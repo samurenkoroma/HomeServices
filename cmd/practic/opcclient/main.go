@@ -13,11 +13,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/simonvetter/modbus"
 	"log"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/simonvetter/modbus"
 
 	"github.com/gopcua/opcua/id"
 	"github.com/gopcua/opcua/server"
@@ -64,7 +65,7 @@ func main() {
 	greenhouseNS.Data["c2"] = false
 	greenhouseNS.Data["c3"] = false
 
-	client, _ := modbus.NewClient(&modbus.ClientConfiguration{URL: "tcp://localhost:5020"})
+	client, _ := modbus.NewClient(&modbus.ClientConfiguration{URL: "tcp://192.168.22.129:502"})
 
 	if err = client.Open(); err != nil {
 		log.Fatal(err)
@@ -75,9 +76,9 @@ func main() {
 
 	go func() {
 		for {
-			inputRegs, err = client.ReadRegisters(0, 2, modbus.INPUT_REGISTER)
+			inputRegs, err = client.ReadRegisters(0, 6, modbus.INPUT_REGISTER)
 			for i, reg := range inputRegs {
-				greenhouseNS.SetValue(fmt.Sprintf("i%d", i), reg)
+				greenhouseNS.SetValue(fmt.Sprintf("i%d", i), int16(reg))
 			}
 
 			coils, err = client.ReadCoils(0, 4)

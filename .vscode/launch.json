@@ -15,7 +15,7 @@
             "program": "${workspaceFolder}/cmd/main.go",
             "cwd": "${workspaceFolder}"
         },
-                {
+        {
             "name": "scaner",
             "type": "go",
             "request": "launch",
@@ -24,6 +24,15 @@
             "envFile": "${workspaceFolder}/.env",
             "program": "${workspaceFolder}/cmd/scaner/main.go",
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "opc",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/practic/opcclient/main.go",
+            "cwd": "${workspaceFolder}"
         }
+
     ]
 }
