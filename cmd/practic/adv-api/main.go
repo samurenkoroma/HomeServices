@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"samurenkoroma/services/configs"
-	"samurenkoroma/services/internal/link"
-	"samurenkoroma/services/internal/stat"
+	"samurenkoroma/services/internal_old/link"
+	"samurenkoroma/services/internal_old/stat"
 	"samurenkoroma/services/pkg/db"
 	"samurenkoroma/services/pkg/event"
 	"samurenkoroma/services/pkg/middleware"
@@ -21,7 +21,7 @@ func main() {
 
 	//Репозитории
 	linkRepo := link.NewLinkRepository(database)
-	// userRepo := user.NewUserRepo(database)
+	// userRepo := user.NewUserRepo(repo)
 	statRepo := stat.NewStatRepo(database)
 
 	//Сервисы

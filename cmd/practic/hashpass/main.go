@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"samurenkoroma/services/internal/hashpass/account"
-	"samurenkoroma/services/internal/hashpass/encrypter"
-	"samurenkoroma/services/internal/hashpass/files"
-	"samurenkoroma/services/internal/hashpass/outputs"
+	"samurenkoroma/services/internal_old/hashpass/account"
+	"samurenkoroma/services/internal_old/hashpass/encrypter"
+	"samurenkoroma/services/internal_old/hashpass/files"
+	"samurenkoroma/services/internal_old/hashpass/outputs"
 
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"

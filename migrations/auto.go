@@ -2,10 +2,10 @@ package main
 
 import (
 	"os"
-	"samurenkoroma/services/internal/link"
-	"samurenkoroma/services/internal/stat"
-	"samurenkoroma/services/internal/user"
-	"samurenkoroma/services/pkg/entities"
+	"samurenkoroma/services/internal/domain"
+	"samurenkoroma/services/internal/infrastructure/payload"
+	"samurenkoroma/services/internal_old/link"
+	"samurenkoroma/services/internal_old/stat"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -23,5 +23,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&link.Link{}, &user.User{}, &stat.Stat{}, &entities.Book{}, &entities.Resource{}, &entities.Author{})
+	db.AutoMigrate(
+		&link.Link{},
+		&domain.User{},
+		&stat.Stat{},
+		&domain.Book{},
+		&domain.Resource{},
+		&domain.Author{},
+		&payload.SupplierGorm{},
+	)
 }

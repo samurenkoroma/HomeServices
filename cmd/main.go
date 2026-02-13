@@ -2,32 +2,31 @@ package main
 
 import (
 	"samurenkoroma/services/configs"
-	"samurenkoroma/services/internal/app"
-	"samurenkoroma/services/internal/auth"
-	"samurenkoroma/services/internal/user"
+	"samurenkoroma/services/internal/delivery/rest"
+	"samurenkoroma/services/internal/infrastructure/repo"
+	"samurenkoroma/services/internal_old/app"
+	"samurenkoroma/services/internal_old/auth"
 	"samurenkoroma/services/pkg/db"
-	"samurenkoroma/services/pkg/repositories"
-	"samurenkoroma/services/pkg/routes"
 )
 
 func main() {
 	conf := configs.LoadConfig()
-	database := db.NewDb(conf)
-	application := app.NewApplication(conf, database)
+	db := db.NewDb(conf)
+	application := app.NewApplication(conf, db)
 
 	//Репозитории
-	userRepo := user.NewUserRepo(database)
-	bookRepo := repositories.NewBookRepo(database)
+	userRepo := repo.NewUserRepo(db)
+	bookRepo := repo.NewBookRepo(db)
 
 	//Сервисы
 	authService := auth.NewAuthService(userRepo)
-
 	auth.NewAuthHandler(application.App, auth.AuthHandlerDeps{
 		AuthService: authService,
 		Config:      conf.Auth,
 	})
+	rest.NewSupplierHandler(application)
 
-	routes.BookRouter(application.App, bookRepo, conf)
+	rest.BookRouter(application.App, bookRepo, conf)
 
 	//home.NewHomeHandler(application)
 	// pages.NewPageHandler(application)

@@ -25,10 +25,10 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 
 func main() {
 	c := color.New(color.FgHiGreen)
-	// Create a non-global registry.
+	// Save a non-global registry.
 	reg := prometheus.NewRegistry()
 
-	// Create new metrics and register them using the custom registry.
+	// Save new metrics and register them using the custom registry.
 	m := NewMetrics(reg)
 	var broker = "lab.raspi"
 	var port = 1883
