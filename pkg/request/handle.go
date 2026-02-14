@@ -1,9 +1,10 @@
 package request
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"samurenkoroma/services/pkg/response"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func HandleBody[T any](w *http.ResponseWriter, r *http.Request) (*T, error) {
@@ -27,6 +28,11 @@ func HandlerRequest[T any](ctx *fiber.Ctx) (*T, error) {
 	var payload T
 	if err := ctx.BodyParser(&payload); err != nil {
 		return &payload, err
+	}
+
+	if err := isValid(payload); err != nil {
+		ctx.Status(fiber.StatusBadRequest)
+		return nil, err
 	}
 	return &payload, nil
 }

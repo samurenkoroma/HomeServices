@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"samurenkoroma/services/configs"
 	"samurenkoroma/services/pkg/jwt"
 	"samurenkoroma/services/pkg/request"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type AuthHandlerDeps struct {

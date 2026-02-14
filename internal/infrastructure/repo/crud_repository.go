@@ -18,7 +18,12 @@ type Repository[T any] interface {
 
 type CRUDRepository[T any] struct {
 	Database *db.Db
-	entity   T
+}
+
+func NewCrudRepo[T any](database *db.Db) *CRUDRepository[T] {
+	return &CRUDRepository[T]{
+		Database: database,
+	}
 }
 
 func (repo CRUDRepository[T]) Save(entity *T) error {

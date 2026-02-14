@@ -5,9 +5,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"samurenkoroma/services/internal/domain"
-	"samurenkoroma/services/internal/infrastructure/repo"
 	"samurenkoroma/services/pkg/db"
+	"samurenkoroma/services/services/homelib"
 	"slices"
 	"strings"
 
@@ -40,11 +39,11 @@ var scanCmd = &cobra.Command{
 					filename := info.Name()
 					p := strings.TrimPrefix(path, dirname)
 					bookRepo.Create(
-						&domain.Book{
+						&homelib.Book{
 							Title: filename[:len(filename)-len(filepath.Ext(filename))],
-							Resources: []domain.Resource{
+							Resources: []homelib.Resource{
 								{
-									Type: domain.DocumentType,
+									Type: homelib.DocumentType,
 									Meta: "",
 									File: p,
 								},

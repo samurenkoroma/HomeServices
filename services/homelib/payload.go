@@ -1,4 +1,4 @@
-package payload
+package homelib
 
 type BookRequest struct {
 	Title   string   `json:"title"`

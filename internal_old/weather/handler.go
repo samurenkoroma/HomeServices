@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"samurenkoroma/services/internal/infrastructure/payload"
 	"samurenkoroma/services/internal_old/app"
+	"samurenkoroma/services/services/weather-forecasst"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +28,7 @@ func NewWeatherHandler(app *app.Polevod) {
 }
 
 func (h *WeatherHandler) weather(c *fiber.Ctx) error {
-	query := &payload.OpenMeteoQuery{
+	query := &weather_forecasst.OpenMeteoQuery{
 		Latitude:     45.91,
 		Longitude:    30.02,
 		Hourly:       "temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day",
@@ -58,22 +58,22 @@ func (h *WeatherHandler) weather(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	var response payload.OpenMeteoResponse
+	var response weather_forecasst.OpenMeteoResponse
 
 	json.Unmarshal(body, &response)
 
-	var items payload.WeatherData
+	var items weather_forecasst.WeatherData
 	for i, value := range response.Hourly.Datetime {
 		datetime, _ := time.Parse("2006-01-02T15:04", value)
 		// if datetime.Format("2006-01-02") != time.Now().Format("2006-01-02") {
 		// 	continue
 		// }
-		items.Hourly = append(items.Hourly, payload.HourlyItem{
+		items.Hourly = append(items.Hourly, weather_forecasst.HourlyItem{
 			WC:          response.Hourly.WC[i],
 			Date:        datetime.Format("15:04"),
 			Temperature: response.Hourly.Temperature_2m[i],
 			IsDay:       response.Hourly.IsDay[i] == 1,
-			Wind: payload.Wind{
+			Wind: weather_forecasst.Wind{
 				Speed:     response.Hourly.WindSpeed_10m[i],
 				Direction: response.Hourly.WindDirection_10m[i],
 				Gusts:     response.Hourly.WindGusts_10m[i],
@@ -82,13 +82,13 @@ func (h *WeatherHandler) weather(c *fiber.Ctx) error {
 	}
 	for i, value := range response.Daily.Datetime {
 		datetime, _ := time.Parse("2006-01-02", value)
-		items.Daily = append(items.Daily, payload.DailyItem{
+		items.Daily = append(items.Daily, weather_forecasst.DailyItem{
 			WC:   response.Daily.WC[i],
 			Date: datetime.Format("2006-01-02"),
-			Temperature: payload.Temperature{
+			Temperature: weather_forecasst.Temperature{
 				Max: response.Daily.TemperatureMax_2m[i],
 				Min: response.Daily.TemperatureMin_2m[i],
-			}, Wind: payload.Wind{
+			}, Wind: weather_forecasst.Wind{
 				Speed:     response.Daily.WindSpeed_10m[i],
 				Direction: response.Daily.WindDirection_10m[i],
 				Gusts:     response.Daily.WindGusts_10m[i],

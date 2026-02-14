@@ -1,24 +1,24 @@
 package rest
 
 import (
-	"samurenkoroma/services/internal/infrastructure/payload"
 	"samurenkoroma/services/internal/infrastructure/repo"
-	"samurenkoroma/services/internal/infrastructure/use_case"
 	"samurenkoroma/services/internal_old/app"
 	"samurenkoroma/services/pkg/request"
+	"samurenkoroma/services/services/accountant"
+	"samurenkoroma/services/services/accountant/entity"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type SupplierHandler struct {
 	router  fiber.Router
-	service *use_case.Service
+	service *accountant.Service
 }
 
 func NewSupplierHandler(app *app.Polevod) {
 	h := SupplierHandler{
 		router:  app.App,
-		service: use_case.NewSupplierService(repo.NewSupplierRepo(app.Db)),
+		service: accountant.NewSupplierService(repo.NewCrudRepo[entity.Supplier](app.Db)),
 	}
 	g := h.router.Group("/finance")
 	g.Post("/supplier", h.Create)
@@ -28,7 +28,7 @@ func NewSupplierHandler(app *app.Polevod) {
 }
 
 func (h *SupplierHandler) Create(c *fiber.Ctx) error {
-	req, err := request.HandlerRequest[payload.CreateSupplierRequest](c)
+	req, err := request.HandlerRequest[accountant.CreateSupplierRequest](c)
 
 	if err != nil {
 		return err

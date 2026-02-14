@@ -1,4 +1,4 @@
-package domain
+package homelib
 
 import "gorm.io/gorm"
 

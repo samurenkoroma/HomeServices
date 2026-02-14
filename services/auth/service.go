@@ -2,8 +2,8 @@ package auth
 
 import (
 	"errors"
-	"samurenkoroma/services/internal/domain"
 	"samurenkoroma/services/internal/infrastructure/repo"
+	"samurenkoroma/services/services/account"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,7 +20,7 @@ func NewAuthService(userRepo *repo.UserRepository) *AuthService {
 
 func (service *AuthService) updateRefreshToken(email, refresh string) error {
 	existedUser, _ := service.userRepository.FindByEmail(email)
-	return service.userRepository.Update(existedUser.Email, &domain.User{RefreshToken: refresh})
+	return service.userRepository.Update(existedUser.Email, &account.User{RefreshToken: refresh})
 }
 
 func (service *AuthService) Register(email, password, name string) (string, error) {
@@ -35,7 +35,7 @@ func (service *AuthService) Register(email, password, name string) (string, erro
 		return "", err
 	}
 
-	user := &domain.User{
+	user := &account.User{
 		Email:    email,
 		PassHash: string(hashedPassword),
 		Name:     name,
@@ -66,5 +66,5 @@ func (service *AuthService) Refresh(refresh string) error {
 	if existedUser == nil {
 		return errors.New(ErrWrongCredentials)
 	}
-	return service.userRepository.Update(existedUser.Email, &domain.User{RefreshToken: refresh})
+	return service.userRepository.Update(existedUser.Email, &account.User{RefreshToken: refresh})
 }

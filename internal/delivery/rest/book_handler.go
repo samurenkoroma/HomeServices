@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"path"
 	"samurenkoroma/services/configs"
-	"samurenkoroma/services/internal/domain"
-	"samurenkoroma/services/internal/infrastructure/payload"
 	"samurenkoroma/services/internal/infrastructure/repo"
 	"samurenkoroma/services/pkg/response"
+	"samurenkoroma/services/services/homelib"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,22 +37,22 @@ func BookRouter(router fiber.Router, repo repo.BookRepository, cfg *configs.Conf
 }
 
 func (h *BookHandler) Create(ctx *fiber.Ctx) error {
-	var dto payload.BookRequest
+	var dto homelib.BookRequest
 	if err := ctx.BodyParser(&dto); err != nil {
 		log.Println(err, ctx.Request())
 		return response.ERROR(ctx, errors.New("wrong data"), http.StatusBadRequest)
 	}
 
-	var authors []domain.Author
+	var authors []homelib.Author
 	for _, p := range dto.Authors {
-		a := domain.Author{
+		a := homelib.Author{
 			Name: p,
 		}
 
 		authors = append(authors, a)
 	}
 
-	book, err := h.repo.Create(&domain.Book{
+	book, err := h.repo.Create(&homelib.Book{
 		Title:   dto.Title,
 		Authors: authors,
 	})
@@ -73,12 +72,12 @@ func (h *BookHandler) GetList(ctx *fiber.Ctx) error {
 	}
 	var books = h.repo.GetList(params)
 
-	var data []payload.BookResponse
+	var data []homelib.BookResponse
 	for _, b := range books {
 		data = append(data, h.makeBookResponse(b))
 	}
 
-	return response.JSON(ctx, payload.BookListResponse{Data: data, Count: len(books)})
+	return response.JSON(ctx, homelib.BookListResponse{Data: data, Count: len(books)})
 }
 
 func (h *BookHandler) GetOne(ctx *fiber.Ctx) error {
@@ -103,13 +102,13 @@ func (h *BookHandler) GetResource(ctx *fiber.Ctx) error {
 	return ctx.Download(path.Join(h.cfg.StorageDir, resource.File))
 }
 
-func (h *BookHandler) makeBookResponse(book domain.Book) payload.BookResponse {
-	var resources []payload.ResourceResponse
-	var authors []payload.AuthorResponse
+func (h *BookHandler) makeBookResponse(book homelib.Book) homelib.BookResponse {
+	var resources []homelib.ResourceResponse
+	var authors []homelib.AuthorResponse
 
 	if len(book.Resources) != 0 {
 		for _, r := range book.Resources {
-			resources = append(resources, payload.ResourceResponse{
+			resources = append(resources, homelib.ResourceResponse{
 				Type: uint(r.Type),
 				Link: fmt.Sprintf("http://%s/resource/%d", h.cfg.ApiHost, r.ID),
 			})
@@ -118,13 +117,13 @@ func (h *BookHandler) makeBookResponse(book domain.Book) payload.BookResponse {
 
 	if len(book.Authors) != 0 {
 		for _, a := range book.Authors {
-			authors = append(authors, payload.AuthorResponse{
+			authors = append(authors, homelib.AuthorResponse{
 				Id:   a.ID,
 				Name: a.Name,
 			})
 		}
 	}
-	return payload.BookResponse{
+	return homelib.BookResponse{
 		Title:     book.Title,
 		Authors:   authors,
 		Resources: resources,

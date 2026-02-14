@@ -1,4 +1,4 @@
-package payload
+package weather_forecasst
 
 type OpenMeteoResponse struct {
 	Latitude  float32 `json:"latitude"`

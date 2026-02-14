@@ -1,15 +1,15 @@
 package repo
 
 import (
-	"samurenkoroma/services/internal/domain"
 	"samurenkoroma/services/pkg/db"
+	"samurenkoroma/services/services/homelib"
 )
 
 type BookRepository interface {
-	Create(b *domain.Book) (*domain.Book, error)
-	GetList(params *BookQueryParams) (books []domain.Book)
-	GetById(id uint) (*domain.Book, error)
-	GetResourceById(id uint) (*domain.Resource, error)
+	Create(b *homelib.Book) (*homelib.Book, error)
+	GetList(params *BookQueryParams) (books []homelib.Book)
+	GetById(id uint) (*homelib.Book, error)
+	GetResourceById(id uint) (*homelib.Resource, error)
 }
 
 func NewBookRepo(database *db.Db) BookRepository {
@@ -23,7 +23,7 @@ type BookRepositoryImpl struct {
 }
 
 // GetResourceById implements [BookRepository].
-func (repo *BookRepositoryImpl) GetResourceById(id uint) (resource *domain.Resource, err error) {
+func (repo *BookRepositoryImpl) GetResourceById(id uint) (resource *homelib.Resource, err error) {
 	result := repo.database.DB.First(&resource, "id = ?", id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -40,7 +40,7 @@ func (repo *BookRepositoryImpl) GetResourceById(id uint) (resource *domain.Resou
 // 	return a, nil
 // }
 
-func (repo *BookRepositoryImpl) GetById(id uint) (book *domain.Book, err error) {
+func (repo *BookRepositoryImpl) GetById(id uint) (book *homelib.Book, err error) {
 	result := repo.database.DB.Preload("Resources").Preload("Authors").First(&book, "id = ?", id)
 	if result.Error != nil {
 		return nil, result.Error
@@ -48,7 +48,7 @@ func (repo *BookRepositoryImpl) GetById(id uint) (book *domain.Book, err error) 
 	return book, nil
 }
 
-func (repo *BookRepositoryImpl) Create(book *domain.Book) (*domain.Book, error) {
+func (repo *BookRepositoryImpl) Create(book *homelib.Book) (*homelib.Book, error) {
 	result := repo.database.Create(book)
 	if result.Error != nil {
 
@@ -80,7 +80,7 @@ func NewBookQueryParams() *BookQueryParams {
 	}
 }
 
-func (repo *BookRepositoryImpl) GetList(params *BookQueryParams) (books []domain.Book) {
+func (repo *BookRepositoryImpl) GetList(params *BookQueryParams) (books []homelib.Book) {
 	repo.database.
 		Table("books").
 		Preload("Resources").
