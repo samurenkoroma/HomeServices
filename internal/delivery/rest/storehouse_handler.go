@@ -18,7 +18,7 @@ type StoreHouseHandler struct {
 func NewStoreHouseHandler(app *app.Polevod) {
 	h := StoreHouseHandler{
 		router:        app.App,
-		seedService:   service.NewSeedService(storehouse.NewSeedsRepository(app.Db)),
+		seedService:   service.NewSeedService(storehouse.NewSeedsRepository(app.Db), app.Db),
 		vendorService: service.NewVendorService(storehouse.NewVendorRepository(app.Db)),
 	}
 	g := h.router.Group("/storehouse")

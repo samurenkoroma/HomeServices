@@ -1,26 +1,49 @@
 package service
 
-import "samurenkoroma/services/services/storehouse"
+import (
+	"database/sql"
+	"fmt"
+	"samurenkoroma/services/pkg/db"
+	"samurenkoroma/services/services/storehouse"
+
+	nestedset "github.com/longbridgeapp/nested-set"
+)
 
 type SeedService struct {
-	Repo *storehouse.SeedsRepository
+	Repo     *storehouse.SeedsRepository
+	database *db.Db
 }
 
-func NewSeedService(repo *storehouse.SeedsRepository) *SeedService {
+func NewSeedService(repo *storehouse.SeedsRepository, db *db.Db) *SeedService {
 	return &SeedService{
-		Repo: repo,
+		Repo:     repo,
+		database: db,
 	}
 }
 
 func (s *SeedService) Add(dto *storehouse.CreateSeedRequest) (storehouse.CreateSeedResponse, error) {
-	seed := &storehouse.Seed{
+
+	parent, err := s.Repo.Crud.Get(fmt.Sprintf("%d", dto.Parent))
+	if err != nil && dto.Parent != 0 {
+		return storehouse.CreateSeedResponse{}, err
+	}
+
+	seed := storehouse.Seed{
 		Name: dto.Name,
 		Type: dto.Type,
 	}
-	err := s.Repo.Crud.Save(seed)
-	if err != nil {
+	if parent != nil {
+		seed.ParentID = sql.NullInt64{Valid: true, Int64: int64(parent.ID)}
+	}
+
+	if err := nestedset.Create(s.database.DB, &seed, parent); err != nil {
 		return storehouse.CreateSeedResponse{}, err
 	}
+
+	//err := s.Repo.Crud.Save(seed)
+	//if err != nil {
+	//	return storehouse.CreateSeedResponse{}, err
+	//}
 	return storehouse.CreateSeedResponse{
 		ID:   seed.ID,
 		Name: seed.Name,
