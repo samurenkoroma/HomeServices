@@ -18,10 +18,11 @@ type StoreHouseHandler struct {
 func NewStoreHouseHandler(app *app.Polevod) {
 	h := StoreHouseHandler{
 		router:        app.App,
-		seedService:   service.NewSeedService(storehouse.NewSeedsRepository(app.Db), app.Db),
-		vendorService: service.NewVendorService(storehouse.NewVendorRepository(app.Db)),
+		seedService:   service.NewSeedService(app.Db),
+		vendorService: service.NewVendorService(app.Db),
 	}
 	g := h.router.Group("/storehouse")
+	g.Post("/plant", h.AddPlant)
 	g.Post("/seed", h.AddSeed)
 	g.Get("/seed", h.ListSeed)
 	g.Get("/vendor", h.ListVendor)
@@ -35,12 +36,24 @@ func (h StoreHouseHandler) AddSeed(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	response, err := h.seedService.Add(req)
-	if err != nil {
+	if err := h.seedService.AddSeed(req); err != nil {
 		return err
 	}
 	ctx.Status(fiber.StatusCreated)
-	return ctx.JSON(fiber.Map{"data": response})
+	return ctx.JSON(fiber.Map{"message": "created"})
+}
+func (h StoreHouseHandler) AddPlant(ctx *fiber.Ctx) error {
+	req, err := request.HandlerRequest[storehouse.CreatePlantRequest](ctx)
+
+	if err != nil {
+		return err
+	}
+
+	if err := h.seedService.AddPlant(req); err != nil {
+		return err
+	}
+	ctx.Status(fiber.StatusCreated)
+	return ctx.JSON(fiber.Map{"message": "created"})
 }
 
 func (h StoreHouseHandler) ListSeed(ctx *fiber.Ctx) error {
@@ -74,6 +87,5 @@ func (h StoreHouseHandler) ListVendor(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(fiber.Map{"data": response})
 }

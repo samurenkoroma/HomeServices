@@ -1,45 +1,50 @@
 package service
 
-import "samurenkoroma/services/services/storehouse"
+import (
+	"context"
+	"samurenkoroma/services/internal/infrastructure/db_table"
+	"samurenkoroma/services/pkg/db"
+	"samurenkoroma/services/services/storehouse"
+
+	"gorm.io/gorm"
+)
 
 type VendorService struct {
-	Repo *storehouse.VendorRepository
+	database *db.Db
 }
 
-func NewVendorService(repo *storehouse.VendorRepository) *VendorService {
+func NewVendorService(db *db.Db) *VendorService {
 	return &VendorService{
-		Repo: repo,
+		database: db,
 	}
 }
 func (s *VendorService) Add(dto *storehouse.CreateVendorRequest) (storehouse.CreateVendorResponse, error) {
 	vendor := &storehouse.Vendor{
 		Name: dto.Name,
-		Url:  dto.Url,
+		URL:  dto.Url,
 	}
-	err := s.Repo.Crud.Save(vendor)
-	if err != nil {
-		return storehouse.CreateVendorResponse{}, err
-	}
+
+	s.database.DB.Create(&vendor)
+
 	return storehouse.CreateVendorResponse{
 		ID:   vendor.ID,
 		Name: vendor.Name,
-		Url:  vendor.Url,
+		Url:  vendor.URL,
 	}, nil
 
 }
 
 func (s *VendorService) List() ([]storehouse.CreateVendorResponse, error) {
-	vendors, err := s.Repo.Crud.List("")
+	vendors, err := gorm.G[db_table.Vendor](s.database.DB).Find(context.Background())
 	if err != nil {
 		return nil, err
 	}
-
 	var data []storehouse.CreateVendorResponse
-	for _, vendor := range vendors {
+	for _, v := range vendors {
 		data = append(data, storehouse.CreateVendorResponse{
-			ID:   vendor.ID,
-			Name: vendor.Name,
-			Url:  vendor.Url,
+			ID:   v.ID,
+			Name: v.Name,
+			Url:  v.Url,
 		})
 	}
 	return data, nil

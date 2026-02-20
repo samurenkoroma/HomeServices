@@ -2,27 +2,15 @@ package accountant
 
 import (
 	"log"
-	"samurenkoroma/services/internal/infrastructure/repo"
+	"samurenkoroma/services/pkg/di"
 	"samurenkoroma/services/services/accountant/entity"
 )
 
-type Repository interface {
-	Save(entity *entity.Supplier) error
-	Get(id string) (*entity.Supplier, error)
-	List(filter string) ([]*entity.Supplier, error)
-	Update(entity *entity.Supplier) (bool, error)
-	Delete(id string) error
-}
-
-type AccountantService struct {
-	suppliers repo.CRUDRepository[entity.Supplier]
-}
-
 type Service struct {
-	repo Repository
+	repo di.CRUDRepository[entity.Supplier]
 }
 
-func NewSupplierService(repo Repository) *Service {
+func NewSupplierService(repo di.CRUDRepository[entity.Supplier]) *Service {
 	return &Service{repo: repo}
 }
 
@@ -43,7 +31,7 @@ func (s *Service) Create(dto *CreateSupplierRequest) (CreateSupplierResponse, er
 	}, nil
 }
 
-func (s *Service) Get(id string) (CreateSupplierResponse, error) {
+func (s *Service) Get(id uint) (CreateSupplierResponse, error) {
 	supplier, err := s.repo.Get(id)
 	if err != nil {
 		return CreateSupplierResponse{}, err
@@ -73,9 +61,9 @@ func (s *Service) List() ([]CreateSupplierResponse, error) {
 	return data, nil
 }
 
-func (s *Service) Update(supplier *entity.Supplier) (bool, error) {
-	return s.repo.Update(supplier)
+func (s *Service) Update(id uint, supplier *entity.Supplier) (bool, error) {
+	return s.repo.Update(id, supplier)
 }
-func (s *Service) Delete(id string) error {
+func (s *Service) Delete(id uint) error {
 	return s.repo.Delete(id)
 }

@@ -4,29 +4,22 @@ import (
 	"context"
 	"log"
 	"samurenkoroma/services/pkg/db"
+	"samurenkoroma/services/pkg/di"
 
 	"gorm.io/gorm"
 )
 
-type Repository[T any] interface {
-	Save(*T) error
-	Get(string) (*T, error)
-	List(string) ([]*T, error)
-	Update(*T) (bool, error)
-	Delete(string) error
-}
-
-type CRUDRepository[T any] struct {
+type CRUDRepositoryImpl[T any] struct {
 	Database *db.Db
 }
 
-func NewCrudRepo[T any](database *db.Db) *CRUDRepository[T] {
-	return &CRUDRepository[T]{
+func NewCrudRepo[T any](database *db.Db) di.CRUDRepository[T] {
+	return &CRUDRepositoryImpl[T]{
 		Database: database,
 	}
 }
 
-func (repo CRUDRepository[T]) Save(entity *T) error {
+func (repo CRUDRepositoryImpl[T]) Save(entity *T) error {
 	if err := gorm.G[T](repo.Database.DB).Create(context.Background(), entity); err != nil {
 		log.Println(err)
 		return err
@@ -34,7 +27,7 @@ func (repo CRUDRepository[T]) Save(entity *T) error {
 	return nil
 }
 
-func (repo CRUDRepository[T]) Get(id string) (*T, error) {
+func (repo CRUDRepositoryImpl[T]) Get(id uint) (*T, error) {
 	result, err := gorm.G[T](repo.Database.DB).Where("id = ?", id).First(context.Background())
 	if err != nil {
 		return nil, err
@@ -42,7 +35,7 @@ func (repo CRUDRepository[T]) Get(id string) (*T, error) {
 	return &result, nil
 }
 
-func (repo CRUDRepository[T]) List(filter string) ([]*T, error) {
+func (repo CRUDRepositoryImpl[T]) List(filter interface{}) ([]*T, error) {
 	var entities []*T
 	result, err := gorm.G[T](repo.Database.DB).Find(context.Background())
 	if err != nil {
@@ -54,12 +47,12 @@ func (repo CRUDRepository[T]) List(filter string) ([]*T, error) {
 	return entities, nil
 }
 
-func (repo CRUDRepository[T]) Update(entity *T) (bool, error) {
+func (repo CRUDRepositoryImpl[T]) Update(id uint, entity *T) (bool, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (repo CRUDRepository[T]) Delete(id string) error {
+func (repo CRUDRepositoryImpl[T]) Delete(id uint) error {
 	//TODO implement me
 	panic("implement me")
 }

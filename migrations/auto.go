@@ -7,7 +7,6 @@ import (
 	"samurenkoroma/services/internal_old/stat"
 	"samurenkoroma/services/services/account"
 	"samurenkoroma/services/services/homelib"
-	"samurenkoroma/services/services/storehouse"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -35,8 +34,9 @@ func main() {
 		&db_table.Supplier{},
 		&db_table.Invoice{},
 		&db_table.InvoiceItem{},
-		&storehouse.Seed{},
-		&storehouse.Vendor{},
-		&storehouse.VendorSeeds{},
+		&db_table.Seed{},
+		&db_table.Vendor{},
+		&db_table.SeedVariant{},
+		&db_table.TaxonomyNode{},
 	)
 }
