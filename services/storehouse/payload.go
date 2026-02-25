@@ -2,7 +2,7 @@ package storehouse
 
 type CreatePlantRequest struct {
 	Name   string `json:"name" validate:"required"`
-	Rank   uint   `json:"rank" validate:"required"`
+	Rank   string `json:"rank" validate:"required"`
 	Parent uint   `json:"parent"`
 }
 

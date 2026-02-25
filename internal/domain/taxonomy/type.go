@@ -1,21 +1,32 @@
 package taxonomy
 
-type TypeTaxonomy uint
+type TypeTaxonomy uint8
 
 var values = map[TypeTaxonomy]string{
-	Animals: "Animals",
-	Plants:  "Plants",
-	Tools:   "Tools",
-	None:    "None",
+	Animals:    "animals",
+	Plants:     "plants",
+	Tools:      "tools",
+	Equipments: "equipments",
+	None:       "none",
 }
 
 const (
-	None    = TypeTaxonomy(iota)
-	Animals = TypeTaxonomy(1)
-	Plants  = TypeTaxonomy(2)
-	Tools   = TypeTaxonomy(3)
+	None TypeTaxonomy = iota
+	Animals
+	Plants
+	Tools
+	Equipments
 )
 
 func (t TypeTaxonomy) String() string {
 	return values[t]
+}
+
+func TypeFromString(name string) uint8 {
+	for k, v := range values {
+		if v == name {
+			return uint8(k)
+		}
+	}
+	return 0
 }

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"gorm.io/gorm/logger"
 )
 
 type Config struct {
@@ -31,7 +32,8 @@ type LoggerConfig struct {
 }
 
 type DbConfig struct {
-	Dsn string
+	Dsn    string
+	Logger int
 }
 
 func init() {
@@ -46,7 +48,8 @@ func init() {
 func LoadConfig() *Config {
 	return &Config{
 		Db: DbConfig{
-			Dsn: getString("DSN", ""),
+			Dsn:    getString("DSN", ""),
+			Logger: getInt("DB_LOGGER", int(logger.Info)),
 		},
 		Auth: AuthConfig{
 			AccessSecret:  os.Getenv("ACCESS_SECRET_JWT"),

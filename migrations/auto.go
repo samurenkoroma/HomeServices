@@ -31,12 +31,12 @@ func main() {
 		&homelib.Book{},
 		&homelib.Resource{},
 		&homelib.Author{},
+
 		&db_table.Supplier{},
-		&db_table.Invoice{},
-		&db_table.InvoiceItem{},
-		&db_table.Seed{},
-		&db_table.Vendor{},
-		&db_table.SeedVariant{},
+		&db_table.Order{},
+		&db_table.OrderItem{},
+		&db_table.Product{},
+		&db_table.ProductVariant{},
 		&db_table.TaxonomyNode{},
 	)
 }

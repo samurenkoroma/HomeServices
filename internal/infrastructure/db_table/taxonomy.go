@@ -37,8 +37,8 @@ description — свободное описание
 */
 type TaxonomyNode struct {
 	ID   int64 `gorm:"primarykey" nestedset:"id"`
-	Type uint
-	Rank uint
+	Type uint8
+	Rank string
 	Name string
 	gorm.Model
 
@@ -47,27 +47,4 @@ type TaxonomyNode struct {
 	Lft           int           `nestedset:"lft"`
 	Depth         int           `nestedset:"depth"`
 	ChildrenCount int           `nestedset:"children_count"`
-}
-
-type Seed struct {
-	Link     string
-	Plant    *TaxonomyNode
-	PlantID  int64
-	Vendor   *Vendor
-	VendorID int64
-	gorm.Model
-	Variants []SeedVariant
-}
-
-type SeedVariant struct {
-	Weight float64
-	Price  float64
-	Seed   Seed
-	SeedId int64
-}
-type Vendor struct {
-	Name string
-	Url  string
-	gorm.Model
-	Seeds []*Seed
 }
