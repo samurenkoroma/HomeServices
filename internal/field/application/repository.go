@@ -6,7 +6,6 @@ import (
 )
 
 type LandUnitRepository interface {
-	Get(id landunit.LandUnitID) (*landunit.LandUnit, error)
 	Save(unit *landunit.LandUnit) error
 }
 

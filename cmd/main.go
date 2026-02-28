@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"samurenkoroma/services/configs"
@@ -8,6 +9,7 @@ import (
 	"samurenkoroma/services/internal/field/application/query"
 	"samurenkoroma/services/internal/field/infrastructure/postgres"
 	myRoute "samurenkoroma/services/internal/field/interfaces/http"
+	"samurenkoroma/services/internal/infrastructure/eventbus"
 )
 
 func main() {
@@ -19,7 +21,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	uow, err := postgres.NewUow(conn)
+
+	eventBus := eventbus.NewInMemoryEventBus()
+	uow, err := postgres.NewPgUnitOfWorkFactory(conn, eventBus).New(context.Background())
 	if err != nil {
 		return
 	}

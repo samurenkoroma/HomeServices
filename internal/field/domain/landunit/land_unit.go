@@ -1,10 +1,12 @@
 package landunit
 
 import (
+	"samurenkoroma/services/internal/domain/shared"
 	"samurenkoroma/services/internal/field/domain/valueobject"
 )
 
 type LandUnit struct {
+	shared.BaseAggregate
 	id        LandUnitID
 	name      string
 	unitType  LandUnitType
