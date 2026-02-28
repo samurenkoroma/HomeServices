@@ -1,13 +1,19 @@
 package command
 
 import (
+	"context"
+	"fmt"
 	"samurenkoroma/services/internal/field/application"
 	"samurenkoroma/services/internal/field/domain/landunit"
 	"samurenkoroma/services/internal/field/domain/valueobject"
 )
 
 type CreateLandUnitHandler struct {
-	Uow application.UnitOfWork
+	UowFactory application.UnitOfWorkFactory
+}
+
+func NewCreateLandUnitHandler(uowFactory application.UnitOfWorkFactory) *CreateLandUnitHandler {
+	return &CreateLandUnitHandler{UowFactory: uowFactory}
 }
 
 type CreateLandUnitCmd struct {
@@ -19,8 +25,15 @@ type CreateLandUnitCmd struct {
 }
 
 func (h *CreateLandUnitHandler) Handle(cmd CreateLandUnitCmd) error {
+	uow, err := h.UowFactory.New(context.Background())
+	if err != nil {
+		return err
+	}
+	defer uow.Rollback()
+
 	dim, err := valueobject.NewDimension(cmd.Length, cmd.Width)
 	if err != nil {
+		fmt.Println("dimcreate command error.", err)
 		return err
 	}
 
@@ -35,10 +48,11 @@ func (h *CreateLandUnitHandler) Handle(cmd CreateLandUnitCmd) error {
 		return landunit.ErrInvalidUnitType
 	}
 
-	err = h.Uow.LandUnits().Save(unit)
+	err = uow.LandUnits().Save(unit)
 	if err != nil {
+		fmt.Println("landunit save command error.", err)
 		return err
 	}
 
-	return h.Uow.Commit()
+	return uow.Commit()
 }

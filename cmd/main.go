@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"samurenkoroma/services/configs"
@@ -23,12 +22,9 @@ func main() {
 	}
 
 	eventBus := eventbus.NewInMemoryEventBus()
-	uow, err := postgres.NewPgUnitOfWorkFactory(conn, eventBus).New(context.Background())
-	if err != nil {
-		return
-	}
+	uowFactory := postgres.NewPgUnitOfWorkFactory(conn, eventBus)
 
-	createCmd := &command.CreateLandUnitHandler{Uow: uow}
+	createCmd := command.NewCreateLandUnitHandler(uowFactory)
 	getQuery := query.NewGetLandUnitHandler(conn)
 
 	mux := http.NewServeMux()

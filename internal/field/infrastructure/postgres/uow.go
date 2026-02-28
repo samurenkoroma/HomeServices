@@ -5,6 +5,7 @@ import (
 	"samurenkoroma/services/internal/application/shared"
 	domainShared "samurenkoroma/services/internal/domain/shared"
 	"samurenkoroma/services/internal/field/application"
+	"sync"
 )
 
 type PgUow struct {
@@ -14,10 +15,12 @@ type PgUow struct {
 	cropRepo application.CropPlanRepository
 
 	aggregates []domainShared.EventAwareAggregate
+
+	closed bool
+	mu     sync.Mutex
 }
 
 func newPgUnitOfWork(tx *sql.Tx, eventBus shared.EventBus) *PgUow {
-
 	uow := &PgUow{
 		tx:       tx,
 		eventBus: eventBus,
@@ -37,13 +40,31 @@ func (u *PgUow) CropPlans() application.CropPlanRepository {
 }
 
 func (u *PgUow) Commit() error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	if u.closed {
+		return nil
+	}
+
 	if err := u.tx.Commit(); err != nil {
 		return err
 	}
+
+	u.closed = true
+
 	return u.dispatchEvents()
 }
 
 func (u *PgUow) Rollback() error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	if u.closed {
+		return nil
+	}
+
+	u.closed = true
 	return u.tx.Rollback()
 }
 

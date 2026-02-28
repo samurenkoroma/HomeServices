@@ -1,7 +1,7 @@
 CREATE TABLE land_structure
 (
     id         UUID PRIMARY KEY,
-    root_id     UUID NOT NULL ,
+    root_id    UUID NOT NULL ,
     parent_id  UUID NULL REFERENCES land_structure(id),
 
     unit_type  TEXT      NOT NULL, -- land_unit | section | bed

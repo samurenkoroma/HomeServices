@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"samurenkoroma/services/internal/field/application"
 	"samurenkoroma/services/internal/field/domain/landunit"
 )
@@ -16,8 +17,6 @@ func NewLandUnitRepository(tx *sql.Tx, uow *PgUow) application.LandUnitRepositor
 }
 
 func (r *LandUnitRepoImp) Save(unit *landunit.LandUnit) error {
-	defer r.uow.Rollback()
-
 	// remove old structure
 	_, err := r.tx.Exec(`
 		DELETE FROM land_structure
@@ -25,6 +24,7 @@ func (r *LandUnitRepoImp) Save(unit *landunit.LandUnit) error {
 	`, unit.ID())
 
 	if err != nil {
+		fmt.Println("Error deleting land_structure", err)
 		return err
 	}
 
@@ -48,14 +48,13 @@ func (r *LandUnitRepoImp) Save(unit *landunit.LandUnit) error {
 		)
 
 		if err != nil {
+			if isUniqueViolation(err) {
+				return landunit.ErrLandUnitAlreadyExists
+			}
 			return err
 		}
 	}
 
-	err = r.uow.Commit()
-	if err != nil {
-		return err
-	}
 	r.uow.registerAggregate(unit)
 	return nil
 }

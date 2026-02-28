@@ -2,9 +2,12 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"samurenkoroma/services/internal/field/application/command"
 	"samurenkoroma/services/internal/field/application/query"
+
+	"github.com/google/uuid"
 )
 
 type LandUnitHTTPHandler struct {
@@ -45,11 +48,13 @@ func (h *LandUnitHTTPHandler) createLandUnit(w http.ResponseWriter, r *http.Requ
 	var req CreateLandUnitRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Println("land unit json decode error.", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	cmd := command.CreateLandUnitCmd{
+		ID:     uuid.New().String(),
 		Name:   req.Name,
 		Type:   req.UnitType,
 		Length: req.Length,
@@ -57,6 +62,7 @@ func (h *LandUnitHTTPHandler) createLandUnit(w http.ResponseWriter, r *http.Requ
 	}
 
 	if err := h.createCmd.Handle(cmd); err != nil {
+		fmt.Println("land unit create command error.", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
