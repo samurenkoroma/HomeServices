@@ -5,8 +5,9 @@ type SectionID string
 type BedID string
 
 type LandUnitType string
+type LandSpaceType string
 
 const (
-	Field      LandUnitType = "field"
-	Greenhouse LandUnitType = "greenhouse"
+	Field      LandSpaceType = "field"
+	Greenhouse LandSpaceType = "greenhouse"
 )

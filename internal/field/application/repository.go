@@ -6,7 +6,8 @@ import (
 )
 
 type LandUnitRepository interface {
-	Save(unit *landunit.LandUnit) error
+	Get(id landunit.LandUnitID) (*landunit.GrowingFacility, error)
+	Save(unit *landunit.GrowingFacility) error
 }
 
 type CropPlanRepository interface {

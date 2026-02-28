@@ -19,7 +19,8 @@ func NewCreateLandUnitHandler(uowFactory application.UnitOfWorkFactory) *CreateL
 type CreateLandUnitCmd struct {
 	ID     string
 	Name   string
-	Type   string
+	Unit   string
+	Space  string
 	Length float64
 	Width  float64
 }
@@ -37,15 +38,15 @@ func (h *CreateLandUnitHandler) Handle(cmd CreateLandUnitCmd) error {
 		return err
 	}
 
-	var unit *landunit.LandUnit
+	var unit *landunit.GrowingFacility
 
-	switch cmd.Type {
+	switch cmd.Space {
 	case "field":
 		unit = landunit.NewField(landunit.LandUnitID(cmd.ID), cmd.Name, dim)
 	case "greenhouse":
 		unit = landunit.NewGreenhouse(landunit.LandUnitID(cmd.ID), cmd.Name, dim)
 	default:
-		return landunit.ErrInvalidUnitType
+		return landunit.ErrInvalidSpaceType
 	}
 
 	err = uow.LandUnits().Save(unit)

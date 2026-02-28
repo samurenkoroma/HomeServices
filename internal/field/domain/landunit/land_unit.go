@@ -5,27 +5,27 @@ import (
 	"samurenkoroma/services/internal/field/domain/valueobject"
 )
 
-type LandUnit struct {
+type GrowingFacility struct {
 	shared.BaseAggregate
 	id        LandUnitID
 	name      string
-	unitType  LandUnitType
+	spaceType LandSpaceType
 	dimension valueobject.Dimension
 	sections  []*Section
 	beds      []*Bed
 }
 
-func NewField(id LandUnitID, name string, dim valueobject.Dimension) *LandUnit {
-	return &LandUnit{id: id, name: name, unitType: Field, dimension: dim}
+func NewField(id LandUnitID, name string, dim valueobject.Dimension) *GrowingFacility {
+	return &GrowingFacility{id: id, name: name, spaceType: Field, dimension: dim}
 }
 
-func NewGreenhouse(id LandUnitID, name string, dim valueobject.Dimension) *LandUnit {
-	return &LandUnit{id: id, name: name, unitType: Greenhouse, dimension: dim}
+func NewGreenhouse(id LandUnitID, name string, dim valueobject.Dimension) *GrowingFacility {
+	return &GrowingFacility{id: id, name: name, spaceType: Greenhouse, dimension: dim}
 }
 
-func (l *LandUnit) AddSection(s *Section) error {
-	if l.unitType != Field {
-		return ErrInvalidUnitType
+func (l *GrowingFacility) AddSection(s *Section) error {
+	if l.spaceType != Field {
+		return ErrInvalidSpaceType
 	}
 	if l.totalSectionArea()+s.dimension.Area() > l.dimension.Area() {
 		return ErrAreaExceeded
@@ -34,9 +34,9 @@ func (l *LandUnit) AddSection(s *Section) error {
 	return nil
 }
 
-func (l *LandUnit) AddBedToSection(sectionID SectionID, b *Bed) error {
-	if l.unitType != Field {
-		return ErrInvalidUnitType
+func (l *GrowingFacility) AddBedToSection(sectionID SectionID, b *Bed) error {
+	if l.spaceType != Field {
+		return ErrInvalidSpaceType
 	}
 	for _, s := range l.sections {
 		if s.ID() == sectionID {
@@ -46,9 +46,9 @@ func (l *LandUnit) AddBedToSection(sectionID SectionID, b *Bed) error {
 	return ErrSectionNotFound
 }
 
-func (l *LandUnit) AddBedToGreenhouse(b *Bed) error {
-	if l.unitType != Greenhouse {
-		return ErrInvalidUnitType
+func (l *GrowingFacility) AddBedToGreenhouse(b *Bed) error {
+	if l.spaceType != Greenhouse {
+		return ErrInvalidSpaceType
 	}
 	if l.totalBedArea()+b.Area() > l.dimension.Area() {
 		return ErrAreaExceeded
@@ -57,7 +57,7 @@ func (l *LandUnit) AddBedToGreenhouse(b *Bed) error {
 	return nil
 }
 
-func (l *LandUnit) totalSectionArea() float64 {
+func (l *GrowingFacility) totalSectionArea() float64 {
 	total := 0.0
 	for _, s := range l.sections {
 		total += s.dimension.Area()
@@ -65,49 +65,49 @@ func (l *LandUnit) totalSectionArea() float64 {
 	return total
 }
 
-func (l *LandUnit) totalBedArea() float64 {
+func (l *GrowingFacility) totalBedArea() float64 {
 	total := 0.0
 	for _, b := range l.beds {
 		total += b.Area()
 	}
 	return total
 }
-func (l *LandUnit) ID() LandUnitID {
+func (l *GrowingFacility) ID() LandUnitID {
 	return l.id
 }
 
-func (l *LandUnit) Name() string {
+func (l *GrowingFacility) Name() string {
 	return l.name
 }
 
-func (l *LandUnit) Type() LandUnitType {
-	return l.unitType
+func (l *GrowingFacility) SpaceType() LandSpaceType {
+	return l.spaceType
 }
 
-func (l *LandUnit) Dimension() valueobject.Dimension {
+func (l *GrowingFacility) Dimension() valueobject.Dimension {
 	return l.dimension
 }
 
-func (l *LandUnit) Sections() []*Section {
+func (l *GrowingFacility) Sections() []*Section {
 	return append([]*Section(nil), l.sections...)
 }
 
-func (l *LandUnit) Beds() []*Bed {
+func (l *GrowingFacility) Beds() []*Bed {
 	return append([]*Bed(nil), l.beds...)
 }
 
 func RehydrateLandUnit(
 	id LandUnitID,
 	name string,
-	unitType LandUnitType,
+	spaceType LandSpaceType,
 	dim valueobject.Dimension,
 	sections []*Section,
 	beds []*Bed,
-) *LandUnit {
-	return &LandUnit{
+) *GrowingFacility {
+	return &GrowingFacility{
 		id:        id,
 		name:      name,
-		unitType:  unitType,
+		spaceType: spaceType,
 		dimension: dim,
 		sections:  sections,
 		beds:      beds,
@@ -123,11 +123,11 @@ func RehydrateSection(id SectionID, name string, dim valueobject.Dimension) *Sec
 	}
 }
 
-func (l *LandUnit) rehydrateAddSection(s *Section) {
+func (l *GrowingFacility) rehydrateAddSection(s *Section) {
 	l.sections = append(l.sections, s)
 }
 
-func (l *LandUnit) rehydrateAddBedToSection(sectionID SectionID, b *Bed) {
+func (l *GrowingFacility) rehydrateAddBedToSection(sectionID SectionID, b *Bed) {
 	for _, s := range l.sections {
 		if s.ID() == sectionID {
 			s.rehydrateAddBed(b)
@@ -136,6 +136,6 @@ func (l *LandUnit) rehydrateAddBedToSection(sectionID SectionID, b *Bed) {
 	}
 }
 
-func (l *LandUnit) rehydrateAddBed(b *Bed) {
+func (l *GrowingFacility) rehydrateAddBed(b *Bed) {
 	l.beds = append(l.beds, b)
 }

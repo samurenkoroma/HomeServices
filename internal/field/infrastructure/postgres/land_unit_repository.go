@@ -12,11 +12,16 @@ type LandUnitRepoImp struct {
 	uow *PgUow
 }
 
+func (r *LandUnitRepoImp) Get(id landunit.LandUnitID) (*landunit.GrowingFacility, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewLandUnitRepository(tx *sql.Tx, uow *PgUow) application.LandUnitRepository {
 	return &LandUnitRepoImp{tx: tx, uow: uow}
 }
 
-func (r *LandUnitRepoImp) Save(unit *landunit.LandUnit) error {
+func (r *LandUnitRepoImp) Save(unit *landunit.GrowingFacility) error {
 	// remove old structure
 	_, err := r.tx.Exec(`
 		DELETE FROM land_structure
@@ -34,14 +39,14 @@ func (r *LandUnitRepoImp) Save(unit *landunit.LandUnit) error {
 	for _, row := range rows {
 		_, err = r.tx.Exec(`
 			INSERT INTO land_structure
-			(id, parent_id, root_id, unit_type, land_type, name, length, width, created_at)
+			(id, parent_id, root_id, unit_type, space_type, name, length, width, created_at)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8, NOW())
 		`,
 			row.ID,
 			row.ParentID,
 			row.RootID,
 			row.UnitType,
-			row.LandType,
+			row.SpaceType,
 			row.Name,
 			row.Length,
 			row.Width,

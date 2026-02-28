@@ -7,14 +7,14 @@ import (
 )
 
 type landUnitRow struct {
-	ID       string
-	RootID   string
-	ParentID *string
-	Name     string
-	UnitType string
-	LandType string
-	Length   float64
-	Width    float64
+	ID        string
+	RootID    string
+	ParentID  *string
+	Name      string
+	UnitType  string
+	SpaceType string
+	Length    float64
+	Width     float64
 }
 type sectionRow landUnitRow
 type bedRow landUnitRow
@@ -28,40 +28,42 @@ type cropPlanRow struct {
 }
 
 // LAND UNIT → DB
-func mapLandUnitToRows(unit *landunit.LandUnit) []landUnitRow {
+func mapLandUnitToRows(unit *landunit.GrowingFacility) []landUnitRow {
 	rootId := string(unit.ID())
 	lu := landUnitRow{
-		ID:       string(unit.ID()),
-		RootID:   rootId,
-		Name:     unit.Name(),
-		LandType: string(unit.Type()),
-		UnitType: "land_unit",
-		Length:   unit.Dimension().Length,
-		Width:    unit.Dimension().Width,
+		ID:        string(unit.ID()),
+		RootID:    rootId,
+		Name:      unit.Name(),
+		SpaceType: string(unit.SpaceType()),
+		UnitType:  "land",
+		Length:    unit.Dimension().Length,
+		Width:     unit.Dimension().Width,
 	}
 
 	var rows = []landUnitRow{lu}
 
 	for _, s := range unit.Sections() {
 		rows = append(rows, landUnitRow{
-			ID:       string(s.ID()),
-			ParentID: &rootId,
-			RootID:   rootId,
-			UnitType: "section",
-			Name:     s.Name(),
-			Length:   s.Dimension().Length,
-			Width:    s.Dimension().Width,
+			ID:        string(s.ID()),
+			ParentID:  &rootId,
+			RootID:    rootId,
+			UnitType:  "section",
+			SpaceType: string(unit.SpaceType()),
+			Name:      s.Name(),
+			Length:    s.Dimension().Length,
+			Width:     s.Dimension().Width,
 		})
 
 		for _, b := range s.Beds() {
 			rows = append(rows, landUnitRow{
-				ID:       string(b.ID()),
-				ParentID: &rootId,
-				RootID:   rootId,
-				UnitType: "bed",
-				Name:     b.Name(),
-				Length:   b.Dimension().Length,
-				Width:    b.Dimension().Width,
+				ID:        string(b.ID()),
+				ParentID:  &rootId,
+				RootID:    rootId,
+				SpaceType: string(unit.SpaceType()),
+				UnitType:  "bed",
+				Name:      b.Name(),
+				Length:    b.Dimension().Length,
+				Width:     b.Dimension().Width,
 			})
 		}
 	}
@@ -69,12 +71,14 @@ func mapLandUnitToRows(unit *landunit.LandUnit) []landUnitRow {
 	// beds directly under greenhouse
 	for _, b := range unit.Beds() {
 		rows = append(rows, landUnitRow{
-			ID:       string(b.ID()),
-			ParentID: &rootId,
-			RootID:   rootId,
-			Name:     b.Name(),
-			Length:   b.Dimension().Length,
-			Width:    b.Dimension().Width,
+			ID:        string(b.ID()),
+			ParentID:  &rootId,
+			RootID:    rootId,
+			SpaceType: string(unit.SpaceType()),
+			UnitType:  "bed",
+			Name:      b.Name(),
+			Length:    b.Dimension().Length,
+			Width:     b.Dimension().Width,
 		})
 	}
 
@@ -86,16 +90,16 @@ func mapRowsToLandUnit(
 	lu landUnitRow,
 	sections []sectionRow,
 	beds []bedRow,
-) (*landunit.LandUnit, error) {
+) (*landunit.GrowingFacility, error) {
 
 	dim, err := valueobject.NewDimension(lu.Length, lu.Width)
 	if err != nil {
 		return nil, err
 	}
 
-	var unit *landunit.LandUnit
+	var unit *landunit.GrowingFacility
 
-	switch lu.LandType {
+	switch lu.SpaceType {
 	case "field":
 		unit = landunit.NewField(
 			landunit.LandUnitID(lu.ID),
@@ -109,7 +113,7 @@ func mapRowsToLandUnit(
 			dim,
 		)
 	default:
-		return nil, landunit.ErrInvalidUnitType
+		return nil, landunit.ErrInvalidSpaceType
 	}
 
 	// создаём map sections
