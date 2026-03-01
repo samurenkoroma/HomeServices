@@ -3,14 +3,16 @@ package facility
 import (
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestGreenhouseCannotAddSection(t *testing.T) {
 	d, _ := valueobject.NewDimension(10, 10)
-	gh := NewGreenhouse(1, "GH", d)
+	gh := NewGreenhouseFacility(FacilityID(uuid.New().String()), "GH", d)
 
-	sec := NewSection(1, "S", d)
-	err := gh.AddSection(sec)
+	sec := NewFieldBlock(GrowingAreaID(uuid.New().String()), "S", d)
+	err := gh.AddBlock(sec)
 
 	if err == nil {
 		t.Fail()
