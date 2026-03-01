@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"samurenkoroma/services/configs"
-	"samurenkoroma/services/internal/field/application/command"
-	"samurenkoroma/services/internal/field/application/query"
-	"samurenkoroma/services/internal/field/infrastructure/postgres"
-	myRoute "samurenkoroma/services/internal/field/interfaces/http"
+	"samurenkoroma/services/internal/growing/application/command"
+	"samurenkoroma/services/internal/growing/infrastructure/postgres"
+	"samurenkoroma/services/internal/growing/interfaces/httpapi"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
 )
 
@@ -24,13 +23,27 @@ func main() {
 	eventBus := eventbus.NewInMemoryEventBus()
 	uowFactory := postgres.NewPgUnitOfWorkFactory(conn, eventBus)
 
-	createCmd := command.NewCreateLandUnitHandler(uowFactory)
-	getQuery := query.NewGetLandUnitHandler(conn)
+	//createCmd := command.NewCreateLandUnitHandler(uowFactory)
+	//getQuery := query.NewGetLandUnitHandler(conn)
 
 	mux := http.NewServeMux()
-	handler := myRoute.NewLandUnitHTTPHandler(createCmd, getQuery)
+	//handler := httpapi.NewLandUnitHTTPHandler(createCmd, getQuery)
 
-	handler.RegisterRoutes(mux)
+	//handler.RegisterRoutes(mux)
+
+	router := httpapi.NewCommandRouter()
+	router.Register(
+		"CreateField",
+		&command.CreateFacilityHandler{UowFactory: uowFactory},
+		command.DecodeCreateField,
+	)
+	commandHandler := httpapi.CommandEndpoint(router)
+
+	mux.Handle("/api/command", httpapi.Chain(
+		commandHandler,
+		httpapi.TransactionMiddleware(uowFactory),
+	))
+
 	http.ListenAndServe(":8080", mux)
 	//Репозитории
 	//userRepo := repo.NewUserRepo(database)
