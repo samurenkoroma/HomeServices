@@ -1,10 +1,10 @@
 package domain
 
-type EventHandler interface {
-	Handle(event DomainEvent) error
-}
+import "context"
+
+type EventHandler func(ctx context.Context, event DomainEvent) error
 
 type EventBus interface {
-	Publish(events []DomainEvent) error
 	Register(eventName string, handler EventHandler)
+	Publish(context.Context, []DomainEvent) error
 }

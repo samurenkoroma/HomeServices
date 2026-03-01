@@ -1,6 +1,7 @@
 package eventbus
 
 import (
+	"context"
 	"samurenkoroma/services/internal/common/domain"
 	"sync"
 )
@@ -23,16 +24,19 @@ func (b *InMemoryEventBus) Register(eventName string, handler domain.EventHandle
 	b.handlers[eventName] = append(b.handlers[eventName], handler)
 }
 
-func (b *InMemoryEventBus) Publish(events []domain.DomainEvent) error {
+func (b *InMemoryEventBus) Publish(
+	ctx context.Context,
+	events []domain.DomainEvent,
+) error {
 
-	for _, e := range events {
+	for _, event := range events {
 
 		b.mu.RLock()
-		handlers := b.handlers[e.EventName()]
+		handlers := b.handlers[event.EventName()]
 		b.mu.RUnlock()
 
 		for _, h := range handlers {
-			if err := h.Handle(e); err != nil {
+			if err := h(ctx, event); err != nil {
 				return err
 			}
 		}

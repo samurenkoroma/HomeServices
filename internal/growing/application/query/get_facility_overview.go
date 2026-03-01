@@ -31,7 +31,7 @@ type GetLandUnitHandler struct {
 	db *sql.DB
 }
 
-func NewGetFacilityOverviewHandler(db *sql.DB) *GetLandUnitHandler {
+func NewGetLandUnitHandler(db *sql.DB) *GetLandUnitHandler {
 	return &GetLandUnitHandler{db: db}
 }
 

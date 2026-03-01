@@ -8,6 +8,9 @@ import (
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/common/application/uow"
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
+	"samurenkoroma/services/internal/growing/application/events"
+
+	//growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
 	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
@@ -37,7 +40,9 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 
 	// ---------- Unit Of Work Factory ----------
 
-	uowFactory := uowSql.NewUnitOfWorkFactory(db, eventbus.NewInMemoryEventBus())
+	bus := eventbus.NewInMemoryEventBus()
+	bus.Register("FacilityCreated", events.OnFacilityCreated)
+	uowFactory := uowSql.NewUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------
 
@@ -92,7 +97,7 @@ func registerGrowing(
 	// ---- Query Handlers ----
 
 	//getOverviewHandler :=
-	//	growingapp.NewGetFacilityOverviewHandler()
+	//	growingQuery.NewGetLandUnitHandler()
 	//
 	//queryRouter.Register(
 	//	"GetFacilityOverview",

@@ -102,5 +102,5 @@ func (u *sqlUnitOfWork) dispatchEvents() error {
 		return nil
 	}
 
-	return u.bus.Publish(allEvents)
+	return u.bus.Publish(uow.WithUnitOfWork(u.ctx, u), allEvents)
 }
