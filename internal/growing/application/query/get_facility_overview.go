@@ -1,114 +1,64 @@
 package query
 
-import "database/sql"
+import (
+	"context"
+	"errors"
 
-type GetLandUnitResult struct {
-	ID       string
-	Name     string
-	Type     string
-	Length   float64
-	Width    float64
-	Sections []SectionDTO
-	Beds     []BedDTO
+	"github.com/google/uuid"
+)
+
+type GetFacilityOverviewQuery struct {
+	FacilityID string `json:"facility_id"`
 }
 
-type SectionDTO struct {
-	ID     string
-	Name   string
-	Length float64
-	Width  float64
-	Beds   []BedDTO
+type FacilityOverviewDTO struct {
+	ID    string        `json:"id"`
+	Name  string        `json:"name"`
+	Type  string        `json:"type"` // field | greenhouse
+	Area  float64       `json:"area"`
+	Units []LandUnitDTO `json:"units"`
 }
 
-type BedDTO struct {
-	ID     string
-	Name   string
-	Length float64
-	Width  float64
+type LandUnitDTO struct {
+	ID   string  `json:"id"`
+	Name string  `json:"name"`
+	Area float64 `json:"area"`
+}
+type FacilityReadRepository interface {
+	GetOverview(ctx context.Context, id string) (*FacilityOverviewDTO, error)
 }
 
-type GetLandUnitHandler struct {
-	db *sql.DB
+type GetFacilityOverviewHandler struct {
 }
 
-func NewGetLandUnitHandler(db *sql.DB) *GetLandUnitHandler {
-	return &GetLandUnitHandler{db: db}
+func NewGetFacilityOverviewHandler() *GetFacilityOverviewHandler {
+	return &GetFacilityOverviewHandler{}
 }
 
-func (h *GetLandUnitHandler) Handle(id string) (*GetLandUnitResult, error) {
-
-	rows, err := h.db.Query(`
-		SELECT id, parent_id, unit_type, name, length, width
-		FROM land_structure
-		WHERE root_id = $1
-	`, id)
-
-	if err != nil {
-		return nil, err
+func (h *GetFacilityOverviewHandler) AsHandler() func(context.Context, any) (any, error) {
+	return func(ctx context.Context, payload any) (any, error) {
+		q, ok := payload.(*GetFacilityOverviewQuery)
+		if !ok {
+			return nil, errors.New("invalid payload type")
+		}
+		return h.Handle(ctx, q)
 	}
-	defer rows.Close()
+}
 
-	var root *GetLandUnitResult
-	sections := make(map[string]*SectionDTO)
+func (h *GetFacilityOverviewHandler) Handle(
+	ctx context.Context,
+	q *GetFacilityOverviewQuery,
+) (*FacilityOverviewDTO, error) {
 
-	for rows.Next() {
-
-		var rowID string
-		var parentID *string
-		var unitType string
-		var name string
-		var length float64
-		var width float64
-
-		if err := rows.Scan(
-			&rowID,
-			&parentID,
-			&unitType,
-			&name,
-			&length,
-			&width,
-		); err != nil {
-			return nil, err
-		}
-
-		if parentID == nil {
-			root = &GetLandUnitResult{
-				ID:     rowID,
-				Name:   name,
-				Type:   unitType,
-				Length: length,
-				Width:  width,
-			}
-			continue
-		}
-
-		if unitType == "section" {
-			sec := &SectionDTO{
-				ID:     rowID,
-				Name:   name,
-				Length: length,
-				Width:  width,
-			}
-			sections[rowID] = sec
-			root.Sections = append(root.Sections, *sec)
-			continue
-		}
-
-		if unitType == "bed" {
-			bed := BedDTO{
-				ID:     rowID,
-				Name:   name,
-				Length: length,
-				Width:  width,
-			}
-
-			if sec, ok := sections[*parentID]; ok {
-				sec.Beds = append(sec.Beds, bed)
-			} else {
-				root.Beds = append(root.Beds, bed)
-			}
-		}
+	if q.FacilityID == "" {
+		return nil, errors.New("facility_id is required")
 	}
 
-	return root, nil
+	return &FacilityOverviewDTO{
+		ID:    uuid.New().String(),
+		Name:  "test",
+		Type:  "test",
+		Area:  0.6,
+		Units: nil,
+	}, nil
 }

@@ -10,7 +10,7 @@ import (
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
 	"samurenkoroma/services/internal/growing/application/events"
 
-	//growingQuery "samurenkoroma/services/internal/growing/application/query"
+	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
 	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
@@ -95,15 +95,13 @@ func registerGrowing(
 	)
 
 	// ---- Query Handlers ----
+	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler()
 
-	//getOverviewHandler :=
-	//	growingQuery.NewGetLandUnitHandler()
-	//
-	//queryRouter.Register(
-	//	"GetFacilityOverview",
-	//	getOverviewHandler.Handle,
-	//	growingapp.DecodeGetFacilityOverview,
-	//)
+	queryRouter.Register(
+		"get_facility_overview",
+		query.DecodeJSON[growingQuery.GetFacilityOverviewQuery],
+		getOverviewHandler.AsHandler(),
+	)
 
 	return nil
 }
