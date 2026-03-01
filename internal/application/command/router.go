@@ -6,29 +6,40 @@ import (
 	"errors"
 )
 
-type CommandRouter struct {
-	handlers map[string]CommandHandler
-	decoders map[string]CommandDecoder
+type Handler interface {
+	Handle(ctx context.Context, cmd any) error
+}
+type DecoderFunc func([]byte) (any, error)
+
+type Router interface {
+	Register(string, Handler, DecoderFunc)
+	Dispatch(context.Context, string, any) error
+	ResolveCommandPayload(string, json.RawMessage) (any, error)
 }
 
-func NewCommandRouter() *CommandRouter {
-	return &CommandRouter{
-		handlers: make(map[string]CommandHandler),
-		decoders: make(map[string]CommandDecoder),
+type router struct {
+	handlers map[string]Handler
+	decoders map[string]DecoderFunc
+}
+
+func NewRouter() Router {
+	return &router{
+		handlers: make(map[string]Handler),
+		decoders: make(map[string]DecoderFunc),
 	}
 }
 
-func (r *CommandRouter) Register(
+func (r *router) Register(
 	commandName string,
-	handler CommandHandler,
-	decoder CommandDecoder,
+	handler Handler,
+	decoder DecoderFunc,
 ) {
 
 	r.handlers[commandName] = handler
 	r.decoders[commandName] = decoder
 }
 
-func (r *CommandRouter) Dispatch(
+func (r *router) Dispatch(
 	ctx context.Context,
 	commandName string,
 	cmd any,
@@ -42,7 +53,7 @@ func (r *CommandRouter) Dispatch(
 	return handler.Handle(ctx, cmd)
 }
 
-func (r *CommandRouter) ResolveCommandPayload(
+func (r *router) ResolveCommandPayload(
 	commandName string,
 	data json.RawMessage,
 ) (any, error) {

@@ -5,22 +5,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/application/uow"
+	"samurenkoroma/services/internal/common/application/uow"
 	"samurenkoroma/services/internal/growing/domain/facility"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 )
 
 type CreateFacilityHandler struct {
-	UowFactory uow.UnitOfWorkFactory
+	UowFactory uow.Factory
 }
 
 type CreateFacilityCmd struct {
-	ID           string
-	Name         string
-	Unit         string
-	FacilityType string
-	Length       float64
-	Width        float64
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	FacilityType string  `json:"type"`
+	Length       float64 `json:"length"`
+	Width        float64 `json:"width"`
 }
 
 func DecodeCreateField(data []byte) (any, error) {
@@ -41,7 +40,7 @@ func (h *CreateFacilityHandler) Handle(ctx context.Context, cmd any) error {
 		return errors.New("invalid command type")
 	}
 
-	uow, err := h.UowFactory.New(ctx)
+	uow, err := h.UowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}

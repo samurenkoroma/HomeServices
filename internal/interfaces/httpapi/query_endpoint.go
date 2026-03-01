@@ -7,7 +7,7 @@ import (
 	"samurenkoroma/services/internal/application/query/dto"
 )
 
-func QueryEndpoint(router query.QueryRouter) http.HandlerFunc {
+func QueryEndpoint(router query.Router) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -18,16 +18,10 @@ func QueryEndpoint(router query.QueryRouter) http.HandlerFunc {
 			return
 		}
 
-		query, err := router.Decode(payload.Query, payload.Data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
 		result, err := router.Dispatch(
 			r.Context(),
 			payload.Query,
-			query,
+			payload.Data,
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -1,13 +1,13 @@
 package facility
 
 import (
-	"samurenkoroma/services/internal/domain/shared"
+	"samurenkoroma/services/internal/common/domain"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 	"time"
 )
 
 type GrowingFacility struct {
-	shared.BaseAggregate
+	domain.BaseAggregate
 
 	id           FacilityID
 	name         string

@@ -1,4 +1,4 @@
-package event
+package domain
 
 type EventHandler interface {
 	Handle(event DomainEvent) error

@@ -1,6 +1,7 @@
-package event
+package domain
 
-type EventAwareAggregate interface {
+type Aggregate interface {
+	AddEvent(e DomainEvent)
 	PullEvents() []DomainEvent
 }
 

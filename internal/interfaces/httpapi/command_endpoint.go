@@ -6,7 +6,7 @@ import (
 	"samurenkoroma/services/internal/application/command"
 )
 
-func CommandEndpoint(router *command.CommandRouter) http.HandlerFunc {
+func CommandEndpoint(router command.Router) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
