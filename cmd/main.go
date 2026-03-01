@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"samurenkoroma/services/configs"
-	"samurenkoroma/services/internal/growing/application/command"
+	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 	"samurenkoroma/services/internal/growing/interfaces/httpapi"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
@@ -31,7 +31,8 @@ func main() {
 
 	//handler.RegisterRoutes(mux)
 
-	router := httpapi.NewCommandRouter()
+	router := command.NewCommandRouter()
+
 	router.Register(
 		"CreateField",
 		&command.CreateFacilityHandler{UowFactory: uowFactory},

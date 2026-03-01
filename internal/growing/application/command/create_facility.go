@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/growing/application"
+	"samurenkoroma/services/internal/application/uow"
 	"samurenkoroma/services/internal/growing/domain/facility"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 )
 
 type CreateFacilityHandler struct {
-	UowFactory application.UnitOfWorkFactory
+	UowFactory uow.UnitOfWorkFactory
 }
 
 type CreateFacilityCmd struct {
@@ -67,6 +67,6 @@ func (h *CreateFacilityHandler) Handle(ctx context.Context, cmd any) error {
 	if err := uow.GrowingFacilities().Save(unit); err != nil {
 		return err
 	}
-
+	uow.RegisterAggregate(unit)
 	return uow.Commit()
 }

@@ -1,4 +1,4 @@
-package shared
+package event
 
 type EventAwareAggregate interface {
 	PullEvents() []DomainEvent

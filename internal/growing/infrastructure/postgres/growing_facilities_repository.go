@@ -7,20 +7,19 @@ import (
 	"samurenkoroma/services/internal/growing/domain/facility"
 )
 
-type LandUnitRepoImp struct {
-	tx  *sql.Tx
-	uow *PgUow
+type GrowingFacilitiesRepoImp struct {
+	tx *sql.Tx
 }
 
-func NewLandUnitRepository(tx *sql.Tx, uow *PgUow) application.GrowingFacilitiesRepository {
-	return &LandUnitRepoImp{tx: tx, uow: uow}
+func NewGrowingFacilitiesRepository(tx *sql.Tx) application.GrowingFacilitiesRepository {
+	return &GrowingFacilitiesRepoImp{tx: tx}
 }
-func (r *LandUnitRepoImp) Get(id facility.FacilityID) (*facility.GrowingFacility, error) {
+func (r *GrowingFacilitiesRepoImp) Get(id facility.FacilityID) (*facility.GrowingFacility, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *LandUnitRepoImp) Save(unit *facility.GrowingFacility) error {
+func (r *GrowingFacilitiesRepoImp) Save(unit *facility.GrowingFacility) error {
 	// remove old structure
 	_, err := r.tx.Exec(`DELETE FROM land_structure WHERE root_id = $1`, unit.ID())
 
@@ -56,6 +55,5 @@ func (r *LandUnitRepoImp) Save(unit *facility.GrowingFacility) error {
 		}
 	}
 
-	r.uow.registerAggregate(unit)
 	return nil
 }

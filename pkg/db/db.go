@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"samurenkoroma/services/configs"
@@ -32,4 +33,8 @@ func NewDb(config *configs.Config) *Db {
 		panic(err)
 	}
 	return &Db{db}
+}
+
+func NewDatabase(dsn string) (*sql.DB, error) {
+	return sql.Open("postgres", dsn)
 }

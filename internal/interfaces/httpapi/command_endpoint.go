@@ -3,9 +3,10 @@ package httpapi
 import (
 	"encoding/json"
 	"net/http"
+	"samurenkoroma/services/internal/application/command"
 )
 
-func CommandEndpoint(router *CommandRouter) http.HandlerFunc {
+func CommandEndpoint(router *command.CommandRouter) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
