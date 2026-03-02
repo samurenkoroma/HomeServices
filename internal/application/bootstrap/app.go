@@ -84,21 +84,28 @@ func registerGrowing(
 	uowFactory uow.Factory,
 ) error {
 
-	// ---- Command Handlers ----
-	createFacilityHandler := growingCommand.CreateFacilityHandler{UowFactory: uowFactory}
-
 	// ---- Command Registration ----
 	commandRouter.Register(
 		"CreateFacility",
-		&createFacilityHandler,
+		growingCommand.NewCreateFacilityHandler(uowFactory),
 		growingCommand.DecodeCreateField,
+	)
+	commandRouter.Register(
+		"AddBed",
+		growingCommand.NewAddBedHandler(uowFactory),
+		growingCommand.DecodeAddBed,
+	)
+	commandRouter.Register(
+		"AddBlock",
+		growingCommand.NewAddBlockHandler(uowFactory),
+		growingCommand.DecodeAddBlock, // нужно будет реализовать аналогично
 	)
 
 	// ---- Query Handlers ----
 	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler()
 
 	queryRouter.Register(
-		"get_facility_overview",
+		"GetFacilityOverview",
 		query.DecodeJSON[growingQuery.GetFacilityOverviewQuery],
 		getOverviewHandler.AsHandler(),
 	)

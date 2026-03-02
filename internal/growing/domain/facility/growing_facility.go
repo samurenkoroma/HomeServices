@@ -57,17 +57,23 @@ func NewGreenhouseFacility(id FacilityID, name string, dim valueobject.Dimension
 	return f
 }
 
-func (f *GrowingFacility) AddBlock(block FieldBlock) error {
+func (f *GrowingFacility) AddBlock(id GrowingAreaID, name string, dim valueobject.Dimension) error {
+
 	if f.facilityType != FieldFacility {
 		return ErrBlockNotAllowed
 	}
 
-	if f.containsBlock(block.id) {
+	if f.containsBlock(id) {
 		return ErrDuplicateArea
 	}
 
-	f.blocks = append(f.blocks, block)
+	block := FieldBlock{
+		id:        id,
+		name:      name,
+		dimension: dim,
+	}
 
+	f.blocks = append(f.blocks, block)
 	return nil
 }
 

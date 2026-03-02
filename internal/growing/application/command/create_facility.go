@@ -14,6 +14,10 @@ type CreateFacilityHandler struct {
 	UowFactory uow.Factory
 }
 
+func NewCreateFacilityHandler(uowFactory uow.Factory) *CreateFacilityHandler {
+	return &CreateFacilityHandler{UowFactory: uowFactory}
+}
+
 type CreateFacilityCmd struct {
 	ID           string  `json:"id"`
 	Name         string  `json:"name"`

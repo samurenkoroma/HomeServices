@@ -4,6 +4,12 @@ import (
 	"samurenkoroma/services/internal/growing/domain/facility"
 )
 
+const (
+	Facility string = "facility"
+	Block    string = "block"
+	Bed      string = "bed"
+)
+
 type facilityRow struct {
 	ID        string
 	RootID    string
@@ -14,16 +20,6 @@ type facilityRow struct {
 	Length    float64
 	Width     float64
 }
-type sectionRow facilityRow
-type bedRow facilityRow
-
-type cropPlanRow struct {
-	ID        string
-	BedID     string
-	CropName  string
-	Status    string
-	HarvestKg float64
-}
 
 // LAND UNIT → DB
 func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
@@ -33,7 +29,7 @@ func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
 		RootID:    rootId,
 		Name:      unit.Name(),
 		SpaceType: string(unit.FacilityType()),
-		UnitType:  "land",
+		UnitType:  Facility,
 		Length:    unit.Dimension().Length(),
 		Width:     unit.Dimension().Width(),
 	}
