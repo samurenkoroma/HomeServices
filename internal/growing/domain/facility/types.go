@@ -7,4 +7,6 @@ type FacilityType string
 const (
 	FieldFacility      FacilityType = "FIELD"
 	GreenhouseFacility FacilityType = "GREENHOUSE"
+	BlockFacility      FacilityType = "BLOCK"
+	BedFacility        FacilityType = "BED"
 )

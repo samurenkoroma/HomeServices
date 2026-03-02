@@ -4,34 +4,26 @@ import (
 	"samurenkoroma/services/internal/growing/domain/facility"
 )
 
-const (
-	Facility string = "facility"
-	Block    string = "block"
-	Bed      string = "bed"
-)
-
 type facilityRow struct {
-	ID        string
-	RootID    string
-	ParentID  *string
-	Name      string
-	UnitType  string
-	SpaceType string
-	Length    float64
-	Width     float64
+	ID       string
+	RootID   string
+	ParentID *string
+	Name     string
+	UnitType string
+	Length   float64
+	Width    float64
 }
 
 // LAND UNIT → DB
 func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
 	rootId := string(unit.ID())
 	lu := facilityRow{
-		ID:        string(unit.ID()),
-		RootID:    rootId,
-		Name:      unit.Name(),
-		SpaceType: string(unit.FacilityType()),
-		UnitType:  Facility,
-		Length:    unit.Dimension().Length(),
-		Width:     unit.Dimension().Width(),
+		ID:       string(unit.ID()),
+		RootID:   rootId,
+		Name:     unit.Name(),
+		UnitType: string(unit.FacilityType()),
+		Length:   unit.Dimension().Length(),
+		Width:    unit.Dimension().Width(),
 	}
 
 	var rows = []facilityRow{lu}

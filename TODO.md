@@ -2,7 +2,7 @@
 - [x] CreateFacilityHandler
 - [x] AddBedHandler
 - [x] AddBlockHandler
-- [ ] Fix Get в репозитории
+- [x] Fix Get в репозитории
 
 ## Cropplan
 - [ ] CropPlanRepository (Save)

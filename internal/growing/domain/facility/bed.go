@@ -8,8 +8,8 @@ type Bed struct {
 	dimension valueobject.Dimension
 }
 
-func NewBed(id GrowingAreaID, name string, dim valueobject.Dimension) Bed {
-	return Bed{id: id, name: name, dimension: dim}
+func NewBed(id GrowingAreaID, name string, dim valueobject.Dimension) *Bed {
+	return &Bed{id: id, name: name, dimension: dim}
 }
 
 func (b *Bed) ID() GrowingAreaID {
@@ -22,4 +22,16 @@ func (b *Bed) Name() string {
 
 func (b *Bed) Dimension() valueobject.Dimension {
 	return b.dimension
+}
+
+func RehydrateBed(
+	id GrowingAreaID,
+	name string,
+	dim valueobject.Dimension,
+) *Bed {
+	return &Bed{
+		id:        id,
+		name:      name,
+		dimension: dim,
+	}
 }

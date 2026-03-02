@@ -4,8 +4,7 @@ CREATE TABLE land_structure
     root_id    UUID NOT NULL ,
     parent_id  UUID NULL REFERENCES land_structure(id),
 
-    unit_type  TEXT NOT NULL, -- land | section | bed
-    space_type  TEXT NULL,    -- facility | greenhouse (только для land_unit)
+    unit_type  TEXT NOT NULL, 
 
     name       TEXT NOT NULL,
 

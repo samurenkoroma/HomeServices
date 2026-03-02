@@ -5,9 +5,9 @@ Content-Type: application/json
 {
   "command": "CreateFacility",
   "data": {
-    "id": "781643dc-7080-4d24-b3ab-84767d7a1217",
+    "id": "181643d1-7080-4d24-b3ab-84767d7a1213",
     "name": "Теплица 1",
-    "type": "GREENHOUSE",
+    "type": "FIELD",
     "length": 100,
     "width": 50
   }

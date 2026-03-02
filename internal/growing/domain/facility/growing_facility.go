@@ -14,16 +14,8 @@ type GrowingFacility struct {
 	facilityType FacilityType
 	dimension    valueobject.Dimension
 
-	blocks []FieldBlock
-	beds   []Bed
-}
-
-func (f *GrowingFacility) Blocks() []FieldBlock {
-	return append([]FieldBlock(nil), f.blocks...)
-}
-
-func (f *GrowingFacility) Beds() []Bed {
-	return append([]Bed(nil), f.beds...)
+	blocks []*FieldBlock
+	beds   []*Bed
 }
 
 func NewFieldFacility(id FacilityID, name string, dim valueobject.Dimension) *GrowingFacility {
@@ -67,7 +59,7 @@ func (f *GrowingFacility) AddBlock(id GrowingAreaID, name string, dim valueobjec
 		return ErrDuplicateArea
 	}
 
-	block := FieldBlock{
+	block := &FieldBlock{
 		id:        id,
 		name:      name,
 		dimension: dim,
@@ -132,7 +124,7 @@ func (f *GrowingFacility) containsBlock(id GrowingAreaID) bool {
 func (f *GrowingFacility) findBlock(id GrowingAreaID) *FieldBlock {
 	for i := range f.blocks {
 		if f.blocks[i].id == id {
-			return &f.blocks[i]
+			return f.blocks[i]
 		}
 	}
 	return nil
@@ -161,4 +153,38 @@ func (f *GrowingFacility) FacilityType() FacilityType {
 
 func (f *GrowingFacility) Dimension() valueobject.Dimension {
 	return f.dimension
+}
+
+func (f *GrowingFacility) RehydrateAddBlock(b *FieldBlock) {
+	f.blocks = append(f.blocks, b)
+}
+func (f *GrowingFacility) RehydrateAddBedToSection(blockID GrowingAreaID, bed *Bed) {
+	for _, block := range f.blocks {
+		if block.id == blockID {
+			block.RehydrateAddBed(bed)
+			return
+		}
+	}
+}
+
+func (f *GrowingFacility) RehydrateAddBed(bed *Bed) {
+	f.beds = append(f.beds, bed)
+}
+
+func RehydrateGrowingFacility(
+	id FacilityID,
+	name string,
+	facilityType FacilityType,
+	dim valueobject.Dimension,
+	sections []*FieldBlock,
+	beds []*Bed,
+) *GrowingFacility {
+	return &GrowingFacility{
+		id:           id,
+		name:         name,
+		facilityType: facilityType,
+		dimension:    dim,
+		blocks:       sections,
+		beds:         beds,
+	}
 }

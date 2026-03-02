@@ -9,6 +9,7 @@ import (
 	"samurenkoroma/services/internal/common/application/uow"
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
 	"samurenkoroma/services/internal/growing/application/events"
+	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 
 	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
@@ -55,6 +56,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 		commandRouter,
 		queryRouter,
 		uowFactory,
+		db,
 	); err != nil {
 		return nil, err
 	}
@@ -78,11 +80,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 	}, nil
 }
 
-func registerGrowing(
-	commandRouter command.Router,
-	queryRouter query.Router,
-	uowFactory uow.Factory,
-) error {
+func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory uow.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
 	commandRouter.Register(
@@ -102,7 +100,8 @@ func registerGrowing(
 	)
 
 	// ---- Query Handlers ----
-	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler()
+	facilityReadRepo := postgres.NewFacilityReadRepository(db)
+	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler(facilityReadRepo)
 
 	queryRouter.Register(
 		"GetFacilityOverview",
