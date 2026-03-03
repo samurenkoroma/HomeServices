@@ -5,6 +5,14 @@ type CropRotationRule struct {
 	minYears    int
 }
 
+func (c CropRotationRule) Predecessor() CropTypeID {
+	return c.predecessor
+}
+
+func (c CropRotationRule) MinYears() int {
+	return c.minYears
+}
+
 func NewCropRotationRule(
 	predecessor CropTypeID,
 	minYears int,

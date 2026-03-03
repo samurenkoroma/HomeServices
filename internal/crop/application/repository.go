@@ -1,8 +1,11 @@
 package application
 
-import "samurenkoroma/services/internal/crop/domain"
+import (
+	"context"
+	"samurenkoroma/services/internal/crop/domain"
+)
 
 type CropPlanRepository interface {
-	ByID(id domain.CropTypeID) (*domain.CropPlan, error)
-	Save(plan *domain.CropPlan) error
+	ByID(context.Context, domain.CropPlanID) (*domain.CropPlan, error)
+	Save(context.Context, *domain.CropPlan) error
 }
