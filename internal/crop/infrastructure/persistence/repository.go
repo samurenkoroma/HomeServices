@@ -9,12 +9,12 @@ import (
 )
 
 type CropPlanRepoImp struct {
-	db *sql.DB
+	tx *sql.Tx
 }
 
-func NewCropRepo(db *sql.DB) application.CropPlanRepository {
+func NewCropRepo(tx *sql.Tx) application.CropPlanRepository {
 	return &CropPlanRepoImp{
-		db: db,
+		tx: tx,
 	}
 }
 
@@ -23,7 +23,7 @@ func (r *CropPlanRepoImp) ByID(
 	id domain.CropPlanID,
 ) (*domain.CropPlan, error) {
 
-	row := r.db.QueryRowContext(ctx, `
+	row := r.tx.QueryRowContext(ctx, `
 		SELECT id, crop_type_id, name, duration, version, status
 		FROM crop_plans
 		WHERE id = $1
@@ -75,13 +75,8 @@ func (r *CropPlanRepoImp) Save(
 	ctx context.Context,
 	plan *domain.CropPlan,
 ) error {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
 	// 1. upsert crop_plans
-	_, err = tx.ExecContext(ctx, `
+	_, err := r.tx.ExecContext(ctx, `
 		INSERT INTO crop_plans (
 			id, crop_type_id, variety_id,
 			name, duration, version, status,
@@ -119,14 +114,14 @@ func (r *CropPlanRepoImp) Save(
 	}
 
 	// 2. delete old children
-	if _, err = tx.ExecContext(ctx,
+	if _, err = r.tx.ExecContext(ctx,
 		`DELETE FROM crop_plan_stages WHERE plan_id = $1`,
 		plan.ID(),
 	); err != nil {
 		return err
 	}
 
-	if _, err = tx.ExecContext(ctx,
+	if _, err = r.tx.ExecContext(ctx,
 		`DELETE FROM crop_rotation_rules WHERE plan_id = $1`,
 		plan.ID(),
 	); err != nil {
@@ -135,7 +130,7 @@ func (r *CropPlanRepoImp) Save(
 
 	// 3. insert stages
 	for _, s := range plan.Stages() {
-		_, err = tx.ExecContext(ctx, `
+		_, err = r.tx.ExecContext(ctx, `
 			INSERT INTO crop_plan_stages (
 				plan_id, stage_order, name, duration,
 				min_temp, max_temp, water_per_day
@@ -157,7 +152,7 @@ func (r *CropPlanRepoImp) Save(
 
 	// 4. insert rotation rules
 	for _, rrule := range plan.RotationRules() {
-		_, err = tx.ExecContext(ctx, `
+		_, err = r.tx.ExecContext(ctx, `
 			INSERT INTO crop_rotation_rules (
 				plan_id, predecessor_crop_type_id, min_years
 			)
@@ -172,5 +167,5 @@ func (r *CropPlanRepoImp) Save(
 		}
 	}
 
-	return tx.Commit()
+	return r.tx.Commit()
 }

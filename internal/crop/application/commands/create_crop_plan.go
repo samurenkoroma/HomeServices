@@ -53,16 +53,16 @@ func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 	defer uowObj.Rollback()
 
 	// Создаем план
-	plan := domain.NewCropPlan(
-		domain.PlanID(uuid.New().String()),
-		domain.GrowingAreaID(c.AreaID),
-		c.Name,
+	plan, _ := domain.NewCropPlan(
+		domain.CropPlanID(uuid.New().String()),
+		domain.CropTypeID(c.AreaID),
 		c.CropName,
+		3,
 	)
 
 	// Сохраняем
 	repo := uowObj.CropPlans()
-	if err := repo.Save(plan); err != nil {
+	if err := repo.Save(ctx, plan); err != nil {
 		return fmt.Errorf("failed to save crop plan: %w", err)
 	}
 

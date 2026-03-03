@@ -2,7 +2,7 @@ package domain
 
 import (
 	common "samurenkoroma/services/internal/common/domain"
-	"time"
+	"samurenkoroma/services/internal/shared/events"
 )
 
 type CropPlanID string
@@ -65,28 +65,22 @@ func (c *CropPlan) Nutrients() NutrientRequirements {
 	return c.nutrReq
 }
 
-func NewCropPlan(
-	id CropPlanID,
-	cropType CropTypeID,
-	name string,
-	duration int,
-) (*CropPlan, error) {
-
+func NewCropPlan(id CropPlanID, cropType CropTypeID, name string, duration int) (*CropPlan, error) {
 	if duration <= 0 {
 		return nil, ErrInvalidDuration
 	}
 
-	return &CropPlan{
+	plan := &CropPlan{
 		id:       id,
 		cropType: cropType,
 		name:     name,
 		duration: duration,
 		version:  1,
 		status:   StatusDraft,
-	}, nil
+	}
+	plan.AddEvent(events.NewCropPlanCreated(string(id), string(cropType)))
+	return plan, nil
 }
-
-// Управление этапами
 
 // AddStage добавляет этап в план
 func (c *CropPlan) AddStage(stage GrowthStage) error {
@@ -102,13 +96,7 @@ func (c *CropPlan) AddStage(stage GrowthStage) error {
 	}
 	c.stages = append(c.stages, stage)
 
-	c.AddEvent(StageAddedEvent{
-		PlanID: string(c.id),
-		Stage:  stage.name,
-		Order:  stage.order,
-		Time:   time.Now(),
-	})
-
+	c.AddEvent(events.NewGrowthStageAdded(string(c.id), stage.Order(), stage.Name()))
 	return nil
 }
 
@@ -133,6 +121,7 @@ func (c *CropPlan) Publish() error {
 	}
 
 	c.status = StatusPublished
+	c.AddEvent(events.NewCropPlanPublished(string(c.id), c.version))
 	return nil
 }
 
@@ -149,6 +138,7 @@ func (c *CropPlan) AddRotationRule(rule CropRotationRule) error {
 	}
 
 	c.rotation = append(c.rotation, rule)
+	//c.AddEvent(NewRotationRuleAdded(c.ID(), ))
 	return nil
 }
 func (c *CropPlan) Rehydrate(version int, status CropPlanStatus) {
