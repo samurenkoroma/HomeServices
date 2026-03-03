@@ -1,13 +1,12 @@
-package cropplan
+package domain
 
 import "time"
 
 type StageAddedEvent struct {
-	PlanID  string
-	StageID string
-	Type    string
-	Order   int
-	Time    time.Time
+	PlanID string
+	Stage  string
+	Order  int
+	Time   time.Time
 }
 
 func (e StageAddedEvent) EventName() string {

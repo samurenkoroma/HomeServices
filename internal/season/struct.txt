@@ -1,0 +1,16 @@
+season/
+ ├── domain/
+ │     ├── season
+ │     ├── season_rules
+ │     ├── season_metrics
+ │
+ ├── application/
+ │     ├── commands
+ │     ├── queries
+ │     └── policies
+ │
+ ├── infrastructure/
+ │     ├── persistence
+ │     └── projections
+ │
+ └── module.go

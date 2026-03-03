@@ -7,8 +7,8 @@ import (
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/common/application/uow"
+	cropCommand "samurenkoroma/services/internal/crop/application/commands"
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
-	cropplanCommand "samurenkoroma/services/internal/growing/application/command/cropplan"
 	"samurenkoroma/services/internal/growing/application/events"
 	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
@@ -102,8 +102,8 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 
 	commandRouter.Register(
 		"CreateCropPlan",
-		&cropplanCommand.CreateCropPlanHandler{UowFactory: uowFactory},
-		cropplanCommand.DecodeCreateCropPlan,
+		&cropCommand.CreateCropPlanHandler{UowFactory: uowFactory},
+		cropCommand.DecodeCreateCropPlan,
 	)
 
 	// ---- Query Handlers ----

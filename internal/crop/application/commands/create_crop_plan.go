@@ -1,4 +1,4 @@
-package cropplan
+package commands
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/common/application/uow"
-	"samurenkoroma/services/internal/growing/domain/cropplan/cropplan"
+	"samurenkoroma/services/internal/crop/domain"
 
 	"github.com/google/uuid"
 )
@@ -53,9 +53,9 @@ func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 	defer uowObj.Rollback()
 
 	// Создаем план
-	plan := cropplan.NewCropPlan(
-		cropplan.PlanID(uuid.New().String()),
-		cropplan.GrowingAreaID(c.AreaID),
+	plan := domain.NewCropPlan(
+		domain.PlanID(uuid.New().String()),
+		domain.GrowingAreaID(c.AreaID),
 		c.Name,
 		c.CropName,
 	)

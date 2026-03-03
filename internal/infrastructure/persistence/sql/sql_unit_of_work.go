@@ -6,7 +6,9 @@ import (
 	"errors"
 	"samurenkoroma/services/internal/common/application/uow"
 	"samurenkoroma/services/internal/common/domain"
-	"samurenkoroma/services/internal/growing/application"
+	crop "samurenkoroma/services/internal/crop/application"
+	"samurenkoroma/services/internal/crop/infrastructure/persistence"
+	growing "samurenkoroma/services/internal/growing/application"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 	"sync"
 )
@@ -26,7 +28,7 @@ func newSQLUnitOfWork(
 		tx:             tx,
 		bus:            bus,
 		facilitiesRepo: postgres.NewGrowingFacilitiesRepository(tx),
-		cropRepo:       postgres.NewCropRepo(tx),
+		cropRepo:       persistence.NewCropRepo(tx),
 	}
 }
 
@@ -42,14 +44,14 @@ type sqlUnitOfWork struct {
 
 	aggregates []domain.Aggregate
 
-	facilitiesRepo application.GrowingFacilitiesRepository
-	cropRepo       application.CropPlanRepository
+	facilitiesRepo growing.GrowingFacilitiesRepository
+	cropRepo       crop.CropPlanRepository
 }
 
-func (u *sqlUnitOfWork) GrowingFacilities() application.GrowingFacilitiesRepository {
+func (u *sqlUnitOfWork) GrowingFacilities() growing.GrowingFacilitiesRepository {
 	return u.facilitiesRepo
 }
-func (u *sqlUnitOfWork) CropPlans() application.CropPlanRepository { return u.cropRepo }
+func (u *sqlUnitOfWork) CropPlans() crop.CropPlanRepository { return u.cropRepo }
 
 func (u *sqlUnitOfWork) RegisterAggregate(agg domain.Aggregate) {
 	u.mu.Lock()

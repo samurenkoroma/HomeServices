@@ -2,7 +2,8 @@ package uow
 
 import (
 	"samurenkoroma/services/internal/common/domain"
-	"samurenkoroma/services/internal/growing/application"
+	crop "samurenkoroma/services/internal/crop/application"
+	growing "samurenkoroma/services/internal/growing/application"
 )
 
 type UnitOfWork interface {
@@ -12,6 +13,6 @@ type UnitOfWork interface {
 	Rollback() error
 
 	EventBus() domain.EventBus
-	GrowingFacilities() application.GrowingFacilitiesRepository
-	CropPlans() application.CropPlanRepository
+	GrowingFacilities() growing.GrowingFacilitiesRepository
+	CropPlans() crop.CropPlanRepository
 }

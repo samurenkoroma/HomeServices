@@ -1,97 +1,115 @@
-package cropplan
+package domain
 
 import (
 	"errors"
-	"samurenkoroma/services/internal/common/domain"
+	common "samurenkoroma/services/internal/common/domain"
 	"time"
 )
 
-const (
-	StatusDraft     Status = "draft"
-	StatusActive    Status = "active"
-	StatusCompleted Status = "completed"
-	StatusCancelled Status = "cancelled"
-)
+type CropPlanID string
 
 type CropPlan struct {
-	domain.BaseAggregate
+	common.BaseAggregate
+	id       CropPlanID
+	cropType CropTypeID
+	variety  *CropVarietyID
 
-	id          PlanID
-	facilityID  GrowingAreaID
-	name        string
-	cropName    string
-	status      Status
-	stages      []Stage
-	createdAt   time.Time
-	updatedAt   time.Time
-	startedAt   *time.Time
-	completedAt *time.Time
-	harvestKg   float64
+	name     string
+	duration int
+	version  int
+	status   CropPlanStatus
+
+	stages   []GrowthStage
+	rotation []CropRotationRule
+
+	envReq  EnvironmentalRequirements
+	nutrReq NutrientRequirements
 }
 
-// Конструктор
-func NewCropPlan(id PlanID, facilityID GrowingAreaID, name, cropName string) *CropPlan {
-	now := time.Now()
-	plan := &CropPlan{
-		id:         id,
-		facilityID: facilityID,
-		name:       name,
-		cropName:   cropName,
-		status:     StatusDraft,
-		stages:     []Stage{},
-		createdAt:  now,
-		updatedAt:  now,
+func NewCropPlan(
+	id CropPlanID,
+	cropType CropTypeID,
+	name string,
+	duration int,
+) (*CropPlan, error) {
+
+	if duration <= 0 {
+		return nil, ErrInvalidDuration
 	}
 
-	plan.AddEvent(CropPlanCreatedEvent{
-		PlanID:   string(id),
-		AreaID:   string(facilityID),
-		CropName: cropName,
-		Time:     now,
-	})
-
-	return plan
+	return &CropPlan{
+		id:       id,
+		cropType: cropType,
+		name:     name,
+		duration: duration,
+		version:  1,
+		status:   StatusDraft,
+	}, nil
 }
-
-// Getters
-func (p *CropPlan) ID() PlanID                { return p.id }
-func (p *CropPlan) FacilityID() GrowingAreaID { return p.facilityID }
-func (p *CropPlan) Name() string              { return p.name }
-func (p *CropPlan) CropName() string          { return p.cropName }
-func (p *CropPlan) Status() Status            { return p.status }
-func (p *CropPlan) Stages() []Stage           { return append([]Stage(nil), p.stages...) }
-func (p *CropPlan) CreatedAt() time.Time      { return p.createdAt }
-func (p *CropPlan) StartedAt() *time.Time     { return p.startedAt }
-func (p *CropPlan) CompletedAt() *time.Time   { return p.completedAt }
-func (p *CropPlan) HarvestKg() float64        { return p.harvestKg }
 
 // Управление этапами
 
 // AddStage добавляет этап в план
-func (p *CropPlan) AddStage(stage Stage) error {
-	if p.status != StatusDraft {
-		return errors.New("cannot add stages to non-draft plan")
+func (c *CropPlan) AddStage(stage GrowthStage) error {
+	if c.status == StatusPublished {
+		return ErrCannotModifyPublished
 	}
 
 	// Проверяем уникальность порядка
-	for _, s := range p.stages {
-		if s.Order == stage.Order {
+	for _, s := range c.stages {
+		if s.order == stage.order {
 			return ErrStageOrderDuplicate
 		}
 	}
+	c.stages = append(c.stages, stage)
 
-	stage.PlanID = string(p.id)
-	p.stages = append(p.stages, stage)
-	p.updatedAt = time.Now()
-
-	p.AddEvent(StageAddedEvent{
-		PlanID:  string(p.id),
-		StageID: stage.ID,
-		Type:    string(stage.Type),
-		Order:   stage.Order,
-		Time:    time.Now(),
+	c.AddEvent(StageAddedEvent{
+		PlanID: string(c.id),
+		Stage:  stage.name,
+		Order:  stage.order,
+		Time:   time.Now(),
 	})
 
+	return nil
+}
+
+func (c *CropPlan) ValidateDuration() error {
+
+	total := 0
+	for _, s := range c.stages {
+		total += s.duration
+	}
+
+	if total != c.duration {
+		return ErrStageDurationMismatch
+	}
+
+	return nil
+}
+
+func (c *CropPlan) Publish() error {
+
+	if err := c.ValidateDuration(); err != nil {
+		return err
+	}
+
+	c.status = StatusPublished
+	return nil
+}
+
+func (c *CropPlan) AddRotationRule(rule CropRotationRule) error {
+
+	if c.status == StatusPublished {
+		return ErrCannotModifyPublished
+	}
+
+	for _, r := range c.rotation {
+		if r.predecessor == rule.predecessor {
+			return ErrRotationDuplicate
+		}
+	}
+
+	c.rotation = append(c.rotation, rule)
 	return nil
 }
 
