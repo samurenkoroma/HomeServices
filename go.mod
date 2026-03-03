@@ -36,6 +36,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-chi/chi/v5 v5.2.5 // indirect
+	github.com/go-chi/cors v1.2.2 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goburrow/serial v0.1.0 // indirect
