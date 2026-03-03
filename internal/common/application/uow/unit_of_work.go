@@ -13,4 +13,5 @@ type UnitOfWork interface {
 
 	EventBus() domain.EventBus
 	GrowingFacilities() application.GrowingFacilitiesRepository
+	CropPlans() application.CropPlanRepository
 }

@@ -44,12 +44,12 @@ func (h *CreateFacilityHandler) Handle(ctx context.Context, cmd any) error {
 		return errors.New("invalid command type")
 	}
 
-	uow, err := h.UowFactory.Begin(ctx)
+	uowObj, err := h.UowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	defer uow.Rollback()
+	defer uowObj.Rollback()
 
 	dim, err := valueobject.NewDimension(c.Length, c.Width)
 	if err != nil {
@@ -67,9 +67,9 @@ func (h *CreateFacilityHandler) Handle(ctx context.Context, cmd any) error {
 		return facility.ErrInvalidSpaceType
 	}
 
-	if err := uow.GrowingFacilities().Save(unit); err != nil {
+	if err := uowObj.GrowingFacilities().Save(unit); err != nil {
 		return err
 	}
-	uow.RegisterAggregate(unit)
-	return uow.Commit()
+	uowObj.RegisterAggregate(unit)
+	return uowObj.Commit()
 }

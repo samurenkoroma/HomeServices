@@ -26,6 +26,7 @@ func newSQLUnitOfWork(
 		tx:             tx,
 		bus:            bus,
 		facilitiesRepo: postgres.NewGrowingFacilitiesRepository(tx),
+		cropRepo:       postgres.NewCropRepo(tx),
 	}
 }
 
@@ -48,6 +49,7 @@ type sqlUnitOfWork struct {
 func (u *sqlUnitOfWork) GrowingFacilities() application.GrowingFacilitiesRepository {
 	return u.facilitiesRepo
 }
+func (u *sqlUnitOfWork) CropPlans() application.CropPlanRepository { return u.cropRepo }
 
 func (u *sqlUnitOfWork) RegisterAggregate(agg domain.Aggregate) {
 	u.mu.Lock()

@@ -2,7 +2,7 @@ package application
 
 import (
 	"context"
-	"samurenkoroma/services/internal/growing/domain/cropplan"
+	"samurenkoroma/services/internal/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/growing/domain/facility"
 )
 
@@ -24,6 +24,6 @@ type GrowingFacilitiesRepository interface {
 }
 
 type CropPlanRepository interface {
-	Get(id cropplan.CropPlanID) (*cropplan.CropPlan, error)
+	Get(id cropplan.PlanID) (*cropplan.CropPlan, error)
 	Save(plan *cropplan.CropPlan) error
 }

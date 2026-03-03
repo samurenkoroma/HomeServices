@@ -89,13 +89,13 @@ func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
 //	switch lu.SpaceType {
 //	case "facility":
 //		unit = facility.NewGreenhouseFacility(
-//			facility.FacilityID(lu.ID),
+//			facility.AreaID(lu.ID),
 //			lu.Name,
 //			dim,
 //		)
 //	case "greenhouse":
 //		unit = facility.NewGreenhouseFacility(
-//			facility.FacilityID(lu.ID),
+//			facility.AreaID(lu.ID),
 //			lu.Name,
 //			dim,
 //		)

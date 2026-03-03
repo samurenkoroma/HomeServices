@@ -8,10 +8,11 @@ import (
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/common/application/uow"
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
+	cropplanCommand "samurenkoroma/services/internal/growing/application/command/cropplan"
 	"samurenkoroma/services/internal/growing/application/events"
+	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 
-	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/infrastructure/eventbus"
 	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
@@ -96,7 +97,13 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(
 		"AddBlock",
 		growingCommand.NewAddBlockHandler(uowFactory),
-		growingCommand.DecodeAddBlock, // нужно будет реализовать аналогично
+		growingCommand.DecodeAddBlock,
+	)
+
+	commandRouter.Register(
+		"CreateCropPlan",
+		&cropplanCommand.CreateCropPlanHandler{UowFactory: uowFactory},
+		cropplanCommand.DecodeCreateCropPlan,
 	)
 
 	// ---- Query Handlers ----
