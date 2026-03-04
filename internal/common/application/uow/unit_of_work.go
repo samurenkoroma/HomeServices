@@ -2,8 +2,8 @@ package uow
 
 import (
 	"samurenkoroma/services/internal/common/domain"
-	crop "samurenkoroma/services/internal/crop/application"
-	growing "samurenkoroma/services/internal/growing/application"
+	crop "samurenkoroma/services/internal/crop/domain"
+	growing "samurenkoroma/services/internal/growing/domain"
 )
 
 type UnitOfWork interface {
