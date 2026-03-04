@@ -4,7 +4,8 @@ import (
 	"context"
 	"samurenkoroma/services/internal/common/application/uow"
 	"samurenkoroma/services/internal/common/domain"
-	"samurenkoroma/services/internal/growing/application"
+	crop "samurenkoroma/services/internal/crop/domain"
+	growlingDomain "samurenkoroma/services/internal/growing/domain"
 	"samurenkoroma/services/internal/growing/domain/facility"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 	"testing"
@@ -19,7 +20,22 @@ type mockUOW struct {
 	savedFacility *facility.GrowingFacility
 }
 
-func (m *mockUOW) GrowingFacilities() application.GrowingFacilitiesRepository {
+func (m *mockUOW) CropCycles() growlingDomain.CropCycleRepository {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mockUOW) CropTemplates() growlingDomain.CropTemplateRepository {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mockUOW) CropPlans() crop.CropPlanRepository {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mockUOW) GrowingFacilities() growlingDomain.GrowingFacilitiesRepository {
 	return &mockFacilityRepo{uow: m}
 }
 

@@ -1,4 +1,4 @@
-package events
+package eventhandlers
 
 import (
 	"context"
@@ -6,19 +6,16 @@ import (
 	"log"
 	"samurenkoroma/services/internal/common/application/uow"
 	"samurenkoroma/services/internal/common/domain"
-	"samurenkoroma/services/internal/growing/domain/facility"
+	"samurenkoroma/services/internal/shared/events"
 )
 
-func OnFacilityCreated(
-	ctx context.Context,
-	event domain.DomainEvent,
-) error {
+func OnFacilityCreated(ctx context.Context, event domain.DomainEvent) error {
 	UOW, ok := uow.FromContext(ctx)
 	if !ok {
 		return nil
 	}
 	fmt.Println(UOW)
-	e, ok := event.(facility.FacilityCreatedEvent)
+	e, ok := event.(events.FacilityCreated)
 	if !ok {
 		return nil
 	}

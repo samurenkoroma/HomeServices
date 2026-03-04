@@ -3,25 +3,18 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"samurenkoroma/services/internal/growing/application"
+	"samurenkoroma/services/internal/growing/domain"
 )
 
-type facilityReadRepository struct {
-	db *sql.DB
-}
+type facilityReadRepository struct{ db *sql.DB }
 
-func NewFacilityReadRepository(
-	db *sql.DB,
-) application.FacilityReadRepository {
+func NewFacilityReadRepository(db *sql.DB) domain.FacilityReadRepository {
 	return &facilityReadRepository{
 		db: db,
 	}
 }
 
-func (r *facilityReadRepository) GetOverview(
-	ctx context.Context,
-	id string,
-) (*application.FacilityOverviewDTO, error) {
+func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*domain.FacilityOverviewDTO, error) {
 
 	const query = `
 	SELECT
@@ -36,7 +29,7 @@ func (r *facilityReadRepository) GetOverview(
 
 	row := r.db.QueryRowContext(ctx, query, id)
 
-	dto := &application.FacilityOverviewDTO{}
+	dto := &domain.FacilityOverviewDTO{}
 
 	if err := row.Scan(
 		&dto.ID,

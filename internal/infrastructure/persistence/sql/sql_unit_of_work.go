@@ -6,9 +6,9 @@ import (
 	"errors"
 	"samurenkoroma/services/internal/common/application/uow"
 	"samurenkoroma/services/internal/common/domain"
-	crop "samurenkoroma/services/internal/crop/application"
+	crop "samurenkoroma/services/internal/crop/domain"
 	"samurenkoroma/services/internal/crop/infrastructure/persistence"
-	growing "samurenkoroma/services/internal/growing/application"
+	growing "samurenkoroma/services/internal/growing/domain"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 	"sync"
 )
@@ -46,6 +46,16 @@ type sqlUnitOfWork struct {
 
 	facilitiesRepo growing.GrowingFacilitiesRepository
 	cropRepo       crop.CropPlanRepository
+}
+
+func (u *sqlUnitOfWork) CropCycles() growing.CropCycleRepository {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (u *sqlUnitOfWork) CropTemplates() growing.CropTemplateRepository {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (u *sqlUnitOfWork) GrowingFacilities() growing.GrowingFacilitiesRepository {

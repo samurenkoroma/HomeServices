@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"samurenkoroma/services/internal/crop/application"
 	"samurenkoroma/services/internal/crop/domain"
 )
 
@@ -12,7 +11,7 @@ type CropPlanRepoImp struct {
 	tx *sql.Tx
 }
 
-func NewCropRepo(tx *sql.Tx) application.CropPlanRepository {
+func NewCropRepo(tx *sql.Tx) domain.CropPlanRepository {
 	return &CropPlanRepoImp{
 		tx: tx,
 	}

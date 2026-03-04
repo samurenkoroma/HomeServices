@@ -9,7 +9,7 @@ import (
 	"samurenkoroma/services/internal/common/application/uow"
 	cropCommand "samurenkoroma/services/internal/crop/application/commands"
 	growingCommand "samurenkoroma/services/internal/growing/application/command"
-	"samurenkoroma/services/internal/growing/application/events"
+	"samurenkoroma/services/internal/growing/application/eventhandlers"
 	growingQuery "samurenkoroma/services/internal/growing/application/query"
 	"samurenkoroma/services/internal/growing/infrastructure/postgres"
 
@@ -43,7 +43,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 	// ---------- Unit Of Work Factory ----------
 
 	bus := eventbus.NewInMemoryEventBus()
-	bus.Register("FacilityCreated", events.OnFacilityCreated)
+	bus.Register("FacilityCreated", eventhandlers.OnFacilityCreated)
 	uowFactory := uowSql.NewUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------

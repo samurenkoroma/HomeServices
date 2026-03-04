@@ -3,7 +3,7 @@ package facility
 import (
 	"samurenkoroma/services/internal/common/domain"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
-	"time"
+	"samurenkoroma/services/internal/shared/events"
 )
 
 type GrowingFacility struct {
@@ -26,10 +26,7 @@ func NewFieldFacility(id FacilityID, name string, dim valueobject.Dimension) *Gr
 		dimension:    dim,
 	}
 
-	f.AddEvent(FacilityCreatedEvent{
-		FacilityID: string(id),
-		Time:       time.Now(),
-	})
+	f.AddEvent(events.NewFacilityCreated(string(id)))
 
 	return f
 }
@@ -42,10 +39,7 @@ func NewGreenhouseFacility(id FacilityID, name string, dim valueobject.Dimension
 		dimension:    dim,
 	}
 
-	f.AddEvent(FacilityCreatedEvent{
-		FacilityID: string(id),
-		Time:       time.Now(),
-	})
+	f.AddEvent(events.NewFacilityCreated(string(id)))
 	return f
 }
 

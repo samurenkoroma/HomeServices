@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"samurenkoroma/services/internal/growing/application"
+	"samurenkoroma/services/internal/growing/domain"
 	"samurenkoroma/services/internal/growing/domain/facility"
 	"samurenkoroma/services/internal/growing/domain/valueobject"
 )
@@ -21,7 +21,7 @@ type persistenceLandRow struct {
 	Width    float64
 }
 
-func NewGrowingFacilitiesRepository(tx *sql.Tx) application.GrowingFacilitiesRepository {
+func NewGrowingFacilitiesRepository(tx *sql.Tx) domain.GrowingFacilitiesRepository {
 	return &GrowingFacilitiesRepoImp{tx: tx}
 }
 func (r *GrowingFacilitiesRepoImp) Get(id facility.FacilityID) (*facility.GrowingFacility, error) {

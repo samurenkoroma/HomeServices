@@ -12,6 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type AddBedCmd struct {
+	FacilityID string  `json:"facility_id"`        // ID теплицы или поля
+	BlockID    *string `json:"block_id,omitempty"` // ID секции (для поля, опционально)
+	Name       string  `json:"name"`               // Название грядки
+	Length     float64 `json:"length"`             // Длина в метрах
+	Width      float64 `json:"width"`              // Ширина в метрах
+}
+
 type AddBedHandler struct {
 	UowFactory uow.Factory
 }
@@ -19,14 +27,6 @@ type AddBedHandler struct {
 func NewAddBedHandler(uowFactory uow.Factory) *AddBedHandler {
 	return &AddBedHandler{UowFactory: uowFactory}
 
-}
-
-type AddBedCmd struct {
-	FacilityID string  `json:"facility_id"`        // ID теплицы или поля
-	BlockID    *string `json:"block_id,omitempty"` // ID секции (для поля, опционально)
-	Name       string  `json:"name"`               // Название грядки
-	Length     float64 `json:"length"`             // Длина в метрах
-	Width      float64 `json:"width"`              // Ширина в метрах
 }
 
 func DecodeAddBed(data []byte) (any, error) {

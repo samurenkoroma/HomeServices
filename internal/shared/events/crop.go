@@ -15,6 +15,11 @@ type CropPlanPublished struct {
 	Version int
 }
 
+type CropPlanDeprecated struct {
+	common.BaseEvent
+	PlanID string
+}
+
 type GrowthStageAdded struct {
 	common.BaseEvent
 	PlanID string
@@ -29,10 +34,11 @@ type RotationRuleAdded struct {
 	Name   string
 }
 
-func (e RotationRuleAdded) EventName() string { return "crop.plan.stage_added" }
-func (e GrowthStageAdded) EventName() string  { return "crop.plan.stage_added" }
-func (e CropPlanCreated) EventName() string   { return "crop.plan.created" }
-func (e CropPlanPublished) EventName() string { return "crop.plan.published" }
+func (e RotationRuleAdded) EventName() string  { return "crop.plan.rotation_added" }
+func (e GrowthStageAdded) EventName() string   { return "crop.plan.stage_added" }
+func (e CropPlanCreated) EventName() string    { return "crop.plan.created" }
+func (e CropPlanPublished) EventName() string  { return "crop.plan.published" }
+func (e CropPlanDeprecated) EventName() string { return "crop.plan.deprecated" }
 
 func NewCropPlanCreated(planID string, cropTypeID string) CropPlanCreated {
 	return CropPlanCreated{

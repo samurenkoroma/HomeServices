@@ -20,7 +20,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: romasamurenko/home-use_case
-          # generate Docker tags based on the following events/attributes
+          # generate Docker tags based on the following eventhandlers/attributes
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
@@ -61,7 +61,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: romasamurenko/scaner
-          # generate Docker tags based on the following events/attributes
+          # generate Docker tags based on the following eventhandlers/attributes
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
