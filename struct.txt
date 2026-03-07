@@ -1,72 +1,34 @@
-internal/growing/cropplan/
-│
-├── domain/                      # ✅ БАЗОВАЯ СТРУКТУРА ГОТОВА
-│   ├── catalog/                 # 📝 Нужно создать
-│   │   ├── crop_variety.go      # 📝 Создать
-│   │   ├── tomato_varieties.go  # 📝 Создать (данные)
-│   │   └── eggplant_varieties.go # 📝 Создать (данные)
-│   │
-│   ├── season/                   # 📝 Нужно создать
-│   │   ├── season.go             # 📝 Создать
-│   │   ├── bed_season_schedule.go # 📝 Создать
-│   │   └── repository.go         # 📝 Создать (интерфейс)
-│   │
-│   ├── rotation/                  # 📝 Нужно создать
-│   │   ├── crop_family.go         # 📝 Создать
-│   │   ├── rotation_history.go    # 📝 Создать
-│   │   └── rotation_service.go    # 📝 Создать
-│   │
-│   ├── phenology/                  # 📝 Нужно создать (опционально)
-│   │   └── phenology_service.go    # 📝 Создать позже
-│   │
-│   ├── task/                        # 📝 Нужно создать (опционально)
-│   │   ├── task.go                  # 📝 Создать позже
-│   │   └── task_generator.go        # 📝 Создать позже
-│   │
-│   └── cropplan/                     # ✅ Есть база, нужно дополнить
-│       ├── crop_plan.go              # ⚠️ Дополнить (добавить методы)
-│       ├── stage.go                  # ⚠️ Дополнить
-│       ├── events.go                 # ⚠️ Дополнить
-│       ├── errors.go                 # ✅ Уже есть
-│       └── repository.go             # ✅ Уже есть (интерфейс)
-│
-├── application/                   # 🚧 В РАЗРАБОТКЕ
-│   ├── command/                    # 📝 Нужно создать все файлы
-│   │   ├── create_crop_plan.go      # 📝 Создать
-│   │   ├── add_stage.go             # 📝 Создать
-│   │   ├── activate_crop_plan.go    # 📝 Создать
-│   │   ├── start_stage.go           # 📝 Создать
-│   │   ├── complete_stage.go        # 📝 Создать
-│   │   ├── harvest_crop_plan.go     # 📝 Создать
-│   │   └── cancel_crop_plan.go      # 📝 Создать
-│   │
-│   ├── query/                      # 📝 Нужно создать все файлы
-│   │   ├── get_crop_plan.go         # 📝 Создать
-│   │   ├── list_crop_plans.go       # 📝 Создать
-│   │   ├── get_phenophases.go       # 📝 Создать позже
-│   │   ├── calculate_seeds.go       # 📝 Создать позже
-│   │   ├── search_varieties.go      # 📝 Создать позже
-│   │   ├── get_crop_recommendations.go # 📝 Создать позже
-│   │   └── get_rotation_recommendations.go # 📝 Создать позже
-│   │
-│   └── events/                      # 📝 Нужно создать
-│       ├── crop_plan_handlers.go     # 📝 Создать
-│       └── bed_handlers.go           # 📝 Создать
-│
-├── infrastructure/                # 🚧 В РАЗРАБОТКЕ
-│   └── postgres/                    # 📝 Нужно создать все файлы
-│       ├── crop_plan_repo.go        # ⚠️ Есть заглушка, нужно реализовать
-│       ├── season_repo.go           # 📝 Создать
-│       ├── rotation_repo.go         # 📝 Создать
-│       └── migrations/               # 📝 Создать
-│           ├── 001_crop_plans.sql    # 📝 Создать
-│           ├── 002_seasons.sql       # 📝 Создать
-│           └── 003_rotation_history.sql # 📝 Создать
-│
-└── interfaces/                    # 🚧 В РАЗРАБОТКЕ
-    └── http/                        # 📝 Нужно создать
-        ├── handlers/
-        │   ├── plan_handler.go       # 📝 Создать
-        │   └── stage_handler.go      # 📝 Создать
-        └── dto/
-            └── plan_dto.go           # 📝 Создать
+core/
+   common
+   eventbus
+
+modules/
+
+farm/
+    field
+    block
+    greenhouse
+    bed
+
+crop/
+    crop
+    variety
+    cropplan
+
+growing/
+    cropcycle
+    tasks
+
+harvest/
+    harvestbatch
+    yield
+
+weather/
+    forecast
+
+sensors/
+    sensor
+    readings
+
+analytics/
+    predictions

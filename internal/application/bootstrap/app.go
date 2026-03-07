@@ -84,37 +84,19 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory uow.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register(
-		"CreateFacility",
-		growingCommand.NewCreateFacilityHandler(uowFactory),
-		growingCommand.DecodeCreateField,
-	)
-	commandRouter.Register(
-		"AddBed",
-		growingCommand.NewAddBedHandler(uowFactory),
-		growingCommand.DecodeAddBed,
-	)
-	commandRouter.Register(
-		"AddBlock",
-		growingCommand.NewAddBlockHandler(uowFactory),
-		growingCommand.DecodeAddBlock,
-	)
-
-	commandRouter.Register(
-		"CreateCropPlan",
-		&cropCommand.CreateCropPlanHandler{UowFactory: uowFactory},
-		cropCommand.DecodeCreateCropPlan,
-	)
+	commandRouter.Register("CreateFacility", growingCommand.NewCreateFacilityHandler(uowFactory), growingCommand.DecodeCreateField)
+	commandRouter.Register("AddBed", growingCommand.NewAddBedHandler(uowFactory), growingCommand.DecodeAddBed)
+	commandRouter.Register("AddBlock", growingCommand.NewAddBlockHandler(uowFactory), growingCommand.DecodeAddBlock)
+	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----
 	facilityReadRepo := postgres.NewFacilityReadRepository(db)
-	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler(facilityReadRepo)
 
-	queryRouter.Register(
-		"GetFacilityOverview",
-		query.DecodeJSON[growingQuery.GetFacilityOverviewQuery],
-		getOverviewHandler.AsHandler(),
-	)
+	getOverviewHandler := growingQuery.NewGetFacilityOverviewHandler(facilityReadRepo)
+	getListHandler := growingQuery.NewGetFacilitiesListHandler(facilityReadRepo)
+
+	queryRouter.Register("GetFacilityOverview", query.DecodeJSON[growingQuery.GetFacilityOverviewQuery], getOverviewHandler.AsHandler())
+	queryRouter.Register("GetFacilitiesList", query.DecodeJSON[growingQuery.GetFacilitiesListQuery], getListHandler.AsHandler())
 
 	return nil
 }

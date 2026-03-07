@@ -41,3 +41,13 @@ Content-Type: application/json
     "facility_id": "781643dc-7080-4d24-b3ab-84767d7a1217"
   }
 }
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetFacilitiesList",
+  "data": {
+  }
+}
