@@ -3,9 +3,11 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"samurenkoroma/services/internal/modules/growing/domain"
-	facility2 "samurenkoroma/services/internal/modules/growing/domain/facility"
-	"samurenkoroma/services/internal/modules/growing/domain/valueobject"
+	"samurenkoroma/services/internal/modules/farm"
+	domain2 "samurenkoroma/services/internal/modules/farm/bed/domain"
+	domain3 "samurenkoroma/services/internal/modules/farm/block/domain"
+	"samurenkoroma/services/internal/modules/farm/field/domain"
+	"samurenkoroma/services/internal/modules/farm/valueobject"
 )
 
 type GrowingFacilitiesRepoImp struct {
@@ -21,10 +23,10 @@ type persistenceLandRow struct {
 	Width    float64
 }
 
-func NewGrowingFacilitiesRepository(tx *sql.Tx) domain.GrowingFacilitiesRepository {
+func NewGrowingFacilitiesRepository(tx *sql.Tx) domain.FieldRepository {
 	return &GrowingFacilitiesRepoImp{tx: tx}
 }
-func (r *GrowingFacilitiesRepoImp) Get(id facility2.FacilityID) (*facility2.GrowingFacility, error) {
+func (r *GrowingFacilitiesRepoImp) Get(id farm.FacilityID) (*domain.Field, error) {
 	rows, err := r.tx.Query(`
 		SELECT id, parent_id, unit_type,  name, length, width
 		FROM land_structure
@@ -60,9 +62,9 @@ func (r *GrowingFacilitiesRepoImp) Get(id facility2.FacilityID) (*facility2.Grow
 		if row.ParentID == nil {
 			rootRow = row
 		} else {
-			if row.UnitType == string(facility2.BlockFacility) {
+			if row.UnitType == string(farm.BlockFacility) {
 				blocks = append(blocks, row)
-			} else if row.UnitType == string(facility2.BedFacility) {
+			} else if row.UnitType == string(farm.BedFacility) {
 				beds = append(beds, row)
 			}
 		}
@@ -71,24 +73,23 @@ func (r *GrowingFacilitiesRepoImp) Get(id facility2.FacilityID) (*facility2.Grow
 	if err != nil {
 		return nil, err
 	}
-	unit := facility2.RehydrateGrowingFacility(
-		facility2.FacilityID(rootRow.ID),
+	unit := domain.RehydrateGrowingFacility(
+		farm.FacilityID(rootRow.ID),
 		rootRow.Name,
-		facility2.FacilityType(rootRow.UnitType),
 		dim,
 		nil,
 		nil,
 	)
 	//
 	//// rebuild tree
-	sectionMap := make(map[string]*facility2.FieldBlock)
+	sectionMap := make(map[string]*domain3.FieldBlock)
 	//
 	for _, s := range blocks {
 
 		sDim, _ := valueobject.NewDimension(s.Length, s.Width)
 
-		sec := facility2.RehydrateBlock(
-			facility2.GrowingAreaID(s.ID),
+		sec := domain3.RehydrateBlock(
+			farm.GrowingAreaID(s.ID),
 			s.Name,
 			sDim,
 		)
@@ -100,14 +101,14 @@ func (r *GrowingFacilitiesRepoImp) Get(id facility2.FacilityID) (*facility2.Grow
 	for _, b := range beds {
 		bDim, _ := valueobject.NewDimension(b.Length, b.Width)
 
-		bed := facility2.RehydrateBed(
-			facility2.GrowingAreaID(b.ID),
+		bed := domain2.RehydrateBed(
+			farm.GrowingAreaID(b.ID),
 			b.Name,
 			bDim,
 		)
 
 		if *b.ParentID != string(unit.ID()) {
-			unit.RehydrateAddBedToSection(facility2.GrowingAreaID(*b.ParentID), bed)
+			unit.RehydrateAddBedToSection(farm.GrowingAreaID(*b.ParentID), bed)
 		} else {
 			unit.RehydrateAddBed(bed)
 		}
@@ -116,7 +117,7 @@ func (r *GrowingFacilitiesRepoImp) Get(id facility2.FacilityID) (*facility2.Grow
 	return unit, nil
 }
 
-func (r *GrowingFacilitiesRepoImp) Save(unit *facility2.GrowingFacility) error {
+func (r *GrowingFacilitiesRepoImp) Save(unit *domain.Field) error {
 	// remove old structure
 	_, err := r.tx.Exec(`DELETE FROM land_structure WHERE root_id = $1`, unit.ID())
 
@@ -145,7 +146,7 @@ func (r *GrowingFacilitiesRepoImp) Save(unit *facility2.GrowingFacility) error {
 
 		if err != nil {
 			if isUniqueViolation(err) {
-				return facility2.ErrLandUnitAlreadyExists
+				return farm.ErrLandUnitAlreadyExists
 			}
 			return err
 		}

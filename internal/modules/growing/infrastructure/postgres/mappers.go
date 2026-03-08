@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"samurenkoroma/services/internal/modules/growing/domain/facility"
+	"samurenkoroma/services/internal/modules/farm/field/domain"
 )
 
 type facilityRow struct {
@@ -15,7 +15,7 @@ type facilityRow struct {
 }
 
 // LAND UNIT → DB
-func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
+func mapLandUnitToRows(unit *domain.Field) []facilityRow {
 	rootId := string(unit.ID())
 	lu := facilityRow{
 		ID:       string(unit.ID()),
@@ -77,14 +77,14 @@ func mapLandUnitToRows(unit *facility.GrowingFacility) []facilityRow {
 //	lu landUnitRow,
 //	sections []sectionRow,
 //	beds []bedRow,
-//) (*facility.GrowingFacility, error) {
+//) (*facility.Field, error) {
 //
 //	dim, err := valueobject.NewDimension(lu.Length, lu.Width)
 //	if err != nil {
 //		return nil, err
 //	}
 //
-//	var unit *facility.GrowingFacility
+//	var unit *facility.Field
 //
 //	switch lu.SpaceType {
 //	case "facility":

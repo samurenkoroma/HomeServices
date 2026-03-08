@@ -1,0 +1,46 @@
+modules/analytics/
+
+predictions/
+yield/
+alerts/
+
+#####################
+
+modules/analytics/predictions/
+
+domain/
+    prediction.go
+
+application/
+    queries/
+        yield_prediction.go
+
+    handlers/
+        yield_prediction_handler.go
+
+infrastructure/
+    prediction_service.go
+
+api/
+    prediction_http.go
+
+##################################
+
+
+modules/analytics/alerts/
+
+domain/
+    alert.go
+
+application/
+    queries/
+        active_alerts.go
+
+    handlers/
+        active_alerts_handler.go
+
+infrastructure/
+    alert_repository.go
+
+api/
+    alert_http.go

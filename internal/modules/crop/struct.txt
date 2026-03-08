@@ -1,0 +1,79 @@
+modules/crop/
+
+crop/
+variety/
+cropplan/
+
+
+###############################
+modules/crop/crop/
+
+domain/
+    crop.go
+    crop_events.go
+
+application/
+    commands/
+        register_crop.go
+
+    queries/
+        list_crops.go
+
+    handlers/
+        register_crop_handler.go
+
+infrastructure/
+    sql_crop_repository.go
+
+api/
+    crop_http.go
+
+###############################
+modules/crop/variety/
+
+domain/
+    variety.go
+
+application/
+    commands/
+        register_variety.go
+
+    queries/
+        list_varieties.go
+
+    handlers/
+        register_variety_handler.go
+
+infrastructure/
+    sql_variety_repository.go
+
+api/
+    variety_http.go
+##########################################
+
+modules/crop/cropplan/
+
+domain/
+    cropplan.go
+    cropplan_stage.go
+    cropplan_events.go
+
+application/
+    commands/
+        create_cropplan.go
+        publish_cropplan.go
+        deprecate_cropplan.go
+
+    queries/
+        get_cropplan.go
+        list_cropplans.go
+
+    handlers/
+        create_cropplan_handler.go
+        publish_cropplan_handler.go
+
+infrastructure/
+    sql_cropplan_repository.go
+
+api/
+    cropplan_http.go

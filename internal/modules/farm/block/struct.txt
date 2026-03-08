@@ -1,0 +1,23 @@
+modules/farm/block/
+
+domain/
+    block.go
+    block_events.go
+
+application/
+    commands/
+        create_block.go
+        update_block_geometry.go
+
+    queries/
+        get_block.go
+        list_blocks.go
+
+    handlers/
+        create_block_handler.go
+
+infrastructure/
+    sql_block_repository.go
+
+api/
+    block_http.go

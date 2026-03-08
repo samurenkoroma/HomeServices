@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"samurenkoroma/services/internal/modules/growing/domain"
-	"samurenkoroma/services/internal/modules/growing/domain/facility"
+	"samurenkoroma/services/internal/modules/farm"
+	"samurenkoroma/services/internal/modules/farm/field/domain"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,13 +12,13 @@ import (
 
 type facilityReadRepository struct{ db *sql.DB }
 
-func NewFacilityReadRepository(db *sql.DB) domain.FacilityReadRepository {
+func NewFacilityReadRepository(db *sql.DB) domain.FieldReadRepository {
 	return &facilityReadRepository{
 		db: db,
 	}
 }
 
-func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*domain.FacilityOverviewDTO, error) {
+func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*domain.FieldOverviewDTO, error) {
 
 	const query = `
 	SELECT
@@ -33,7 +33,7 @@ func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*d
 
 	row := r.db.QueryRowContext(ctx, query, id)
 
-	dto := &domain.FacilityOverviewDTO{}
+	dto := &domain.FieldOverviewDTO{}
 
 	if err := row.Scan(
 		&dto.ID,
@@ -54,7 +54,7 @@ func (r *facilityReadRepository) GetList(ctx context.Context, params domain.Faci
 		Items: []domain.FacilitiesListItemDTO{{
 			Id:          uuid.New().String(),
 			Name:        "Ферма Зеленая Долина",
-			Type:        string(facility.FieldFacility),
+			Type:        string(farm.FieldFacility),
 			Area:        176.5,
 			ActiveCrops: 5,
 			Status:      "excellent",
@@ -66,7 +66,7 @@ func (r *facilityReadRepository) GetList(ctx context.Context, params domain.Faci
 			{
 				Id:          uuid.New().String(),
 				Name:        "Теплица Восход",
-				Type:        string(facility.GreenhouseFacility),
+				Type:        string(farm.GreenhouseFacility),
 				Area:        73.2,
 				ActiveCrops: 8,
 				Status:      "attention",

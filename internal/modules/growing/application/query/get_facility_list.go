@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 	"errors"
-	"samurenkoroma/services/internal/modules/growing/domain"
+	"samurenkoroma/services/internal/modules/farm/field/domain"
 )
 
 type GetFacilitiesListQuery struct {
@@ -11,11 +11,11 @@ type GetFacilitiesListQuery struct {
 }
 
 type GetFacilitiesListHandler struct {
-	repo domain.FacilityReadRepository
+	repo domain.FieldReadRepository
 }
 
 func NewGetFacilitiesListHandler(
-	repo domain.FacilityReadRepository,
+	repo domain.FieldReadRepository,
 ) *GetFacilitiesListHandler {
 	return &GetFacilitiesListHandler{
 		repo: repo,

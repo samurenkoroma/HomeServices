@@ -1,0 +1,48 @@
+modules/weather/
+
+forecast/
+station/
+#############################
+
+modules/weather/forecast/
+
+domain/
+    forecast.go
+
+application/
+    queries/
+        get_forecast.go
+
+    handlers/
+        get_forecast_handler.go
+
+infrastructure/
+    weather_api_client.go
+    forecast_repository.go
+
+api/
+    forecast_http.go
+
+
+##################################
+
+modules/weather/station/
+
+domain/
+    station.go
+
+application/
+    commands/
+        register_station.go
+
+    queries/
+        list_stations.go
+
+    handlers/
+        register_station_handler.go
+
+infrastructure/
+    sql_station_repository.go
+
+api/
+    station_http.go

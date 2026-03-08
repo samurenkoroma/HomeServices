@@ -8,8 +8,12 @@ import (
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/port/repository"
 	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
-	command2 "samurenkoroma/services/internal/modules/growing/application/command"
-	"samurenkoroma/services/internal/modules/growing/application/eventhandlers"
+	"samurenkoroma/services/internal/modules/farm/bed/application/commands"
+	bedCommands "samurenkoroma/services/internal/modules/farm/bed/application/commands"
+	blockCommands "samurenkoroma/services/internal/modules/farm/block/application/commands"
+	fieldCommands "samurenkoroma/services/internal/modules/farm/field/application/commands"
+	"samurenkoroma/services/internal/modules/farm/field/application/handlers"
+	greenhouseCommands "samurenkoroma/services/internal/modules/farm/greenhouse/application/commands"
 	query2 "samurenkoroma/services/internal/modules/growing/application/query"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
 
@@ -43,7 +47,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 	// ---------- Unit Of Work Factory ----------
 
 	bus := eventbus.NewInMemoryEventBus()
-	bus.Register("FacilityCreated", eventhandlers.OnFacilityCreated)
+	bus.Register("FacilityCreated", handlers.OnFieldCreated)
 	uowFactory := uowSql.NewUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------
@@ -84,9 +88,10 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register("CreateFacility", command2.NewCreateFacilityHandler(uowFactory), command2.DecodeCreateField)
-	commandRouter.Register("AddBed", command2.NewAddBedHandler(uowFactory), command2.DecodeAddBed)
-	commandRouter.Register("AddBlock", command2.NewAddBlockHandler(uowFactory), command2.DecodeAddBlock)
+	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), fieldCommands.DecodeCreateField)
+	commandRouter.Register("CreateGreenhouse", greenhouseCommands.NewCreateGreenhouseHandler(uowFactory), greenhouseCommands.DecodeCreateField)
+	commandRouter.Register("AddBed", bedCommands.NewAddBedHandler(uowFactory), commands.DecodeAddBed)
+	commandRouter.Register("AddBlock", blockCommands.NewAddBlockHandler(uowFactory), blockCommands.DecodeAddBlock)
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----

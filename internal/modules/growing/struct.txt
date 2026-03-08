@@ -1,0 +1,59 @@
+modules/growing/
+
+cropcycle/
+tasks/
+
+########################################
+
+modules/growing/cropcycle/
+
+domain/
+    cropcycle.go
+    cropcycle_status.go
+    cropcycle_events.go
+
+application/
+    commands/
+        start_crop_cycle.go
+        finish_crop_cycle.go
+        cancel_crop_cycle.go
+
+    queries/
+        get_crop_cycle.go
+        list_crop_cycles.go
+
+    handlers/
+        start_crop_cycle_handler.go
+        finish_crop_cycle_handler.go
+
+infrastructure/
+    sql_cropcycle_repository.go
+
+api/
+    cropcycle_http.go
+
+#########################################
+
+modules/growing/tasks/
+
+domain/
+    task.go
+    task_type.go
+    task_events.go
+
+application/
+    commands/
+        create_task.go
+        complete_task.go
+
+    queries/
+        list_tasks.go
+
+    handlers/
+        create_task_handler.go
+
+infrastructure/
+    sql_task_repository.go
+
+api/
+    task_http.go

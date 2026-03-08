@@ -1,13 +1,14 @@
-package command
+package commands
 
 import (
 	"context"
 	"samurenkoroma/services/internal/core/eventbus"
 	"samurenkoroma/services/internal/core/port/repository"
 	crop "samurenkoroma/services/internal/modules/crop/domain"
+	"samurenkoroma/services/internal/modules/farm"
+	domain3 "samurenkoroma/services/internal/modules/farm/field/domain"
+	"samurenkoroma/services/internal/modules/farm/valueobject"
 	"samurenkoroma/services/internal/modules/growing/domain"
-	facility2 "samurenkoroma/services/internal/modules/growing/domain/facility"
-	"samurenkoroma/services/internal/modules/growing/domain/valueobject"
 	"testing"
 
 	"github.com/google/uuid"
@@ -17,7 +18,7 @@ import (
 type mockUOW struct {
 	committed     bool
 	rolledBack    bool
-	savedFacility *facility2.GrowingFacility
+	savedFacility *domain3.Field
 }
 
 func (m *mockUOW) CropCycles() domain.CropCycleRepository {
@@ -35,7 +36,7 @@ func (m *mockUOW) CropPlans() crop.CropPlanRepository {
 	panic("implement me")
 }
 
-func (m *mockUOW) GrowingFacilities() domain.GrowingFacilitiesRepository {
+func (m *mockUOW) GrowingFacilities() domain3.FieldRepository {
 	return &mockFacilityRepo{uow: m}
 }
 
@@ -50,13 +51,13 @@ type mockFacilityRepo struct {
 	uow *mockUOW
 }
 
-func (r *mockFacilityRepo) Get(id facility2.FacilityID) (*facility2.GrowingFacility, error) {
+func (r *mockFacilityRepo) Get(id farm.FacilityID) (*domain3.Field, error) {
 	// Создаем тестовую теплицу
 	dim, _ := valueobject.NewDimension(100, 50)
-	return facility2.NewGreenhouseFacility(id, "Test Greenhouse", dim), nil
+	return domain3.NewGreenhouseFacility(id, "Test Greenhouse", dim), nil
 }
 
-func (r *mockFacilityRepo) Save(unit *facility2.GrowingFacility) error {
+func (r *mockFacilityRepo) Save(unit *domain3.Field) error {
 	r.uow.savedFacility = unit
 	return nil
 }

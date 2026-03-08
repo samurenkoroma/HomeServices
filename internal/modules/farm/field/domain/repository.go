@@ -2,11 +2,11 @@ package domain
 
 import (
 	"context"
-	facility2 "samurenkoroma/services/internal/modules/growing/domain/facility"
+	"samurenkoroma/services/internal/modules/farm"
 	"time"
 )
 
-type FacilityOverviewDTO struct {
+type FieldOverviewDTO struct {
 	ID     string
 	Name   string
 	Type   string
@@ -14,7 +14,7 @@ type FacilityOverviewDTO struct {
 	Width  float64
 }
 
-type FacilitiesListItemDTO struct {
+type FieldListItemDTO struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
@@ -27,11 +27,11 @@ type FacilitiesListItemDTO struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 type FacilitiesListDTO struct {
-	Items      []FacilitiesListItemDTO `json:"items"`
-	Total      int                     `json:"total"`
-	Page       int                     `json:"page"`
-	Limit      int                     `json:"limit"`
-	TotalPages int                     `json:"total_pages"`
+	Items      []FieldListItemDTO `json:"items"`
+	Total      int                `json:"total"`
+	Page       int                `json:"page"`
+	Limit      int                `json:"limit"`
+	TotalPages int                `json:"total_pages"`
 }
 
 type FacilitiesListParams struct {
@@ -39,12 +39,12 @@ type FacilitiesListParams struct {
 	Page  int
 }
 
-type FacilityReadRepository interface {
-	GetOverview(ctx context.Context, id string) (*FacilityOverviewDTO, error)
+type FieldReadRepository interface {
+	GetOverview(ctx context.Context, id string) (*FieldOverviewDTO, error)
 	GetList(ctx context.Context, params FacilitiesListParams) (*FacilitiesListDTO, error)
 }
 
-type GrowingFacilitiesRepository interface {
-	Get(id facility2.FacilityID) (*facility2.GrowingFacility, error)
-	Save(unit *facility2.GrowingFacility) error
+type FieldRepository interface {
+	Get(id farm.GrowingAreaID) (*Field, error)
+	Save(unit *Field) error
 }

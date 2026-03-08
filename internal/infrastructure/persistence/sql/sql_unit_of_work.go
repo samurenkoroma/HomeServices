@@ -10,6 +10,7 @@ import (
 	"samurenkoroma/services/internal/core/port/repository"
 	crop "samurenkoroma/services/internal/modules/crop/domain"
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence"
+	domain2 "samurenkoroma/services/internal/modules/farm/field/domain"
 	"samurenkoroma/services/internal/modules/growing/domain"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
 	"sync"
@@ -46,7 +47,7 @@ type sqlUnitOfWork struct {
 
 	aggregates []aggregate.Aggregate
 
-	facilitiesRepo domain.GrowingFacilitiesRepository
+	facilitiesRepo domain2.FieldRepository
 	cropRepo       crop.CropPlanRepository
 }
 
@@ -60,7 +61,7 @@ func (u *sqlUnitOfWork) CropTemplates() domain.CropTemplateRepository {
 	panic("implement me")
 }
 
-func (u *sqlUnitOfWork) GrowingFacilities() domain.GrowingFacilitiesRepository {
+func (u *sqlUnitOfWork) GrowingFacilities() domain2.FieldRepository {
 	return u.facilitiesRepo
 }
 func (u *sqlUnitOfWork) CropPlans() crop.CropPlanRepository { return u.cropRepo }

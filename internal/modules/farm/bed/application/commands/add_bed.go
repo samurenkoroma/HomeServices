@@ -1,4 +1,4 @@
-package command
+package commands
 
 import (
 	"context"
@@ -6,30 +6,32 @@ import (
 	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/core/port/repository"
-	"samurenkoroma/services/internal/modules/growing/domain/facility"
-	"samurenkoroma/services/internal/modules/growing/domain/valueobject"
+	"samurenkoroma/services/internal/modules/farm"
+	"samurenkoroma/services/internal/modules/farm/valueobject"
 
 	"github.com/google/uuid"
 )
 
-type AddBlockHandler struct {
+type AddBedCmd struct {
+	FacilityID string  `json:"facility_id"`        // ID теплицы или поля
+	BlockID    *string `json:"block_id,omitempty"` // ID секции (для поля, опционально)
+	Name       string  `json:"name"`               // Название грядки
+	Length     float64 `json:"length"`             // Длина в метрах
+	Width      float64 `json:"width"`              // Ширина в метрах
+}
+
+type AddBedHandler struct {
 	UowFactory repository.Factory
 }
 
-func NewAddBlockHandler(uowFactory repository.Factory) *AddBlockHandler {
-	return &AddBlockHandler{UowFactory: uowFactory}
+func NewAddBedHandler(uowFactory repository.Factory) *AddBedHandler {
+	return &AddBedHandler{UowFactory: uowFactory}
+
 }
 
-type AddBlockCmd struct {
-	FacilityID string  `json:"facility_id"` // ID теплицы или поля
-	Name       string  `json:"name"`        // Название грядки
-	Length     float64 `json:"length"`      // Длина в метрах
-	Width      float64 `json:"width"`       // Ширина в метрах
-}
+func DecodeAddBed(data []byte) (any, error) {
 
-func DecodeAddBlock(data []byte) (any, error) {
-
-	var cmd AddBlockCmd
+	var cmd AddBedCmd
 	if err := json.Unmarshal(data, &cmd); err != nil {
 		return nil, fmt.Errorf("failed to decode AddBed command: %w", err)
 	}
@@ -52,9 +54,9 @@ func DecodeAddBlock(data []byte) (any, error) {
 }
 
 // Handle выполняет команду
-func (h *AddBlockHandler) Handle(ctx context.Context, cmd any) error {
+func (h *AddBedHandler) Handle(ctx context.Context, cmd any) error {
 	// Приводим команду к нужному типу
-	c, ok := cmd.(AddBlockCmd)
+	c, ok := cmd.(AddBedCmd)
 	if !ok {
 		return errors.New("invalid command type: expected AddBedCmd")
 	}
@@ -70,7 +72,7 @@ func (h *AddBlockHandler) Handle(ctx context.Context, cmd any) error {
 	repo := uowObj.GrowingFacilities()
 
 	// Загружаем существующее сооружение (теплицу или поле)
-	facility_unit, err := repo.Get(facility.FacilityID(c.FacilityID))
+	facility_unit, err := repo.Get(farm.FacilityID(c.FacilityID))
 	if err != nil {
 		return fmt.Errorf("failed to get facility %s: %w", c.FacilityID, err)
 	}
@@ -82,16 +84,30 @@ func (h *AddBlockHandler) Handle(ctx context.Context, cmd any) error {
 	}
 
 	// Генерируем ID для новой грядки
-	blockID := facility.GrowingAreaID(uuid.New().String())
+	bedID := farm.GrowingAreaID(uuid.New().String())
 
-	// Добавляем напрямую (для теплицы)
-	err = facility_unit.AddBlock(
-		blockID,
-		c.Name,
-		dim,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to add bed directly: %w", err)
+	// Добавляем грядку в зависимости от наличия block_id
+	if c.BlockID != nil && *c.BlockID != "" {
+		// Добавляем в секцию (для поля)
+		err = facility_unit.AddBedToBlock(
+			farm.GrowingAreaID(*c.BlockID),
+			bedID,
+			c.Name,
+			dim,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to add bed to block: %w", err)
+		}
+	} else {
+		// Добавляем напрямую (для теплицы)
+		err = facility_unit.AddBed(
+			bedID,
+			c.Name,
+			dim,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to add bed directly: %w", err)
+		}
 	}
 
 	// Сохраняем изменения в facility
