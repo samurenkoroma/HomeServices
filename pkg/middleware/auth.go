@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"context"
-	jwtware "github.com/gofiber/contrib/jwt"
-	"github.com/gofiber/fiber/v2"
 	"log"
 	"net/http"
-	"samurenkoroma/services/configs"
+	"samurenkoroma/services/internal/infrastructure/configs"
 	"samurenkoroma/services/pkg/jwt"
 	"strings"
+
+	jwtware "github.com/gofiber/contrib/jwt"
+	"github.com/gofiber/fiber/v2"
 )
 
 type key string

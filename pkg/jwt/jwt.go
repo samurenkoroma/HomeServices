@@ -1,9 +1,10 @@
 package jwt
 
 import (
-	"github.com/golang-jwt/jwt/v5"
-	"samurenkoroma/services/configs"
+	"samurenkoroma/services/internal/infrastructure/configs"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type JWTData struct {

@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"samurenkoroma/services/internal/common/application/uow"
-	"samurenkoroma/services/internal/common/domain"
-	crop "samurenkoroma/services/internal/crop/domain"
-	"samurenkoroma/services/internal/crop/infrastructure/persistence"
-	growing "samurenkoroma/services/internal/growing/domain"
-	"samurenkoroma/services/internal/growing/infrastructure/postgres"
+	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/event"
+	"samurenkoroma/services/internal/core/port/messaging"
+	"samurenkoroma/services/internal/core/port/repository"
+	crop "samurenkoroma/services/internal/modules/crop/domain"
+	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence"
+	"samurenkoroma/services/internal/modules/growing/domain"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
 	"sync"
 )
 
@@ -21,8 +23,8 @@ var (
 func newSQLUnitOfWork(
 	ctx context.Context,
 	tx *sql.Tx,
-	bus domain.EventBus,
-) uow.UnitOfWork {
+	bus messaging.EventBus,
+) repository.UnitOfWork {
 	return &sqlUnitOfWork{
 		ctx:            ctx,
 		tx:             tx,
@@ -36,34 +38,34 @@ type sqlUnitOfWork struct {
 	ctx context.Context
 	tx  *sql.Tx
 
-	bus domain.EventBus
+	bus messaging.EventBus
 
 	mu         sync.Mutex
 	committed  bool
 	rolledBack bool
 
-	aggregates []domain.Aggregate
+	aggregates []aggregate.Aggregate
 
-	facilitiesRepo growing.GrowingFacilitiesRepository
+	facilitiesRepo domain.GrowingFacilitiesRepository
 	cropRepo       crop.CropPlanRepository
 }
 
-func (u *sqlUnitOfWork) CropCycles() growing.CropCycleRepository {
+func (u *sqlUnitOfWork) CropCycles() domain.CropCycleRepository {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *sqlUnitOfWork) CropTemplates() growing.CropTemplateRepository {
+func (u *sqlUnitOfWork) CropTemplates() domain.CropTemplateRepository {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *sqlUnitOfWork) GrowingFacilities() growing.GrowingFacilitiesRepository {
+func (u *sqlUnitOfWork) GrowingFacilities() domain.GrowingFacilitiesRepository {
 	return u.facilitiesRepo
 }
 func (u *sqlUnitOfWork) CropPlans() crop.CropPlanRepository { return u.cropRepo }
 
-func (u *sqlUnitOfWork) RegisterAggregate(agg domain.Aggregate) {
+func (u *sqlUnitOfWork) RegisterAggregate(agg aggregate.Aggregate) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -102,11 +104,11 @@ func (u *sqlUnitOfWork) Rollback() error {
 	return u.tx.Rollback()
 }
 
-func (u *sqlUnitOfWork) EventBus() domain.EventBus {
+func (u *sqlUnitOfWork) EventBus() messaging.EventBus {
 	return u.bus
 }
 func (u *sqlUnitOfWork) dispatchEvents() error {
-	var allEvents []domain.DomainEvent
+	var allEvents []event.DomainEvent
 
 	for _, agg := range u.aggregates {
 		allEvents = append(allEvents, agg.PullEvents()...)
@@ -116,5 +118,5 @@ func (u *sqlUnitOfWork) dispatchEvents() error {
 		return nil
 	}
 
-	return u.bus.Publish(uow.WithUnitOfWork(u.ctx, u), allEvents)
+	return u.bus.Publish(repository.WithUnitOfWork(u.ctx, u), allEvents)
 }

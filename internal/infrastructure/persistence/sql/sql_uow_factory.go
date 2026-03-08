@@ -3,29 +3,23 @@ package sql
 import (
 	"context"
 	"database/sql"
-	"samurenkoroma/services/internal/common/application/uow"
-	"samurenkoroma/services/internal/common/domain"
+	"samurenkoroma/services/internal/core/port/messaging"
+	"samurenkoroma/services/internal/core/port/repository"
 )
 
 type sqlUnitOfWorkFactory struct {
 	db  *sql.DB
-	bus domain.EventBus
+	bus messaging.EventBus
 }
 
-func NewUnitOfWorkFactory(
-	db *sql.DB,
-	bus domain.EventBus,
-) uow.Factory {
+func NewUnitOfWorkFactory(db *sql.DB, bus messaging.EventBus) repository.Factory {
 	return &sqlUnitOfWorkFactory{
 		db:  db,
 		bus: bus,
 	}
 }
 
-func (f *sqlUnitOfWorkFactory) Begin(
-	ctx context.Context,
-) (uow.UnitOfWork, error) {
-
+func (f *sqlUnitOfWorkFactory) Begin(ctx context.Context) (repository.UnitOfWork, error) {
 	tx, err := f.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

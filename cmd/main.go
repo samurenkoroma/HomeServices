@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"samurenkoroma/services/configs"
 	c "samurenkoroma/services/internal/application/bootstrap"
+	"samurenkoroma/services/internal/infrastructure/configs"
 )
 
 func main() {

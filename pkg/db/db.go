@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"samurenkoroma/services/configs"
+	"samurenkoroma/services/internal/infrastructure/configs"
 	"time"
 
 	"gorm.io/driver/postgres"

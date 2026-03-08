@@ -2,22 +2,23 @@ package eventbus
 
 import (
 	"context"
-	"samurenkoroma/services/internal/common/domain"
+	"samurenkoroma/services/internal/core/domain/event"
+	"samurenkoroma/services/internal/core/port/messaging"
 	"sync"
 )
 
 type InMemoryEventBus struct {
-	handlers map[string][]domain.EventHandler
+	handlers map[string][]messaging.EventHandler
 	mu       sync.RWMutex
 }
 
 func NewInMemoryEventBus() *InMemoryEventBus {
 	return &InMemoryEventBus{
-		handlers: make(map[string][]domain.EventHandler),
+		handlers: make(map[string][]messaging.EventHandler),
 	}
 }
 
-func (b *InMemoryEventBus) Register(eventName string, handler domain.EventHandler) {
+func (b *InMemoryEventBus) Register(eventName string, handler messaging.EventHandler) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
@@ -26,17 +27,17 @@ func (b *InMemoryEventBus) Register(eventName string, handler domain.EventHandle
 
 func (b *InMemoryEventBus) Publish(
 	ctx context.Context,
-	events []domain.DomainEvent,
+	events []event.DomainEvent,
 ) error {
 
-	for _, event := range events {
+	for _, e := range events {
 
 		b.mu.RLock()
-		handlers := b.handlers[event.EventName()]
+		handlers := b.handlers[e.EventName()]
 		b.mu.RUnlock()
 
 		for _, h := range handlers {
-			if err := h(ctx, event); err != nil {
+			if err := h(ctx, e); err != nil {
 				return err
 			}
 		}

@@ -2,7 +2,7 @@ package logger
 
 import (
 	"os"
-	"samurenkoroma/services/configs"
+	"samurenkoroma/services/internal/infrastructure/configs"
 
 	"github.com/rs/zerolog"
 )
