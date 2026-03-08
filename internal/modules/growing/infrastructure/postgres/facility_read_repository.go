@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"samurenkoroma/services/internal/modules/farm"
+	domain2 "samurenkoroma/services/internal/modules/farm/domain/field"
 	"samurenkoroma/services/internal/modules/farm/field/domain"
 	"time"
 
@@ -12,13 +13,13 @@ import (
 
 type facilityReadRepository struct{ db *sql.DB }
 
-func NewFacilityReadRepository(db *sql.DB) domain.FieldReadRepository {
+func NewFacilityReadRepository(db *sql.DB) domain2.FieldReadRepository {
 	return &facilityReadRepository{
 		db: db,
 	}
 }
 
-func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*domain.FieldOverviewDTO, error) {
+func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*domain2.FieldOverviewDTO, error) {
 
 	const query = `
 	SELECT
@@ -33,7 +34,7 @@ func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*d
 
 	row := r.db.QueryRowContext(ctx, query, id)
 
-	dto := &domain.FieldOverviewDTO{}
+	dto := &domain2.FieldOverviewDTO{}
 
 	if err := row.Scan(
 		&dto.ID,
@@ -48,9 +49,9 @@ func (r *facilityReadRepository) GetOverview(ctx context.Context, id string) (*d
 	return dto, nil
 }
 
-func (r *facilityReadRepository) GetList(ctx context.Context, params domain.FacilitiesListParams) (*domain.FacilitiesListDTO, error) {
+func (r *facilityReadRepository) GetList(ctx context.Context, params domain2.FacilitiesListParams) (*domain2.FacilitiesListDTO, error) {
 
-	dto := &domain.FacilitiesListDTO{
+	dto := &domain2.FacilitiesListDTO{
 		Items: []domain.FacilitiesListItemDTO{{
 			Id:          uuid.New().String(),
 			Name:        "Ферма Зеленая Долина",

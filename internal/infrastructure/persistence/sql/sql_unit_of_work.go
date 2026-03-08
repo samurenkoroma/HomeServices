@@ -10,7 +10,7 @@ import (
 	"samurenkoroma/services/internal/core/port/repository"
 	crop "samurenkoroma/services/internal/modules/crop/domain"
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence"
-	domain2 "samurenkoroma/services/internal/modules/farm/field/domain"
+	domain2 "samurenkoroma/services/internal/modules/farm/domain/field"
 	"samurenkoroma/services/internal/modules/growing/domain"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
 	"sync"

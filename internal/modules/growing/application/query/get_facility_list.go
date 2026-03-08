@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 	"errors"
-	"samurenkoroma/services/internal/modules/farm/field/domain"
+	"samurenkoroma/services/internal/modules/farm/domain/field"
 )
 
 type GetFacilitiesListQuery struct {
@@ -11,11 +11,11 @@ type GetFacilitiesListQuery struct {
 }
 
 type GetFacilitiesListHandler struct {
-	repo domain.FieldReadRepository
+	repo field.FieldReadRepository
 }
 
 func NewGetFacilitiesListHandler(
-	repo domain.FieldReadRepository,
+	repo field.FieldReadRepository,
 ) *GetFacilitiesListHandler {
 	return &GetFacilitiesListHandler{
 		repo: repo,
@@ -33,5 +33,5 @@ func (h *GetFacilitiesListHandler) AsHandler() func(context.Context, any) (any, 
 
 func (h *GetFacilitiesListHandler) Handle(ctx context.Context, q GetFacilitiesListQuery) (any, error) {
 
-	return h.repo.GetList(ctx, domain.FacilitiesListParams{})
+	return h.repo.GetList(ctx, field.FacilitiesListParams{})
 }

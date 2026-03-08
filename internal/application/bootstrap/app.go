@@ -8,12 +8,8 @@ import (
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/port/repository"
 	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
-	"samurenkoroma/services/internal/modules/farm/bed/application/commands"
-	bedCommands "samurenkoroma/services/internal/modules/farm/bed/application/commands"
-	blockCommands "samurenkoroma/services/internal/modules/farm/block/application/commands"
-	fieldCommands "samurenkoroma/services/internal/modules/farm/field/application/commands"
-	"samurenkoroma/services/internal/modules/farm/field/application/handlers"
-	greenhouseCommands "samurenkoroma/services/internal/modules/farm/greenhouse/application/commands"
+	fieldCommands "samurenkoroma/services/internal/modules/farm/application/commands"
+	"samurenkoroma/services/internal/modules/farm/application/handlers"
 	query2 "samurenkoroma/services/internal/modules/growing/application/query"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
 
@@ -89,9 +85,9 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 
 	// ---- Command Registration ----
 	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), fieldCommands.DecodeCreateField)
-	commandRouter.Register("CreateGreenhouse", greenhouseCommands.NewCreateGreenhouseHandler(uowFactory), greenhouseCommands.DecodeCreateField)
-	commandRouter.Register("AddBed", bedCommands.NewAddBedHandler(uowFactory), commands.DecodeAddBed)
-	commandRouter.Register("AddBlock", blockCommands.NewAddBlockHandler(uowFactory), blockCommands.DecodeAddBlock)
+	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), fieldCommands.DecodeCreateField)
+	commandRouter.Register("AddBed", fieldCommands.NewAddBedHandler(uowFactory), fieldCommands.DecodeAddBed)
+	commandRouter.Register("AddBlock", fieldCommands.NewAddBlockHandler(uowFactory), fieldCommands.DecodeAddBlock)
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----

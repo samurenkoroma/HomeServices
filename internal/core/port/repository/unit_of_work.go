@@ -4,7 +4,7 @@ import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
 	"samurenkoroma/services/internal/core/port/messaging"
 	crop "samurenkoroma/services/internal/modules/crop/domain"
-	domain2 "samurenkoroma/services/internal/modules/farm/field/domain"
+	domain2 "samurenkoroma/services/internal/modules/farm/domain/field"
 	"samurenkoroma/services/internal/modules/growing/domain"
 )
 

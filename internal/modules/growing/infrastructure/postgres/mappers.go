@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"samurenkoroma/services/internal/modules/farm/field/domain"
+	"samurenkoroma/services/internal/modules/farm/domain/field"
 )
 
 type facilityRow struct {
@@ -15,7 +15,7 @@ type facilityRow struct {
 }
 
 // LAND UNIT → DB
-func mapLandUnitToRows(unit *domain.Field) []facilityRow {
+func mapLandUnitToRows(unit *field.Field) []facilityRow {
 	rootId := string(unit.ID())
 	lu := facilityRow{
 		ID:       string(unit.ID()),
