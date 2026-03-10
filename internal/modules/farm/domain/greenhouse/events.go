@@ -4,17 +4,17 @@ import (
 	"samurenkoroma/services/internal/core/domain/event"
 )
 
-type GreenhouseCreated struct {
+type Created struct {
 	event.BaseEvent
 	ID string
 }
 
-func (e GreenhouseCreated) EventName() string {
+func (e Created) EventName() string {
 	return "farm.greenhouse.created"
 }
 
-func NewGreenhouseCreated(facilityID string) GreenhouseCreated {
-	return GreenhouseCreated{
+func NewGreenhouseCreated(facilityID string) Created {
+	return Created{
 		ID: facilityID,
 	}
 }

@@ -7,15 +7,12 @@ import (
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/port/repository"
-	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
-	fieldCommands "samurenkoroma/services/internal/modules/farm/application/commands"
-	"samurenkoroma/services/internal/modules/farm/application/handlers"
-	query2 "samurenkoroma/services/internal/modules/growing/application/query"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/postgres"
-
 	"samurenkoroma/services/internal/infrastructure/eventbus"
 	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
+	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
+	fieldCommands "samurenkoroma/services/internal/modules/farm/application/commands"
+	"samurenkoroma/services/internal/modules/farm/application/handlers"
 
 	_ "github.com/lib/pq"
 )
@@ -85,19 +82,19 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 
 	// ---- Command Registration ----
 	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), fieldCommands.DecodeCreateField)
-	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), fieldCommands.DecodeCreateField)
+	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), fieldCommands.DecodeCreateGreenhouse)
 	commandRouter.Register("AddBed", fieldCommands.NewAddBedHandler(uowFactory), fieldCommands.DecodeAddBed)
 	commandRouter.Register("AddBlock", fieldCommands.NewAddBlockHandler(uowFactory), fieldCommands.DecodeAddBlock)
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----
-	facilityReadRepo := postgres.NewFacilityReadRepository(db)
-
-	getOverviewHandler := query2.NewGetFacilityOverviewHandler(facilityReadRepo)
-	getListHandler := query2.NewGetFacilitiesListHandler(facilityReadRepo)
-
-	queryRouter.Register("GetFacilityOverview", query.DecodeJSON[query2.GetFacilityOverviewQuery], getOverviewHandler.AsHandler())
-	queryRouter.Register("GetFacilitiesList", query.DecodeJSON[query2.GetFacilitiesListQuery], getListHandler.AsHandler())
+	//facilityReadRepo := postgres.NewGrowingFacilitiesRepository(uowFactory.Begin())
+	//
+	//getOverviewHandler := query2.NewGetFacilityOverviewHandler(facilityReadRepo)
+	//getListHandler := query2.NewGetFacilitiesListHandler(facilityReadRepo)
+	//
+	//queryRouter.Register("GetFacilityOverview", query.DecodeJSON[query2.GetFacilityOverviewQuery], getOverviewHandler.AsHandler())
+	//queryRouter.Register("GetFacilitiesList", query.DecodeJSON[query2.GetFacilitiesListQuery], getListHandler.AsHandler())
 
 	return nil
 }

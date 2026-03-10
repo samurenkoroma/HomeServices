@@ -2,9 +2,9 @@ package greenhouse
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain"
 	"samurenkoroma/services/internal/modules/farm/domain/bed"
-	"samurenkoroma/services/internal/modules/farm/domain/block"
 	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
 )
 
@@ -15,8 +15,9 @@ type Greenhouse struct {
 	name      string
 	dimension valueobject.Dimension
 
-	blocks []*block.FieldBlock
-	beds   []*bed.Bed
+	beds []*bed.Bed
+
+	Geometry spatial.GeoJSON
 }
 
 func NewGreenhouse(id domain.GrowingAreaID, name string, dim valueobject.Dimension) *Greenhouse {

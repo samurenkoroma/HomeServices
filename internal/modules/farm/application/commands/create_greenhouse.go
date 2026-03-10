@@ -26,7 +26,7 @@ type CreateGreenhouseCmd struct {
 	Width  float64 `json:"width"`
 }
 
-func DecodeCreateField(data []byte) (any, error) {
+func DecodeCreateGreenhouse(data []byte) (any, error) {
 
 	var cmd CreateGreenhouseCmd
 

@@ -4,18 +4,18 @@ import (
 	"samurenkoroma/services/internal/core/domain/event"
 )
 
-type BedCreated struct {
+type Created struct {
 	event.BaseEvent
 
 	BedID string
 }
 
-func (e BedCreated) EventName() string {
+func (e Created) EventName() string {
 	return "farm.bed.created"
 }
 
-func NewBedCreated(id string) BedCreated {
-	return BedCreated{
+func NewBedCreated(id string) Created {
+	return Created{
 		BedID: id,
 	}
 }

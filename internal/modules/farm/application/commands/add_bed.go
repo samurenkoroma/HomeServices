@@ -7,9 +7,6 @@ import (
 	"fmt"
 	"samurenkoroma/services/internal/core/port/repository"
 	"samurenkoroma/services/internal/modules/farm/domain"
-	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
-
-	"github.com/google/uuid"
 )
 
 type AddBedCmd struct {
@@ -69,7 +66,7 @@ func (h *AddBedHandler) Handle(ctx context.Context, cmd any) error {
 	defer uowObj.Rollback() // Откатим, если не будет Commit
 
 	// Получаем репозиторий для работы с facility
-	repo := uowObj.GrowingFacilities()
+	repo := uowObj.Beds()
 
 	// Загружаем существующее сооружение (теплицу или поле)
 	facility_unit, err := repo.Get(domain.GrowingAreaID(c.FacilityID))
@@ -77,38 +74,38 @@ func (h *AddBedHandler) Handle(ctx context.Context, cmd any) error {
 		return fmt.Errorf("failed to get facility %s: %w", c.FacilityID, err)
 	}
 
-	// Создаем dimension из размеров
-	dim, err := valueobject.NewDimension(c.Length, c.Width)
-	if err != nil {
-		return fmt.Errorf("invalid dimensions: %w", err)
-	}
-
-	// Генерируем ID для новой грядки
-	bedID := domain.GrowingAreaID(uuid.New().String())
-
-	// Добавляем грядку в зависимости от наличия block_id
-	if c.BlockID != nil && *c.BlockID != "" {
-		// Добавляем в секцию (для поля)
-		err = facility_unit.AddBedToBlock(
-			domain.GrowingAreaID(*c.BlockID),
-			bedID,
-			c.Name,
-			dim,
-		)
-		if err != nil {
-			return fmt.Errorf("failed to add bed to block: %w", err)
-		}
-	} else {
-		// Добавляем напрямую (для теплицы)
-		err = facility_unit.AddBed(
-			bedID,
-			c.Name,
-			dim,
-		)
-		if err != nil {
-			return fmt.Errorf("failed to add bed directly: %w", err)
-		}
-	}
+	//// Создаем dimension из размеров
+	//dim, err := valueobject.NewDimension(c.Length, c.Width)
+	//if err != nil {
+	//	return fmt.Errorf("invalid dimensions: %w", err)
+	//}
+	//
+	//// Генерируем ID для новой грядки
+	//bedID := domain.GrowingAreaID(uuid.New().String())
+	//
+	//// Добавляем грядку в зависимости от наличия block_id
+	//if c.BlockID != nil && *c.BlockID != "" {
+	//	// Добавляем в секцию (для поля)
+	//	err = facility_unit.AddBedToBlock(
+	//		domain.GrowingAreaID(*c.BlockID),
+	//		bedID,
+	//		c.Name,
+	//		dim,
+	//	)
+	//	if err != nil {
+	//		return fmt.Errorf("failed to add bed to block: %w", err)
+	//	}
+	//} else {
+	//	// Добавляем напрямую (для теплицы)
+	//	err = facility_unit.AddBed(
+	//		bedID,
+	//		c.Name,
+	//		dim,
+	//	)
+	//	if err != nil {
+	//		return fmt.Errorf("failed to add bed directly: %w", err)
+	//	}
+	//}
 
 	// Сохраняем изменения в facility
 	if err := repo.Save(facility_unit); err != nil {

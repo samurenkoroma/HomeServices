@@ -57,9 +57,9 @@ func (h *CreateFieldHandler) Handle(ctx context.Context, cmd any) error {
 		return err
 	}
 
-	unit := field.NewField(domain2.GrowingAreaID(c.ID), c.Name, dim)
+	unit, _ := field.NewField(domain2.GrowingAreaID(c.ID), c.Name, dim)
 
-	if err := uowObj.GrowingFacilities().Save(unit); err != nil {
+	if err := uowObj.Fields().Save(unit); err != nil {
 		return err
 	}
 	uowObj.RegisterAggregate(unit)

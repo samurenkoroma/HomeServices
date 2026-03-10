@@ -2,13 +2,14 @@ package commands
 
 import (
 	"context"
-	"samurenkoroma/services/internal/core/eventbus"
+	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/port/messaging"
 	"samurenkoroma/services/internal/core/port/repository"
 	crop "samurenkoroma/services/internal/modules/crop/domain"
-	"samurenkoroma/services/internal/modules/farm"
+	farm "samurenkoroma/services/internal/modules/farm/domain"
 	"samurenkoroma/services/internal/modules/farm/domain/field"
+	"samurenkoroma/services/internal/modules/farm/domain/greenhouse"
 	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
-	domain3 "samurenkoroma/services/internal/modules/farm/field/domain"
 	"samurenkoroma/services/internal/modules/growing/domain"
 	"testing"
 
@@ -37,25 +38,25 @@ func (m *mockUOW) CropPlans() crop.CropPlanRepository {
 	panic("implement me")
 }
 
-func (m *mockUOW) GrowingFacilities() field.FieldRepository {
+func (m *mockUOW) GrowingFacilities() field.Repository {
 	return &mockFacilityRepo{uow: m}
 }
 
 // func (m *mockUOW) CropPlans() cropplan.Repository         { return nil }
-func (m *mockUOW) RegisterAggregate(agg eventbus.Aggregate) {}
-func (m *mockUOW) Commit() error                            { m.committed = true; return nil }
-func (m *mockUOW) Rollback() error                          { m.rolledBack = true; return nil }
-func (m *mockUOW) EventBus() eventbus.EventBus              { return nil }
+func (m *mockUOW) RegisterAggregate(agg aggregate.Aggregate) {}
+func (m *mockUOW) Commit() error                             { m.committed = true; return nil }
+func (m *mockUOW) Rollback() error                           { m.rolledBack = true; return nil }
+func (m *mockUOW) EventBus() messaging.EventBus              { return nil }
 
 // Мок для репозитория
 type mockFacilityRepo struct {
 	uow *mockUOW
 }
 
-func (r *mockFacilityRepo) Get(id farm.FacilityID) (*field.Field, error) {
+func (r *mockFacilityRepo) Get(id farm.GrowingAreaID) (*field.Field, error) {
 	// Создаем тестовую теплицу
 	dim, _ := valueobject.NewDimension(100, 50)
-	return domain3.NewGreenhouseFacility(id, "Test Greenhouse", dim), nil
+	return greenhouse.NewGreenhouse(id, "Test Greenhouse", dim), nil
 }
 
 func (r *mockFacilityRepo) Save(unit *field.Field) error {

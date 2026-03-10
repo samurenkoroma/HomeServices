@@ -1,21 +1,21 @@
-package bed
+package block
 
 import (
 	"samurenkoroma/services/internal/core/domain/event"
 )
 
-type BedCreated struct {
+type Created struct {
 	event.BaseEvent
 
-	BedID string
+	BlockID string
 }
 
-func (e BedCreated) EventName() string {
-	return "farm.bed.created"
+func (e Created) EventName() string {
+	return "farm.block.created"
 }
 
-func NewBedCreated(id string) BedCreated {
-	return BedCreated{
-		BedID: id,
+func NewBlockCreated(id string) Created {
+	return Created{
+		BlockID: id,
 	}
 }

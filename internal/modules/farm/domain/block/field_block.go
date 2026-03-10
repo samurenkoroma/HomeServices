@@ -1,24 +1,31 @@
 package block
 
 import (
+	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain"
 	domain2 "samurenkoroma/services/internal/modules/farm/domain/bed"
 	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
 )
 
 type FieldBlock struct {
+	aggregate.BaseAggregate
 	id        domain.GrowingAreaID
 	name      string
 	dimension valueobject.Dimension
 	beds      []*domain2.Bed
+	Geometry  spatial.GeoJSON
+	ParentId  domain.GrowingAreaID
 }
 
-func NewFieldBlock(id domain.GrowingAreaID, name string, dim valueobject.Dimension) FieldBlock {
-	return FieldBlock{
+func NewFieldBlock(id domain.GrowingAreaID, name string, dim valueobject.Dimension) *FieldBlock {
+	b := &FieldBlock{
 		id:        id,
 		name:      name,
 		dimension: dim,
 	}
+	b.AddEvent(NewBlockCreated(string(id)))
+	return b
 }
 
 func (b *FieldBlock) Dimension() valueobject.Dimension {

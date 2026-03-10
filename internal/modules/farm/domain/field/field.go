@@ -2,6 +2,7 @@ package field
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain"
 	bedDomain "samurenkoroma/services/internal/modules/farm/domain/bed"
 	blockDomain "samurenkoroma/services/internal/modules/farm/domain/block"
@@ -15,11 +16,20 @@ type Field struct {
 	name      string
 	dimension valueobject.Dimension
 
-	blocks []*blockDomain.FieldBlock
-	beds   []*bedDomain.Bed
+	blocks   []*blockDomain.FieldBlock
+	beds     []*bedDomain.Bed
+	Geometry spatial.GeoJSON
 }
 
-func NewField(id domain.GrowingAreaID, name string, dim valueobject.Dimension) *Field {
+func NewField(
+	id domain.GrowingAreaID,
+	name string,
+	dim valueobject.Dimension,
+	geom spatial.GeoJSON,
+) (*Field, error) {
+	if err := spatial.ValidateGeometry(geom); err != nil {
+		return nil, err
+	}
 	f := &Field{
 		id:        id,
 		name:      name,
@@ -28,7 +38,7 @@ func NewField(id domain.GrowingAreaID, name string, dim valueobject.Dimension) *
 
 	f.AddEvent(NewFieldCreated(string(id)))
 
-	return f
+	return f, nil
 }
 
 func (f *Field) AddBlock(id domain.GrowingAreaID, name string, dim valueobject.Dimension) error {
@@ -38,7 +48,7 @@ func (f *Field) AddBlock(id domain.GrowingAreaID, name string, dim valueobject.D
 
 	block := blockDomain.NewFieldBlock(id, name, dim)
 
-	f.blocks = append(f.blocks, &block)
+	f.blocks = append(f.blocks, block)
 	return nil
 }
 

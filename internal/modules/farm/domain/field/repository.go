@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type FieldOverviewDTO struct {
+type OverviewDTO struct {
 	ID     string
 	Name   string
 	Type   string
@@ -14,7 +14,7 @@ type FieldOverviewDTO struct {
 	Width  float64
 }
 
-type FieldListItemDTO struct {
+type ListItemDTO struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
@@ -26,25 +26,25 @@ type FieldListItemDTO struct {
 	Thumbnail   *string   `json:"thumbnail"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
-type FacilitiesListDTO struct {
-	Items      []FieldListItemDTO `json:"items"`
-	Total      int                `json:"total"`
-	Page       int                `json:"page"`
-	Limit      int                `json:"limit"`
-	TotalPages int                `json:"total_pages"`
+type ListDTO struct {
+	Items      []ListItemDTO `json:"items"`
+	Total      int           `json:"total"`
+	Page       int           `json:"page"`
+	Limit      int           `json:"limit"`
+	TotalPages int           `json:"total_pages"`
 }
 
-type FacilitiesListParams struct {
+type QueryParams struct {
 	Limit int
 	Page  int
 }
 
-type FieldReadRepository interface {
-	GetOverview(ctx context.Context, id string) (*FieldOverviewDTO, error)
-	GetList(ctx context.Context, params FacilitiesListParams) (*FacilitiesListDTO, error)
+type ReadRepository interface {
+	GetOverview(ctx context.Context, id string) (*OverviewDTO, error)
+	GetList(ctx context.Context, params QueryParams) (*ListDTO, error)
 }
 
-type FieldRepository interface {
+type Repository interface {
 	Get(id domain.GrowingAreaID) (*Field, error)
 	Save(unit *Field) error
 }
