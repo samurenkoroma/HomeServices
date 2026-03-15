@@ -2,7 +2,7 @@ package field
 
 import (
 	"context"
-	"samurenkoroma/services/internal/modules/farm/domain"
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
@@ -45,6 +45,8 @@ type ReadRepository interface {
 }
 
 type Repository interface {
-	Get(id domain.GrowingAreaID) (*Field, error)
 	Save(unit *Field) error
+	Update(ctx context.Context, field *Field) error
+	FindByID(ctx context.Context, id types.FieldId) (*Field, error)
+	FindAll(ctx context.Context) ([]*Field, error)
 }

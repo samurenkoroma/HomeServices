@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"samurenkoroma/services/internal/core/domain/event"
-	uow "samurenkoroma/services/internal/core/port/repository"
+	uow "samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/farm/domain/field"
 )
 
@@ -15,12 +15,12 @@ func OnFieldCreated(ctx context.Context, event event.DomainEvent) error {
 		return nil
 	}
 	fmt.Println(UOW)
-	e, ok := event.(field.FieldCreated)
+	e, ok := event.(field.Created)
 	if !ok {
 		return nil
 	}
 
-	log.Println("Field created:", e.FieldID)
+	log.Println("Field created:", e.ID)
 
 	return nil
 }

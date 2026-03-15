@@ -5,10 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/core/port/repository"
-	domain2 "samurenkoroma/services/internal/modules/crop/domain"
-
-	"github.com/google/uuid"
+	"samurenkoroma/services/internal/core/domain/repository"
 )
 
 type CreateCropPlanHandler struct {
@@ -41,36 +38,6 @@ func DecodeCreateCropPlan(data []byte) (any, error) {
 }
 
 func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CreateCropPlanCmd)
-	if !ok {
-		return errors.New("invalid command type")
-	}
-
-	uowObj, err := h.UowFactory.Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to begin unit of work: %w", err)
-	}
-	defer uowObj.Rollback()
-
-	// Создаем план
-	plan, _ := domain2.NewCropPlan(
-		domain2.CropPlanID(uuid.New().String()),
-		domain2.CropTypeID(c.AreaID),
-		c.CropName,
-		3,
-	)
-
-	// Сохраняем
-	repo := uowObj.CropPlans()
-	if err := repo.Save(ctx, plan); err != nil {
-		return fmt.Errorf("failed to save crop plan: %w", err)
-	}
-
-	uowObj.RegisterAggregate(plan)
-
-	if err := uowObj.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
-	}
 
 	return nil
 }

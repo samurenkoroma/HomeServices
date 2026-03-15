@@ -2,6 +2,7 @@ package greenhouse
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain"
 	"samurenkoroma/services/internal/modules/farm/domain/bed"
@@ -9,70 +10,56 @@ import (
 )
 
 type Greenhouse struct {
-	aggregate.BaseAggregate
+	aggregate.Entity[types.GreenhouseId]
 
-	id        domain.GrowingAreaID
-	name      string
-	dimension valueobject.Dimension
+	Name      string
+	Dimension valueobject.Dimension
 
-	beds []*bed.Bed
-
-	Geometry spatial.GeoJSON
+	Beds []*bed.Bed
+	Geom spatial.GeoJSON
 }
 
-func NewGreenhouse(id domain.GrowingAreaID, name string, dim valueobject.Dimension) *Greenhouse {
+func NewGreenhouse(id types.GreenhouseId, name string, dim valueobject.Dimension, geom spatial.GeoJSON) *Greenhouse {
 	f := &Greenhouse{
-		id:        id,
-		name:      name,
-		dimension: dim,
+		Entity:    aggregate.NewEntity(types.GreenhouseId(types.NewUUID())),
+		Name:      name,
+		Dimension: dim,
+		Geom:      geom,
 	}
 
 	f.AddEvent(NewGreenhouseCreated(string(id)))
 	return f
 }
 
-func (f *Greenhouse) AddBed(id domain.GrowingAreaID, name string, dim valueobject.Dimension) error {
+func (f *Greenhouse) AddBed(id types.BedId, name string, dim valueobject.Dimension) error {
 
 	if f.containsBed(id) {
 		return domain.ErrDuplicateArea
 	}
 
-	f.beds = append(f.beds, bed.NewBed(id, name, dim))
+	f.Beds = append(f.Beds, bed.NewBed(id, name, dim))
 	return nil
 }
 
-func (f *Greenhouse) containsBed(id domain.GrowingAreaID) bool {
-	for _, b := range f.beds {
-		if b.ID() == id {
+func (f *Greenhouse) containsBed(id types.BedId) bool {
+	for _, b := range f.Beds {
+		if b.Id == id {
 			return true
 		}
 	}
 	return false
 }
 
-func (f *Greenhouse) ID() domain.GrowingAreaID {
-	return f.id
-}
-func (f *Greenhouse) Name() string {
-	return f.name
-}
-func (f *Greenhouse) Dimension() valueobject.Dimension {
-	return f.dimension
-}
-func (f *Greenhouse) RehydrateAddBed(bed *bed.Bed) {
-	f.beds = append(f.beds, bed)
-}
-
-func RehydrateGreenhouse(
-	id domain.GrowingAreaID,
-	name string,
-	dim valueobject.Dimension,
-	beds []*bed.Bed,
-) *Greenhouse {
-	return &Greenhouse{
-		id:        id,
-		name:      name,
-		dimension: dim,
-		beds:      beds,
-	}
-}
+//func RehydrateGreenhouse(
+//	id types.GreenhouseId,
+//	name string,
+//	dim valueobject.Dimension,
+//	beds []*bed.Bed,
+//) *Greenhouse {
+//	return &Greenhouse{
+//		id:        id,
+//		name:      name,
+//		dimension: dim,
+//		beds:      beds,
+//	}
+//}

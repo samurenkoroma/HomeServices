@@ -1,4 +1,4 @@
-package persistence
+package postgres
 
 import (
 	"context"
@@ -20,12 +20,12 @@ type blockRepository struct {
 	tx *sql.Tx
 }
 
-func (b *blockRepository) Get(id domain.GrowingAreaID) (*block.FieldBlock, error) {
+func (b *blockRepository) Get(id domain.GrowingAreaID) (*field_block.FieldBlock, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (b *blockRepository) Save(unit *block.FieldBlock) error {
+func (b *blockRepository) Save(unit *field_block.FieldBlock) error {
 	query := `
     INSERT INTO land_structure(id,name,geom, properties)
     VALUES (
@@ -50,10 +50,10 @@ func (b *blockRepository) Save(unit *block.FieldBlock) error {
 
 }
 
-func mapBedToRow(unit *block.FieldBlock) persistenceLandRow {
+func mapBedToRow(unit *field_block.FieldBlock) persistenceLandRow {
 
 }
 
-func NewBlockRepository(tx *sql.Tx) block.Repository {
+func NewBlockRepository(tx *sql.Tx) field_block.Repository {
 	return &blockRepository{tx: tx}
 }

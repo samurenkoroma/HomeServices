@@ -2,7 +2,7 @@ package greenhouse
 
 import (
 	"context"
-	"samurenkoroma/services/internal/modules/farm/domain"
+	"samurenkoroma/services/internal/core/domain/types"
 )
 
 type OverviewDTO struct {
@@ -36,6 +36,6 @@ type ReadRepository interface {
 }
 
 type Repository interface {
-	Get(id domain.GrowingAreaID) (*Greenhouse, error)
+	Get(id types.GreenhouseId) (*Greenhouse, error)
 	Save(unit *Greenhouse) error
 }

@@ -1,6 +1,4 @@
-package domain
-
-type GrowingAreaID string
+package types
 
 const (
 	FieldType      string = "FIELD"
@@ -8,3 +6,5 @@ const (
 	BlockType      string = "BLOCK"
 	BedType        string = "BED"
 )
+
+type Area float64

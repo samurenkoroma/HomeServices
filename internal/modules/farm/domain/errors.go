@@ -3,6 +3,7 @@ package domain
 import "errors"
 
 var (
+	ErrBlockNotAvailable     = errors.New("block not available")
 	ErrAreaExceeded          = errors.New("area exceeded")
 	ErrInvalidSpaceType      = errors.New("invalid land space type")
 	ErrSectionNotFound       = errors.New("section not found")

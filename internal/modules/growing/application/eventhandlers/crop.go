@@ -2,7 +2,7 @@ package eventhandlers
 
 import (
 	"context"
-	"samurenkoroma/services/internal/core/port/repository"
+	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain"
 	"samurenkoroma/services/internal/modules/growing/domain/croptemplate"
 )

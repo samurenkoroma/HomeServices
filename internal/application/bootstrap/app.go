@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/application/query"
-	"samurenkoroma/services/internal/core/port/repository"
-	"samurenkoroma/services/internal/infrastructure/eventbus"
+	"samurenkoroma/services/internal/core/domain/repository"
+	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
 	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
@@ -39,7 +39,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 
 	// ---------- Unit Of Work Factory ----------
 
-	bus := eventbus.NewInMemoryEventBus()
+	bus := inmemory.NewInMemoryEventBus()
 	bus.Register("FacilityCreated", handlers.OnFieldCreated)
 	uowFactory := uowSql.NewUnitOfWorkFactory(db, bus)
 
@@ -83,8 +83,8 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	// ---- Command Registration ----
 	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), fieldCommands.DecodeCreateField)
 	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), fieldCommands.DecodeCreateGreenhouse)
-	commandRouter.Register("AddBed", fieldCommands.NewAddBedHandler(uowFactory), fieldCommands.DecodeAddBed)
-	commandRouter.Register("AddBlock", fieldCommands.NewAddBlockHandler(uowFactory), fieldCommands.DecodeAddBlock)
+	commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), fieldCommands.DecodeCreateBed)
+	commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), fieldCommands.DecodeCreateFieldBlock)
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----

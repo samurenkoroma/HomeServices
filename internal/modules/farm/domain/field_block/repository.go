@@ -1,8 +1,9 @@
-package block
+package field_block
 
 import (
 	"context"
-	"samurenkoroma/services/internal/modules/farm/domain"
+	"samurenkoroma/services/internal/core/domain/types"
+	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
 )
 
 type OverviewDTO struct {
@@ -36,6 +37,11 @@ type ReadRepository interface {
 }
 
 type Repository interface {
-	Get(id domain.GrowingAreaID) (*FieldBlock, error)
-	Save(unit *FieldBlock) error
+	Save(ctx context.Context, block *FieldBlock) error
+	Update(ctx context.Context, block *FieldBlock) error
+	FindByID(ctx context.Context, id types.FieldBlockId) (*FieldBlock, error)
+	FindByFieldID(ctx context.Context, fieldID string) ([]*FieldBlock, error)
+	FindAvailable(ctx context.Context) ([]*FieldBlock, error)
+	FindByStatus(ctx context.Context, status valueobject.AreaStatus) ([]*FieldBlock, error)
+	FindByCropCycleID(ctx context.Context, cropCycleID string) (*FieldBlock, error)
 }

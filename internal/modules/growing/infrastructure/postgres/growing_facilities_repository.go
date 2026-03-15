@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	"samurenkoroma/services/internal/modules/farm/domain"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/modules/farm/domain/field"
 )
 
@@ -10,7 +10,7 @@ type GrowingFacilitiesRepoImp struct {
 	tx *sql.Tx
 }
 
-func (g GrowingFacilitiesRepoImp) Get(id domain.GrowingAreaID) (*field.Field, error) {
+func (g GrowingFacilitiesRepoImp) Get(id types.GrowingAreaID) (*field.Field, error) {
 	//TODO implement me
 	panic("implement me")
 }

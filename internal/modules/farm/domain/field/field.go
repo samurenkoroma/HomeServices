@@ -2,124 +2,130 @@ package field
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain"
 	bedDomain "samurenkoroma/services/internal/modules/farm/domain/bed"
-	blockDomain "samurenkoroma/services/internal/modules/farm/domain/block"
+	blockDomain "samurenkoroma/services/internal/modules/farm/domain/field_block"
 	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
+	"time"
 )
 
 type Field struct {
-	aggregate.BaseAggregate
+	aggregate.Entity[types.FieldId]
 
-	id        domain.GrowingAreaID
-	name      string
-	dimension valueobject.Dimension
+	Name      string
+	Dimension valueobject.Dimension
 
-	blocks   []*blockDomain.FieldBlock
-	beds     []*bedDomain.Bed
-	Geometry spatial.GeoJSON
+	Beds   []BedReference
+	Blocks []BlockReference
+
+	Geom      spatial.GeoJSON
+	TotalArea types.Area
+	valueobject.Additions
 }
 
-func NewField(
-	id domain.GrowingAreaID,
-	name string,
-	dim valueobject.Dimension,
-	geom spatial.GeoJSON,
-) (*Field, error) {
-	if err := spatial.ValidateGeometry(geom); err != nil {
-		return nil, err
+type BlockReference struct {
+	ID   types.FieldBlockId
+	Name string
+	Area types.Area
+	Geom spatial.GeoJSON
+}
+
+func newBlockReference(id types.FieldBlockId, name string, json spatial.GeoJSON) BlockReference {
+	return BlockReference{
+		ID:   id,
+		Name: name,
+		Geom: json,
 	}
+}
+
+type BedReference struct {
+	ID        types.BedId
+	Name      string
+	Area      types.Area
+	Dimension valueobject.Dimension
+}
+
+func newBedReference(id types.BedId, name string, dim valueobject.Dimension) BedReference {
+	return BedReference{
+		ID:        id,
+		Name:      name,
+		Dimension: dim,
+	}
+}
+func NewField(name string, geom spatial.GeoJSON) *Field {
 	f := &Field{
-		id:        id,
-		name:      name,
-		dimension: dim,
+		Entity:    aggregate.NewEntity(types.FieldId(types.NewUUID())),
+		Name:      name,
+		Geom:      geom,
+		Additions: valueobject.DefaultAdditions(),
+		Blocks:    []BlockReference{},
+		Beds:      []BedReference{},
 	}
 
-	f.AddEvent(NewFieldCreated(string(id)))
+	f.AddEvent(NewFieldCreated(string(f.Id)))
 
-	return f, nil
+	return f
 }
 
-func (f *Field) AddBlock(id domain.GrowingAreaID, name string, dim valueobject.Dimension) error {
-	if f.containsBlock(id) {
-		return domain.ErrDuplicateArea
+func (f *Field) AddBlock(blockID types.FieldBlockId, blockNumber int, area types.Area) error {
+	// Бизнес-правило: сумма площадей блоков не может превышать площадь поля
+	totalBlocksArea := types.Area(0)
+	for _, b := range f.Blocks {
+		totalBlocksArea += b.Area
 	}
 
-	block := blockDomain.NewFieldBlock(id, name, dim)
+	if totalBlocksArea+area > f.TotalArea {
+		return domain.ErrAreaExceeded
+	}
 
-	f.blocks = append(f.blocks, block)
+	f.Blocks = append(f.Blocks, BlockReference{
+		ID:   blockID,
+		Area: area,
+	})
+
+	f.UpdatedAt = time.Now()
+	f.AddEvent(BlockAddedToField{
+		FieldID:     f.Id,
+		BlockID:     blockID,
+		BlockNumber: blockNumber,
+		Area:        area,
+	})
+
 	return nil
 }
 
-func (f *Field) AddBed(id domain.GrowingAreaID, name string, dim valueobject.Dimension) error {
-	if f.containsBed(id) {
-		return domain.ErrDuplicateArea
-	}
+func (f *Field) AddBed(id types.BedId, name string, dim valueobject.Dimension) error {
+	//if f.containsBed(id) {
+	//	return domain.ErrDuplicateArea
+	//}
 
-	f.beds = append(f.beds, bedDomain.NewBed(id, name, dim))
+	f.Beds = append(f.Beds, BedReference{ID: id, Name: name, Dimension: dim})
 	return nil
-}
-
-func (f *Field) containsBlock(id domain.GrowingAreaID) bool {
-	for _, b := range f.blocks {
-		if b.ID() == id {
-			return true
-		}
-	}
-	return false
-}
-
-func (f *Field) findBlock(id domain.GrowingAreaID) *blockDomain.FieldBlock {
-	for _, b := range f.blocks {
-		if b.ID() == id {
-			return b
-		}
-	}
-	return nil
-}
-
-func (f *Field) containsBed(id domain.GrowingAreaID) bool {
-	for _, b := range f.beds {
-		if b.ID() == id {
-			return true
-		}
-	}
-	return false
-}
-
-func (f *Field) ID() domain.GrowingAreaID {
-	return f.id
-}
-
-func (f *Field) Name() string {
-	return f.name
-}
-
-func (f *Field) Dimension() valueobject.Dimension {
-	return f.dimension
 }
 
 func (f *Field) RehydrateAddBlock(b *blockDomain.FieldBlock) {
-	f.blocks = append(f.blocks, b)
+	f.Blocks = append(f.Blocks, newBlockReference(b.Id, b.Name, b.Geometry))
 }
 
 func (f *Field) RehydrateAddBed(bed *bedDomain.Bed) {
-	f.beds = append(f.beds, bed)
+	f.Beds = append(f.Beds, newBedReference(bed.Id, bed.Name, bed.Dimension))
 }
 
-func RehydrateGrowingFacility(
-	id domain.GrowingAreaID,
-	name string,
-	dim valueobject.Dimension,
-	sections []*blockDomain.FieldBlock,
-	beds []*bedDomain.Bed,
-) *Field {
-	return &Field{
-		id:        id,
-		name:      name,
-		dimension: dim,
-		blocks:    sections,
-		beds:      beds,
-	}
-}
+//func RehydrateGrowingFacility(
+//	id types.GrowingAreaID,
+//	name string,
+//	dim valueobject.Dimension,
+//	blocks []*blockDomain.FieldBlock,
+//	beds []*bedDomain.Bed,
+//) *Field {
+//	blockRef =
+//	return &Field{
+//		id:        id,
+//		name:      name,
+//		dimension: dim,
+//		blocks:    blocks,
+//		beds:      beds,
+//	}
+//}

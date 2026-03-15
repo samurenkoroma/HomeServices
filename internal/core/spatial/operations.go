@@ -11,7 +11,7 @@ func MakePoint(lon, lat float64) Coordinate {
 func MakePolygon(coords [][]Coordinate) GeoJSON {
 
 	return GeoJSON{
-		Coordinates: coords,
-		Type:        Polygon,
+		//Coordinates: coords,
+		Type: Polygon,
 	}
 }
