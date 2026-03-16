@@ -14,9 +14,7 @@ import (
 type Field struct {
 	aggregate.Entity[types.FieldId]
 
-	Name      string
-	Dimension valueobject.Dimension
-
+	Name   string
 	Beds   []BedReference
 	Blocks []BlockReference
 

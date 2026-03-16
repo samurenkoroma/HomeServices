@@ -1,6 +1,7 @@
 package valueobject
 
 import (
+	"encoding/json"
 	"errors"
 )
 
@@ -20,7 +21,17 @@ func NewDimension(length, width float64) (Dimension, error) {
 func (d Dimension) Length() float64 {
 	return d.length
 }
-
+func (d Dimension) Marshall() ([]byte, error) {
+	return json.Marshal(struct {
+		Length float64 `json:"length"`
+		Width  float64 `json:"width"`
+		Area   float64 `json:"area"`
+	}{
+		Length: d.length,
+		Width:  d.width,
+		Area:   d.Area(),
+	})
+}
 func (d Dimension) Width() float64 {
 	return d.width
 }

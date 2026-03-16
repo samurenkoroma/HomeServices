@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	uow "samurenkoroma/services/internal/core/domain/repository"
@@ -19,17 +18,6 @@ type CreateBedCmd struct {
 
 type createBedHandler struct {
 	uowFactory uow.Factory
-}
-
-func DecodeCreateBed(data []byte) (any, error) {
-
-	var cmd CreateBedCmd
-
-	if err := json.Unmarshal(data, &cmd); err != nil {
-		return nil, err
-	}
-
-	return cmd, nil
 }
 
 func NewCreateBedHandler(uowFactory uow.Factory) command.Handler {

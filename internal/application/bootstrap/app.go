@@ -8,11 +8,11 @@ import (
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/domain/repository"
 	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
-	uowSql "samurenkoroma/services/internal/infrastructure/persistence/sql"
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
 	fieldCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	"samurenkoroma/services/internal/modules/farm/application/handlers"
+	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 
 	_ "github.com/lib/pq"
 )
@@ -40,8 +40,10 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 	// ---------- Unit Of Work Factory ----------
 
 	bus := inmemory.NewInMemoryEventBus()
-	bus.Register("FacilityCreated", handlers.OnFieldCreated)
-	uowFactory := uowSql.NewUnitOfWorkFactory(db, bus)
+	bus.Register("farm.field.created", handlers.OnFieldCreated)
+	bus.Register("farm.greenhouse.created", handlers.OnGreenhouseCreated)
+
+	uowFactory := postgres.NewFarmUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------
 
@@ -81,10 +83,10 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), fieldCommands.DecodeCreateField)
-	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), fieldCommands.DecodeCreateGreenhouse)
-	commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), fieldCommands.DecodeCreateBed)
-	commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), fieldCommands.DecodeCreateFieldBlock)
+	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldCmd])
+	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
+	commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateBedCmd])
+	commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----

@@ -33,13 +33,14 @@ type Entity[T any] struct {
 }
 
 func NewEntity[T any](id T) Entity[T] {
+	now := time.Now()
 	return Entity[T]{
 		BaseAggregate: BaseAggregate{
 			events: make([]event.DomainEvent, 0),
 		},
 		Id:        id,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 		DeletedAt: nil,
 	}
 }

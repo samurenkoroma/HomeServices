@@ -12,14 +12,14 @@ import (
 type Greenhouse struct {
 	aggregate.Entity[types.GreenhouseId]
 
-	Name      string
-	Dimension valueobject.Dimension
-
-	Beds []*bed.Bed
-	Geom spatial.GeoJSON
+	Name       string
+	Dimension  valueobject.Dimension
+	Properties map[string]interface{}
+	Beds       []*bed.Bed
+	Geom       spatial.GeoJSON
 }
 
-func NewGreenhouse(id types.GreenhouseId, name string, dim valueobject.Dimension, geom spatial.GeoJSON) *Greenhouse {
+func NewGreenhouse(name string, dim valueobject.Dimension, geom spatial.GeoJSON) *Greenhouse {
 	f := &Greenhouse{
 		Entity:    aggregate.NewEntity(types.GreenhouseId(types.NewUUID())),
 		Name:      name,
@@ -27,7 +27,7 @@ func NewGreenhouse(id types.GreenhouseId, name string, dim valueobject.Dimension
 		Geom:      geom,
 	}
 
-	f.AddEvent(NewGreenhouseCreated(string(id)))
+	f.AddEvent(NewGreenhouseCreated(string(f.Id)))
 	return f
 }
 

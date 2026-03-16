@@ -2,38 +2,60 @@ package commands
 
 import (
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
+	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/core/spatial"
+	"samurenkoroma/services/internal/modules/farm/domain/field"
+	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 )
 
-type CreateFieldHandler struct {
-	UowFactory repository.Factory
-}
-
-func NewCreateFieldHandler(uowFactory repository.Factory) *CreateFieldHandler {
-	return &CreateFieldHandler{UowFactory: uowFactory}
-}
-
 type CreateFieldCmd struct {
-	ID     string  `json:"id"`
-	Name   string  `json:"name"`
-	Length float64 `json:"length"`
-	Width  float64 `json:"width"`
+	Name string          `json:"name"`
+	Geom spatial.GeoJSON `json:"geom"`
+}
+type createFieldHandler struct {
+	uowFactory repository.Factory
 }
 
-func DecodeCreateField(data []byte) (any, error) {
+func NewCreateFieldHandler(uowFactory repository.Factory) command.Handler {
+	return &createFieldHandler{uowFactory: uowFactory}
+}
 
-	var cmd CreateFieldCmd
-
-	if err := json.Unmarshal(data, &cmd); err != nil {
-		return nil, err
+func (h *createFieldHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(CreateFieldCmd)
+	if !ok {
+		return errors.New("invalid command type")
 	}
 
-	return cmd, nil
-}
+	uow, err := h.uowFactory.Begin(ctx)
+	if err != nil {
+		return err
+	}
 
-func (h *CreateFieldHandler) Handle(ctx context.Context, cmd any) error {
-	fmt.Print("create field")
+	err = uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+		// Приводим провайдер к нужному типу
+		farmProvider, ok := provider.(*postgres.FarmProvider)
+		if !ok {
+			return fmt.Errorf("expected FarmProvider, got %T", provider)
+		}
+
+		// 1. Создаем поле
+		newField := field.NewField(c.Name, c.Geom)
+
+		// 2. Сохраняем поле
+		if err := farmProvider.Fields().Save(ctx, newField); err != nil {
+			return fmt.Errorf("failed to save field: %w", err)
+		}
+
+		uow.RegisterAggregate(newField)
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

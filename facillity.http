@@ -3,17 +3,63 @@ POST http://localhost:8080/commands/
 Content-Type: application/json
 
 {
-  "command": "CreateFacility",
+  "command": "CreateField",
   "data": {
-    "id": "181643d1-7080-4d24-b3ab-84767d7a1213",
-    "name": "Теплица 1",
-    "type": "FIELD",
-    "length": 100,
-    "width": 50
+    "name": "Поле 3",
+    "geom" : {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            30.01688506454229,
+            45.9046543105274
+          ],
+          [
+            30.02165973186493,
+            45.90500076497716
+          ],
+          [
+            30.021628215909004,
+            45.905195105146134
+          ],
+          [
+            30.01937616616488,
+            45.905034827048745
+          ],
+          [
+            30.016832761466503,
+            45.90482508834458
+          ],
+          [
+            30.01688506454229,
+            45.9046543105274
+          ]
+        ]
+      ]
+    }
   }
 }
 
 ###
+
+### commands
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreateGreenhouse",
+  "data": {
+    "name": "Теплица 4",
+    "length": 12,
+    "width": 4,
+    "geom" : {
+      "type": "Point",
+      "coordinates": [30.0162001, 45.9007626]
+    }
+  }
+}
+###
+
 
 
 POST http://localhost:8080/commands/
