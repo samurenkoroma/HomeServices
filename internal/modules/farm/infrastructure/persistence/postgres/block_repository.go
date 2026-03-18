@@ -3,6 +3,8 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/modules/farm/domain/field_block"
 )
@@ -15,47 +17,41 @@ func NewFieldBlockRepository(tx *sql.Tx) field_block.Repository {
 	return &fieldBlockRepository{tx: tx}
 }
 
-func (r *fieldBlockRepository) Save(ctx context.Context, b *field_block.FieldBlock) error {
-	//query := `
-	//    INSERT INTO farm_blocks (
-	//        id, field_id, number, area, irrigation_type, current_crop, status, created_at, updated_at
-	//    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-	//    ON CONFLICT (id) DO UPDATE SET
-	//        field_id = EXCLUDED.field_id,
-	//        number = EXCLUDED.number,
-	//        area = EXCLUDED.area,
-	//        irrigation_type = EXCLUDED.irrigation_type,
-	//        current_crop = EXCLUDED.current_crop,
-	//        status = EXCLUDED.status,
-	//        updated_at = EXCLUDED.updated_at
-	//`
-	//
-	//// Сериализуем current_crop в JSON, если есть
-	//var currentCropJSON []byte
-	//var err error
-	//if b.CurrentCrop != nil {
-	//	currentCropJSON, err = json.Marshal(b.CurrentCrop)
-	//	if err != nil {
-	//		return fmt.Errorf("failed to marshal current crop: %w", err)
-	//	}
-	//}
-	//
-	//_, err = r.tx.ExecContext(ctx, query,
-	//	b.ID.String(),
-	//	b.FieldID,
-	//	b.Number,
-	//	b.Area.Float64(),
-	//	string(b.IrrigationType),
-	//	currentCropJSON,
-	//	string(b.Status),
-	//	b.CreatedAt,
-	//	b.UpdatedAt,
-	//)
-	//
-	//if err != nil {
-	//	return fmt.Errorf("failed to save block: %w", err)
-	//}
-	//
+func (r *fieldBlockRepository) Save(ctx context.Context, fb *field_block.FieldBlock) error {
+	query := `
+	  INSERT INTO land_structure (
+	      id, root_id, parent_id, unit_type, name, geom,  status, created_at, updated_at
+	  ) VALUES ($1, $2, $3, $4,$5, ST_SetSRID(ST_GeomFromGeoJSON($6),4326), $7, $8, $9)
+	  ON CONFLICT (id) DO UPDATE SET
+	      name = EXCLUDED.name,
+	      root_id = EXCLUDED.root_id,
+	      parent_id = EXCLUDED.parent_id,
+	      unit_type = EXCLUDED.unit_type,
+	      geom = EXCLUDED.geom,
+	      status = EXCLUDED.status,
+	      updated_at = EXCLUDED.updated_at
+	`
+
+	geomData, err := json.Marshal(fb.Geom)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.ExecContext(ctx, query,
+		fb.Id.String(),
+		fb.ParentId.String(),
+		fb.ParentId.String(),
+		types.BlockType,
+		fb.Name,
+		geomData,
+		fb.Additions.Status,
+		fb.CreatedAt,
+		fb.UpdatedAt,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to save field: %w", err)
+	}
+
 	return nil
 }
 

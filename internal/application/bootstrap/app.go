@@ -85,8 +85,8 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	// ---- Command Registration ----
 	commandRouter.Register("CreateField", fieldCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldCmd])
 	commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
-	commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateBedCmd])
 	commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])
+	commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateBedCmd])
 	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----

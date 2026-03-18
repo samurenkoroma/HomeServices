@@ -16,19 +16,18 @@ type FieldBlock struct {
 	Dimension valueobject.Dimension
 
 	Beds     []*domain2.Bed
-	Geometry spatial.GeoJSON
+	Geom     spatial.GeoJSON
 	ParentId types.FieldId
 	valueobject.Additions
 }
 
-func NewFieldBlock(fieldId types.FieldId, name string, dim valueobject.Dimension, geom spatial.GeoJSON) *FieldBlock {
+func NewFieldBlock(fieldId types.FieldId, name string, geom spatial.GeoJSON) *FieldBlock {
 	b := &FieldBlock{
 		Entity:    aggregate.NewEntity(types.FieldBlockId(types.NewUUID())),
 		Name:      name,
-		Dimension: dim,
-		Geometry:  geom,
+		Geom:      geom,
 		ParentId:  fieldId,
-		Additions: valueobject.Additions{},
+		Additions: valueobject.DefaultAdditions(),
 	}
 	b.AddEvent(Created{})
 	return b

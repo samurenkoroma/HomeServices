@@ -60,7 +60,49 @@ Content-Type: application/json
 }
 ###
 
+POST http://localhost:8080/commands/
+Content-Type: application/json
 
+{
+  "command": "CreateFieldBlock",
+  "data": {
+    "parent_id": "5f53eef2-faf3-4b01-b5e7-c1da6152de5c",
+    "name": "Участок 3",
+    "geom" : {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            30.01688506454229,
+            45.9046543105274
+          ],
+          [
+            30.02165973186493,
+            45.90500076497716
+          ],
+          [
+            30.021628215909004,
+            45.905195105146134
+          ],
+          [
+            30.01937616616488,
+            45.905034827048745
+          ],
+          [
+            30.016832761466503,
+            45.90482508834458
+          ],
+          [
+            30.01688506454229,
+            45.9046543105274
+          ]
+        ]
+      ]
+    }
+  }
+}
+
+###
 
 POST http://localhost:8080/commands/
 Content-Type: application/json

@@ -104,7 +104,7 @@ func (f *Field) AddBed(id types.BedId, name string, dim valueobject.Dimension) e
 }
 
 func (f *Field) RehydrateAddBlock(b *blockDomain.FieldBlock) {
-	f.Blocks = append(f.Blocks, newBlockReference(b.Id, b.Name, b.Geometry))
+	f.Blocks = append(f.Blocks, newBlockReference(b.Id, b.Name, b.Geom))
 }
 
 func (f *Field) RehydrateAddBed(bed *bedDomain.Bed) {
