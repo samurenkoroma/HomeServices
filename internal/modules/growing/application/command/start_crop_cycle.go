@@ -2,54 +2,67 @@ package command
 
 import (
 	"context"
-	"samurenkoroma/services/internal/modules/growing/domain"
+	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/growing/domain/cropcycle"
-	"samurenkoroma/services/internal/modules/growing/domain/croptemplate"
+	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 )
 
-type StartCropCycle struct {
-	CycleID    string
-	PlanID     string
-	FacilityID string
-	BedID      string
+type StartCropCycleCommand struct {
+	AreaID     string `json:"area_id" validate:"required"`
+	SeasonID   string `json:"season_id" validate:"required"`
+	CropPlanID string `json:"crop_plan_id" validate:"required"`
 }
+
 type StartCropCycleHandler struct {
-	cycleRepo    domain.CropCycleRepository
-	templateRepo domain.CropTemplateRepository
+	uowFactory repository.Factory
 }
 
-func NewStartCropCycleHandler(
-	cycleRepo domain.CropCycleRepository,
-	templateRepo domain.CropTemplateRepository,
-) *StartCropCycleHandler {
-	return &StartCropCycleHandler{
-		cycleRepo:    cycleRepo,
-		templateRepo: templateRepo,
-	}
+func NewStartCropCycleHandler(uowFactory repository.Factory) *StartCropCycleHandler {
+	return &StartCropCycleHandler{uowFactory: uowFactory}
 }
 
-func (h *StartCropCycleHandler) Handle(ctx context.Context, cmd StartCropCycle) error {
-
-	template, err := h.templateRepo.ByPlanID(ctx, cmd.PlanID)
+func (h *StartCropCycleHandler) Handle(ctx context.Context, cmd StartCropCycleCommand) error {
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	if template == nil || !template.Active() {
-		return croptemplate.ErrTemplateNotActive
-	}
+	return uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+		growingProvider := provider.(*postgres.GrowingProvider)
 
-	cycle := cropcycle.New(
-		cmd.CycleID,
-		cmd.PlanID,
-		template.Version(),
-		cmd.FacilityID,
-		cmd.BedID,
-	)
+		// Проверяем, что место настроено на этот сезон
+		area, err := growingProvider.CultivationAreas().GetByID(ctx, cmd.AreaID)
+		if err != nil {
+			return err
+		}
 
-	if err := cycle.Start(); err != nil {
-		return err
-	}
+		if !area.IsConfiguredForSeason(cmd.SeasonID) {
+			return cultivationarea.ErrAreaNotConfiguredForSeason
+		}
 
-	return h.cycleRepo.Save(ctx, cycle)
+		// Проверяем, что план культуры соответствует конфигурации
+		configuredPlan, err := area.GetCropPlanForSeason(cmd.SeasonID)
+		if err == nil && configuredPlan != cmd.CropPlanID {
+			return cultivationarea.ErrCropPlanMismatch
+		}
+
+		// Создаем цикл
+		cycle := cropcycle.NewCropCycle(
+			cmd.AreaID,
+			cmd.SeasonID,
+			cmd.CropPlanID,
+		)
+
+		if err := cycle.Start(); err != nil {
+			return err
+		}
+
+		// Сохраняем
+		if err := growingProvider.CropCycles().Save(ctx, cycle); err != nil {
+			return err
+		}
+
+		uow.RegisterAggregate(cycle)
+		return nil
+	})
 }

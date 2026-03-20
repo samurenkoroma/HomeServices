@@ -1,110 +1,139 @@
 package cropcycle
 
-import "time"
+import (
+	"samurenkoroma/services/internal/core/domain/aggregate"
+	"time"
+)
 
+type CycleStatus string
+
+const (
+	CycleStatusDraft     CycleStatus = "draft"
+	CycleStatusActive    CycleStatus = "active"
+	CycleStatusGrowing   CycleStatus = "growing"
+	CycleStatusHarvested CycleStatus = "harvested"
+	CycleStatusCompleted CycleStatus = "completed"
+	CycleStatusFailed    CycleStatus = "failed"
+	CycleStatusCancelled CycleStatus = "cancelled"
+)
+
+// CropCycle - цикл выращивания культуры
 type CropCycle struct {
-	id          string
-	planID      string
-	planVersion int
+	aggregate.BaseAggregate
 
-	facilityID string
-	bedID      string
+	ID              string
+	AreaID          string // ID из cultivationarea
+	SeasonID        string
+	CropPlanID      string
+	CropPlanVersion int
 
-	status     Status
-	startedAt  *time.Time
-	finishedAt *time.Time
+	Status     CycleStatus
+	StartedAt  *time.Time
+	FinishedAt *time.Time
+
+	// Операции
+	Operations []Operation
+
+	// Результаты
+	Yield *Yield
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-func (c *CropCycle) Id() string {
-	return c.id
+// Yield - урожай
+type Yield struct {
+	ActualWeight    float64
+	EstimatedWeight float64
+	HarvestedAt     time.Time
+	Quality         string
+	Notes           string
 }
 
-func (c *CropCycle) PlanVersion() int {
-	return c.planVersion
-}
-
-func (c *CropCycle) FacilityID() string {
-	return c.facilityID
-}
-
-func (c *CropCycle) BedID() string {
-	return c.bedID
-}
-
-func (c *CropCycle) StartedAt() *time.Time {
-	return c.startedAt
-}
-
-func (c *CropCycle) FinishedAt() *time.Time {
-	return c.finishedAt
-}
-
-func New(
-	id string,
-	planID string,
-	version int,
-	facilityID string,
-	bedID string,
-) *CropCycle {
-
+func NewCropCycle(areaID, seasonID, cropPlanID string) *CropCycle {
 	return &CropCycle{
-		id:          id,
-		planID:      planID,
-		planVersion: version,
-		facilityID:  facilityID,
-		bedID:       bedID,
-		status:      Draft,
+		ID:         generateID(),
+		AreaID:     areaID,
+		SeasonID:   seasonID,
+		CropPlanID: cropPlanID,
+		Status:     CycleStatusDraft,
+		Operations: []Operation{},
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 }
 
 func (c *CropCycle) Start() error {
-	if c.status != Draft {
+	if c.Status != CycleStatusDraft {
 		return ErrInvalidState
 	}
 
 	now := time.Now()
+	c.Status = CycleStatusActive
+	c.StartedAt = &now
+	c.UpdatedAt = now
 
-	c.status = Active
-	c.startedAt = &now
+	c.AddEvent(CropCycleStarted{
+		CycleID:   c.ID,
+		AreaID:    c.AreaID,
+		SeasonID:  c.SeasonID,
+		StartedAt: now,
+	})
 
 	return nil
 }
 
-func (c *CropCycle) ID() string {
-	return c.id
-}
-
-func (c *CropCycle) PlanID() string {
-	return c.planID
-}
-
-func (c *CropCycle) Status() Status {
-	return c.status
-}
-
-func (c *CropCycle) Version() int {
-	return 0
-}
-
-func (c *CropCycle) SetStatus(status Status) {
-	c.status = status
-}
-
-func Rehydrate(
-	id string,
-	planID string,
-	facilityID string,
-	bedID string,
-	status Status,
-	version int,
-) *CropCycle {
-
-	return &CropCycle{
-		id:          id,
-		planID:      planID,
-		planVersion: version,
-		facilityID:  facilityID,
-		bedID:       bedID,
-		status:      status,
+func (c *CropCycle) RecordOperation(op Operation) error {
+	if c.Status != CycleStatusActive && c.Status != CycleStatusGrowing {
+		return ErrInvalidState
 	}
+
+	op.CreatedAt = time.Now()
+	c.Operations = append(c.Operations, op)
+	c.UpdatedAt = time.Now()
+
+	c.AddEvent(OperationRecorded{
+		CycleID:   c.ID,
+		Operation: op,
+	})
+
+	return nil
+}
+
+func (c *CropCycle) RecordYield(weight float64, quality string) error {
+	if c.Status != CycleStatusGrowing && c.Status != CycleStatusActive {
+		return ErrInvalidState
+	}
+
+	now := time.Now()
+	c.Yield = &Yield{
+		ActualWeight: weight,
+		HarvestedAt:  now,
+		Quality:      quality,
+	}
+	c.Status = CycleStatusHarvested
+	c.FinishedAt = &now
+	c.UpdatedAt = now
+
+	c.AddEvent(CropCycleHarvested{
+		CycleID: c.ID,
+		Yield:   *c.Yield,
+	})
+
+	return nil
+}
+
+func (c *CropCycle) Complete() error {
+	if c.Status != CycleStatusHarvested {
+		return ErrInvalidState
+	}
+
+	c.Status = CycleStatusCompleted
+	c.UpdatedAt = time.Now()
+
+	c.AddEvent(CropCycleCompleted{
+		CycleID: c.ID,
+	})
+
+	return nil
 }
