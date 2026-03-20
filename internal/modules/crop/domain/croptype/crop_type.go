@@ -1,6 +1,7 @@
 package croptype
 
 import (
+	"samurenkoroma/services/internal/core/domain/aggregate"
 	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
@@ -9,6 +10,7 @@ type CropTypeID string
 
 // CropType - тип сельскохозяйственной культуры
 type CropType struct {
+	aggregate.Entity[CropTypeID]
 	id             CropTypeID
 	name           string
 	scientificName string

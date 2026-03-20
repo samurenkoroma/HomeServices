@@ -39,7 +39,7 @@ func (h *CreateCropTypeHandler) Handle(ctx context.Context, cmd CreateCropTypeCo
 			return err
 		}
 
-		cropType.Description = cmd.Description
+		cropType.SetDescription(cmd.Description)
 
 		// Сохраняем
 		if err := cropProvider.CropTypes().Save(ctx, cropType); err != nil {

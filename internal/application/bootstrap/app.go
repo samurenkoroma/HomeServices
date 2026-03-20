@@ -9,6 +9,7 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
 	"samurenkoroma/services/internal/interfaces/httpapi"
+	cropCommands "samurenkoroma/services/internal/modules/crop/application/commands"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	"samurenkoroma/services/internal/modules/farm/application/handlers"
 	"samurenkoroma/services/internal/modules/farm/application/queries"
@@ -84,6 +85,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 
 	// ---- Command Registration ----
 	commandRouter.Register(farmCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
+	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropPlanCommand])
 
 	//commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
 	//commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])

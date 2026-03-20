@@ -4,7 +4,6 @@ import (
 	"context"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
-	"samurenkoroma/services/internal/modules/crop/infrastructure/integration"
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
 )
 
@@ -13,17 +12,17 @@ type PublishPlanCommand struct {
 }
 
 type PublishPlanHandler struct {
-	uowFactory    repository.Factory
-	growingClient *integration.GrowingClient
+	uowFactory repository.Factory
+	//growingClient *integration.GrowingClient
 }
 
 func NewPublishPlanHandler(
 	uowFactory repository.Factory,
-	growingClient *integration.GrowingClient,
+	// growingClient *integration.GrowingClient,
 ) *PublishPlanHandler {
 	return &PublishPlanHandler{
-		uowFactory:    uowFactory,
-		growingClient: growingClient,
+		uowFactory: uowFactory,
+		//growingClient: growingClient,
 	}
 }
 

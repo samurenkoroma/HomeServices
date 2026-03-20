@@ -2,8 +2,6 @@ package valueobject
 
 import (
 	"encoding/json"
-	"fmt"
-	"time"
 )
 
 // YieldPotential — потенциал урожайности

@@ -2,6 +2,8 @@ package commands
 
 import (
 	"context"
+	"errors"
+	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
@@ -15,15 +17,24 @@ type CreateCropPlanCommand struct {
 	CreatedBy   string `json:"created_by" validate:"required"`
 }
 
-type CreateCropPlanHandler struct {
+type createCropPlanHandler struct {
 	uowFactory repository.Factory
 }
 
-func NewCreateCropPlanHandler(uowFactory repository.Factory) *CreateCropPlanHandler {
-	return &CreateCropPlanHandler{uowFactory: uowFactory}
+func (h *createCropPlanHandler) Name() string {
+	return "CreateCropPlan"
 }
 
-func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd CreateCropPlanCommand) error {
+func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
+	return &createCropPlanHandler{uowFactory: uowFactory}
+}
+
+func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(CreateCropPlanCommand)
+	if !ok {
+		return errors.New("invalid command type")
+	}
+
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
@@ -34,16 +45,16 @@ func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd CreateCropPlanCo
 
 		// Создаем план
 		plan, err := cropplan.NewCropPlan(
-			cmd.CropTypeID,
-			cmd.Name,
-			cmd.Duration,
-			cmd.CreatedBy,
+			c.CropTypeID,
+			c.Name,
+			c.Duration,
+			c.CreatedBy,
 		)
 		if err != nil {
 			return err
 		}
 
-		plan.Description = cmd.Description
+		plan.Description = c.Description
 
 		// Сохраняем
 		if err := cropProvider.CropPlans().Save(ctx, plan); err != nil {
