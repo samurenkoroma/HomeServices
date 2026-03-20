@@ -1,6 +1,7 @@
 package cropplan
 
 import (
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
@@ -49,7 +50,7 @@ func NewVariety(
 	}
 
 	return &Variety{
-		ID:             VarietyID(generateID()),
+		ID:             VarietyID(types.NewUUID()),
 		CropTypeID:     cropTypeID,
 		Name:           name,
 		VegetationDays: vegetationDays,

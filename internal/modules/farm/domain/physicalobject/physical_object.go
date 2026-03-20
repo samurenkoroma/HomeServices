@@ -10,6 +10,11 @@ import (
 )
 
 type ObjectType string
+type PhysicalObjectID string
+
+func (i PhysicalObjectID) String() any {
+	return string(i)
+}
 
 // GreenhouseType определяет тип теплицы
 type GreenhouseType string
@@ -28,7 +33,7 @@ const (
 
 // PhysicalObject - единый агрегат для всех физических объектов
 type PhysicalObject struct {
-	aggregate.Entity[types.PhysicalObjectID]
+	aggregate.Entity[PhysicalObjectID]
 
 	Type        ObjectType
 	Name        string
@@ -79,7 +84,7 @@ func NewField(
 ) *PhysicalObject {
 
 	obj := &PhysicalObject{
-		Entity:   aggregate.NewEntity(types.PhysicalObjectID(types.NewUUID())),
+		Entity:   aggregate.NewEntity(PhysicalObjectID(types.NewUUID())),
 		Type:     ObjectTypeField,
 		Name:     name,
 		Geometry: geom,
@@ -103,7 +108,7 @@ func NewGreenhouse(
 ) *PhysicalObject {
 
 	obj := &PhysicalObject{
-		Entity:   aggregate.NewEntity(types.PhysicalObjectID(types.NewUUID())),
+		Entity:   aggregate.NewEntity(PhysicalObjectID(types.NewUUID())),
 		Type:     ObjectTypeGreenhouse,
 		Name:     name,
 		Geometry: geom,
@@ -163,8 +168,8 @@ func RehydrateField(
 ) *PhysicalObject {
 
 	return &PhysicalObject{
-		Entity: aggregate.Entity[types.PhysicalObjectID]{
-			Id: types.PhysicalObjectID(id),
+		Entity: aggregate.Entity[PhysicalObjectID]{
+			Id: PhysicalObjectID(id),
 		},
 		Type:   ObjectTypeField,
 		Name:   name,

@@ -1,9 +1,11 @@
-package command
+package commands
 
 import (
 	"context"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
+	"samurenkoroma/services/internal/modules/crop/domain/valueobject"
+	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
 )
 
 type AddStageCommand struct {
@@ -40,7 +42,7 @@ func (h *AddStageHandler) Handle(ctx context.Context, cmd AddStageCommand) error
 		stage, err := cropplan.NewGrowthStage(
 			cmd.Order,
 			cmd.Name,
-			cmd.Duration,
+			valueobject.Duration(cmd.Duration),
 			cmd.MinTemp,
 			cmd.MaxTemp,
 			cmd.OptimalTemp,

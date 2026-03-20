@@ -1,9 +1,10 @@
-package command
+package commands
 
 import (
 	"context"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
+	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
 )
 
 type CreateCropPlanCommand struct {

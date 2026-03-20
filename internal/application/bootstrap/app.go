@@ -9,8 +9,7 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
 	"samurenkoroma/services/internal/interfaces/httpapi"
-	cropCommand "samurenkoroma/services/internal/modules/crop/application/commands"
-	fieldCommands "samurenkoroma/services/internal/modules/farm/application/commands"
+	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	"samurenkoroma/services/internal/modules/farm/application/handlers"
 	"samurenkoroma/services/internal/modules/farm/application/queries"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
@@ -84,11 +83,12 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register("CreatePhysicalObject", fieldCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[fieldCommands.CreatePhysicalObjectCommand])
+	commandRouter.Register(farmCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
+
 	//commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
 	//commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])
 	//commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateBedCmd])
-	commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
+	//commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
 
 	// ---- Query Handlers ----
 	//facilityReadRepo := postgres.NewGrowingFacilitiesRepository(uowFactory.Begin())

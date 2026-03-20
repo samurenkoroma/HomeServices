@@ -2,6 +2,8 @@ package cropplan
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
+	"samurenkoroma/services/internal/modules/crop/domain/valueobject"
 	"time"
 )
 
@@ -26,19 +28,19 @@ type CropPlan struct {
 	Description string
 
 	// Агротехнические параметры
-	Duration int // Общая длительность в днях
-	Version  int // Версия плана
-	Status   PlanStatus
+	Environment valueobject.EnvironmentalRequirements
+	Nutrients   valueobject.NutrientRequirements
+	Duration    valueobject.Duration
+	Yield       *valueobject.YieldPotential
+	// Общая длительность в днях
+	Version int // Версия плана
+	Status  PlanStatus
 
 	// Этапы роста
 	Stages []GrowthStage
 
 	// Правила севооборота
 	RotationRules []RotationRule
-
-	// Требования
-	Environment EnvironmentalRequirements
-	Nutrients   NutrientRequirements
 
 	// Метаданные
 	CreatedBy   string
@@ -50,18 +52,19 @@ type CropPlan struct {
 func NewCropPlan(
 	cropTypeID string,
 	name string,
-	duration int,
+	durationDays int,
 	createdBy string,
 ) (*CropPlan, error) {
-	if duration <= 0 {
-		return nil, ErrInvalidDuration
+	duration, err := valueobject.NewDuration(durationDays)
+	if err != nil {
+		return nil, err
 	}
 	if name == "" {
 		return nil, ErrInvalidName
 	}
 
 	plan := &CropPlan{
-		ID:            PlanID(generateID()),
+		ID:            PlanID(types.NewUUID()),
 		CropTypeID:    cropTypeID,
 		Name:          name,
 		Duration:      duration,
@@ -172,10 +175,10 @@ func (p *CropPlan) AddRotationRule(rule RotationRule) error {
 func (p *CropPlan) ValidateDuration() error {
 	total := 0
 	for _, s := range p.Stages {
-		total += s.Duration
+		total += int(s.Duration)
 	}
 
-	if total != p.Duration {
+	if !p.Duration.Equal(total) {
 		return ErrStageDurationMismatch
 	}
 
@@ -234,7 +237,7 @@ func (p *CropPlan) CreateNewVersion() (*CropPlan, error) {
 	}
 
 	newPlan := &CropPlan{
-		ID:            PlanID(generateID()),
+		ID:            PlanID(types.NewUUID()),
 		CropTypeID:    p.CropTypeID,
 		VarietyID:     p.VarietyID,
 		Name:          p.Name,
@@ -273,24 +276,24 @@ func (p *CropPlan) SetVariety(varietyID string) error {
 }
 
 // SetRequirements устанавливает требования
-func (p *CropPlan) SetRequirements(env EnvironmentalRequirements, nut NutrientRequirements) {
+func (p *CropPlan) SetRequirements(env valueobject.EnvironmentalRequirements, nut valueobject.NutrientRequirements) {
 	p.Environment = env
 	p.Nutrients = nut
 	p.UpdatedAt = time.Now()
 }
 
 // Геттеры
-func (p *CropPlan) GetID() PlanID                             { return p.ID }
-func (p *CropPlan) GetCropTypeID() string                     { return p.CropTypeID }
-func (p *CropPlan) GetVarietyID() *string                     { return p.VarietyID }
-func (p *CropPlan) GetName() string                           { return p.Name }
-func (p *CropPlan) GetDuration() int                          { return p.Duration }
-func (p *CropPlan) GetVersion() int                           { return p.Version }
-func (p *CropPlan) GetStatus() PlanStatus                     { return p.Status }
-func (p *CropPlan) GetStages() []GrowthStage                  { return p.Stages }
-func (p *CropPlan) GetRotationRules() []RotationRule          { return p.RotationRules }
-func (p *CropPlan) GetEnvironment() EnvironmentalRequirements { return p.Environment }
-func (p *CropPlan) GetNutrients() NutrientRequirements        { return p.Nutrients }
+func (p *CropPlan) GetID() PlanID                                         { return p.ID }
+func (p *CropPlan) GetCropTypeID() string                                 { return p.CropTypeID }
+func (p *CropPlan) GetVarietyID() *string                                 { return p.VarietyID }
+func (p *CropPlan) GetName() string                                       { return p.Name }
+func (p *CropPlan) GetDuration() valueobject.Duration                     { return p.Duration }
+func (p *CropPlan) GetVersion() int                                       { return p.Version }
+func (p *CropPlan) GetStatus() PlanStatus                                 { return p.Status }
+func (p *CropPlan) GetStages() []GrowthStage                              { return p.Stages }
+func (p *CropPlan) GetRotationRules() []RotationRule                      { return p.RotationRules }
+func (p *CropPlan) GetEnvironment() valueobject.EnvironmentalRequirements { return p.Environment }
+func (p *CropPlan) GetNutrients() valueobject.NutrientRequirements        { return p.Nutrients }
 
 // Rehydrate восстанавливает план из БД (для репозитория)
 func (p *CropPlan) Rehydrate(version int, status PlanStatus) {

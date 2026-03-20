@@ -2,12 +2,11 @@ package physicalobject
 
 import (
 	"context"
-	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 )
 
 type Repository interface {
-	FindByID(context.Context, types.PhysicalObjectID) (*PhysicalObject, error)
+	FindByID(context.Context, PhysicalObjectID) (*PhysicalObject, error)
 	Save(context.Context, *PhysicalObject) error
 	FindAll(ctx context.Context) ([]*PhysicalObject, error)
 

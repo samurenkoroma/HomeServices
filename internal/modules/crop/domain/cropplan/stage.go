@@ -1,11 +1,13 @@
 package cropplan
 
+import "samurenkoroma/services/internal/modules/crop/domain/valueobject"
+
 // GrowthStage - этап роста культуры
 type GrowthStage struct {
-	Order       int    `json:"order"`    // Порядковый номер
-	Name        string `json:"name"`     // Название этапа (вегетация, цветение)
-	Duration    int    `json:"duration"` // Длительность в днях
-	Description string `json:"description"`
+	Order       int                  `json:"order"`    // Порядковый номер
+	Name        string               `json:"name"`     // Название этапа (вегетация, цветение)
+	Duration    valueobject.Duration `json:"duration"` // Длительность в днях
+	Description string               `json:"description"`
 
 	// Температурные требования
 	MinTemp     float64 `json:"min_temp"`
@@ -28,7 +30,7 @@ type GrowthStage struct {
 func NewGrowthStage(
 	order int,
 	name string,
-	duration int,
+	duration valueobject.Duration,
 	minTemp, maxTemp, optimalTemp float64,
 	waterPerDay float64,
 ) (GrowthStage, error) {

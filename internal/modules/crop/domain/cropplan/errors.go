@@ -26,4 +26,5 @@ var (
 	ErrStageOrderDuplicate          = errors.New("duplicate stage order")
 	ErrStageDurationMismatch        = errors.New("stages duration does not match plan duration")
 	ErrRotationRuleDuplicate        = errors.New("rotation rule already exists")
+	ErrPlanNotFound                 = errors.New("plan not found")
 )

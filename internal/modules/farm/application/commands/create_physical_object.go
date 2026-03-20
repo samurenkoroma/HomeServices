@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreatePhysicalObjectCommand struct {
+type CreatePhysicalObjectCmd struct {
 	Type    string          `json:"type" validate:"required,oneof=field greenhouse"`
 	Name    string          `json:"name" validate:"required"`
 	GeoJSON spatial.GeoJSON `json:"geometry" validate:"required"`
@@ -28,16 +28,20 @@ type CreatePhysicalObjectCommand struct {
 	Length         *float64 `json:"length,omitempty"`          // для greenhouse
 }
 
-type createFieldHandler struct {
+type createPhysicalHandler struct {
 	uowFactory repository.Factory
 }
 
-func NewCreateFieldHandler(uowFactory repository.Factory) command.Handler {
-	return &createFieldHandler{uowFactory: uowFactory}
+func (h *createPhysicalHandler) Name() string {
+	return "CreatePhysicalObject"
 }
 
-func (h *createFieldHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CreatePhysicalObjectCommand)
+func NewCreateFieldHandler(uowFactory repository.Factory) command.Handler {
+	return &createPhysicalHandler{uowFactory: uowFactory}
+}
+
+func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(CreatePhysicalObjectCmd)
 	if !ok {
 		return errors.New("invalid command type")
 	}

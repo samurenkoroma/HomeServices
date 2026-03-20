@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"samurenkoroma/services/internal/core/domain/aggregate"
-	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
@@ -95,7 +94,7 @@ func (r *physicalObjectRepository) Save(ctx context.Context, obj *physicalobject
 	return err
 }
 
-func (r *physicalObjectRepository) FindByID(ctx context.Context, id types.PhysicalObjectID) (*physicalobject.PhysicalObject, error) {
+func (r *physicalObjectRepository) FindByID(ctx context.Context, id physicalobject.PhysicalObjectID) (*physicalobject.PhysicalObject, error) {
 	query := `
         SELECT 
             id, type, name, ST_AsGeoJSON(geometry), 
@@ -141,7 +140,7 @@ func (r *physicalObjectRepository) FindByID(ctx context.Context, id types.Physic
 	}
 
 	obj := &physicalobject.PhysicalObject{
-		Entity:      aggregate.NewEntity(types.PhysicalObjectID(objID)),
+		Entity:      aggregate.NewEntity(physicalobject.PhysicalObjectID(objID)),
 		Type:        physicalobject.ObjectType(objType),
 		Name:        name,
 		Geometry:    geom,
@@ -184,7 +183,7 @@ func (r *physicalObjectRepository) FindByType(ctx context.Context, objType physi
 
 		// Конвертация (упрощенно)
 		obj := &physicalobject.PhysicalObject{
-			Entity: aggregate.NewEntity(types.PhysicalObjectID(id)),
+			Entity: aggregate.NewEntity(physicalobject.PhysicalObjectID(id)),
 			Type:   objType,
 			Name:   name,
 			Status: valueobject.Status(status),
@@ -230,7 +229,7 @@ func (r *physicalObjectRepository) FindInBounds(ctx context.Context, bounds spat
 
 		// Создаем объект (упрощенно)
 		objects = append(objects, &physicalobject.PhysicalObject{
-			Entity: aggregate.NewEntity(types.PhysicalObjectID(id)),
+			Entity: aggregate.NewEntity(physicalobject.PhysicalObjectID(id)),
 			Type:   physicalobject.ObjectType(objType),
 			Name:   name,
 			Status: valueobject.Status(status),
