@@ -1,43 +1,55 @@
-package commands
+package command
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
 )
 
+type CreateCropPlanCommand struct {
+	CropTypeID  string `json:"crop_type_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Duration    int    `json:"duration" validate:"required,gt=0"`
+	Description string `json:"description"`
+	CreatedBy   string `json:"created_by" validate:"required"`
+}
+
 type CreateCropPlanHandler struct {
-	UowFactory repository.Factory
+	uowFactory repository.Factory
 }
 
-type CreateCropPlanCmd struct {
-	AreaID   string `json:"area_id"`
-	Name     string `json:"name"`
-	CropName string `json:"crop_name"`
+func NewCreateCropPlanHandler(uowFactory repository.Factory) *CreateCropPlanHandler {
+	return &CreateCropPlanHandler{uowFactory: uowFactory}
 }
 
-func DecodeCreateCropPlan(data []byte) (any, error) {
-	var cmd CreateCropPlanCmd
-	if err := json.Unmarshal(data, &cmd); err != nil {
-		return nil, fmt.Errorf("failed to decode CreateCropPlan command: %w", err)
+func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd CreateCropPlanCommand) error {
+	uow, err := h.uowFactory.Begin(ctx)
+	if err != nil {
+		return err
 	}
 
-	if cmd.AreaID == "" {
-		return nil, errors.New("bed_id is required")
-	}
-	if cmd.Name == "" {
-		return nil, errors.New("name is required")
-	}
-	if cmd.CropName == "" {
-		return nil, errors.New("crop_name is required")
-	}
+	return uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+		cropProvider := provider.(*postgres.CropProvider)
 
-	return cmd, nil
-}
+		// Создаем план
+		plan, err := cropplan.NewCropPlan(
+			cmd.CropTypeID,
+			cmd.Name,
+			cmd.Duration,
+			cmd.CreatedBy,
+		)
+		if err != nil {
+			return err
+		}
 
-func (h *CreateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
+		plan.Description = cmd.Description
 
-	return nil
+		// Сохраняем
+		if err := cropProvider.CropPlans().Save(ctx, plan); err != nil {
+			return err
+		}
+
+		uow.RegisterAggregate(plan)
+		return nil
+	})
 }
