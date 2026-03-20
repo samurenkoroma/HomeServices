@@ -3,15 +3,13 @@ package valueobject
 import "time"
 
 type Additions struct {
-	IrrigationType IrrigationType   // Тип полива
-	CurrentCrop    *CurrentCropInfo // Текущая культура (если посажено)
+	IrrigationType IrrigationType // Тип полива
 	Status         AreaStatus
 }
 
 func DefaultAdditions() Additions {
 	return Additions{
 		IrrigationType: IrrigationSprinkler,
-		CurrentCrop:    nil,
 		Status:         AreaStatusEmpty,
 	}
 }

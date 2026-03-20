@@ -1,0 +1,103 @@
+### commands
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreatePhysicalObject",
+  "data": {
+    "type": "greenhouse",
+    "name": "Теплица 4",
+    "length": 12,
+    "width": 4,
+    "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
+    "geometry" : {
+      "type": "Point",
+      "coordinates": [30.0162001, 45.9007626]
+    }
+  }
+}
+###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreatePhysicalObject",
+  "data": {
+    "type": "field",
+    "name": "Участок 22",
+    "soil_type": "Чернозём",
+    "geometry" : {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            30.05152512341738,
+            45.90452692673153
+          ],
+          [
+            30.052362643182278,
+            45.89954309793805
+          ],
+          [
+            30.054328702390194,
+            45.89973605726784
+          ],
+          [
+            30.056433230638508,
+            45.89984875267262
+          ],
+          [
+            30.056634396314617,
+            45.90127154164979
+          ],
+          [
+            30.056862048804764,
+            45.90266559683004
+          ],
+          [
+            30.057584568858147,
+            45.90515847685902
+          ],
+          [
+            30.053597800433632,
+            45.904893212682424
+          ],
+          [
+            30.053620599210262,
+            45.90472780104589
+          ],
+          [
+            30.05152512341738,
+            45.90452692673153
+          ]
+        ]
+      ]
+    }
+  }
+}
+
+###
+
+
+
+### queries
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "ListObjects",
+  "data": {
+  }
+}
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetFacilitiesList",
+  "data": {
+  }
+}
