@@ -24,7 +24,7 @@ type AddStageHandler struct {
 }
 
 func (h *AddStageHandler) Handle(ctx context.Context, cmd AddStageCommand) error {
-	uow, err := h.uowFactory.Begin(ctx, "crop")
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}

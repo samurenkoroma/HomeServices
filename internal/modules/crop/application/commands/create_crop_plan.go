@@ -35,7 +35,7 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		return errors.New("invalid command type")
 	}
 
-	uow, err := h.uowFactory.Begin(ctx, "farm")
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}

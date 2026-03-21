@@ -7,7 +7,7 @@ import (
 )
 
 type Factory interface {
-	Begin(ctx context.Context, providerName string) (UnitOfWork, error)
+	Begin(ctx context.Context) (UnitOfWork, error)
 }
 
 type UoWFactory struct {
@@ -22,7 +22,7 @@ func NewUnitOfWorkFactory(db *sql.DB, bus messaging.EventBus) Factory {
 	}
 }
 
-func (f *UoWFactory) Begin(ctx context.Context, providerName string) (UnitOfWork, error) {
+func (f *UoWFactory) Begin(ctx context.Context) (UnitOfWork, error) {
 	tx, err := f.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err

@@ -44,7 +44,7 @@ func (h *AddRotationRuleHandler) Handle(ctx context.Context, cmd AddRotationRule
 		return fmt.Errorf("invalid predecessor: %w", err)
 	}
 
-	uow, err := h.uowFactory.Begin(ctx, "crop")
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -108,7 +108,7 @@ func (h *AddRotationRuleHandler) Handle(ctx context.Context, cmd AddRotationRule
 func (h *AddRotationRuleHandler) validatePredecessor(ctx context.Context, predecessorID string) error {
 	// Для временного UOW используем отдельную транзакцию только для чтения
 	// Это позволяет не блокировать основную транзакцию
-	tempUOW, err := h.uowFactory.Begin(ctx, "crop")
+	tempUOW, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}

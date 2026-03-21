@@ -27,7 +27,7 @@ func NewPublishPlanHandler(
 }
 
 func (h *PublishPlanHandler) Handle(ctx context.Context, cmd PublishPlanCommand) error {
-	uow, err := h.uowFactory.Begin(ctx, "crop")
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}

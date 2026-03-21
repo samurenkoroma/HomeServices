@@ -20,7 +20,7 @@ type CreateCropTypeHandler struct {
 }
 
 func (h *CreateCropTypeHandler) Handle(ctx context.Context, cmd CreateCropTypeCommand) error {
-	uow, err := h.uowFactory.Begin(ctx, "crop")
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}
