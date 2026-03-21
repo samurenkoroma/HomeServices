@@ -25,19 +25,7 @@ type App struct {
 	HTTPHandler   http.Handler
 }
 
-func Build(ctx context.Context, dsn string) (*App, error) {
-
-	// ---------- Database ----------
-
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.PingContext(ctx); err != nil {
-		return nil, err
-	}
-
+func Build(ctx context.Context, db *sql.DB) (*App, error) {
 	// ---------- Unit Of Work Factory ----------
 
 	bus := inmemory.NewInMemoryEventBus()

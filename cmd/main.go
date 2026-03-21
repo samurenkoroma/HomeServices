@@ -6,16 +6,20 @@ import (
 	"net/http"
 	c "samurenkoroma/services/internal/application/bootstrap"
 	"samurenkoroma/services/internal/infrastructure/configs"
+	"samurenkoroma/services/pkg/db"
 )
 
 func main() {
 	conf := configs.LoadConfig()
-	//database := db.NewDb(conf)
-	//application := app.NewApplication(conf, database)
-
 	ctx := context.Background()
 
-	app, err := c.Build(ctx, conf.Db.Dsn)
+	conn, err := db.NewDB(ctx, conf.Db.Dsn)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	app, err := c.Build(ctx, conn)
 	if err != nil {
 		log.Fatal(err)
 	}

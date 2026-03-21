@@ -85,15 +85,11 @@ Content-Type: application/json
 {
   "command": "CreateCropPlan",
   "data": {
-    "type": "greenhouse",
     "name": "Теплица 4",
-    "length": 12,
-    "width": 4,
-    "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
-    "geometry" : {
-      "type": "Point",
-      "coordinates": [30.0162001, 45.9007626]
-    }
+    "duration": 12,
+    "crop_type_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
+    "description" : "",
+    "created_by": "me"
   }
 }
 ###
