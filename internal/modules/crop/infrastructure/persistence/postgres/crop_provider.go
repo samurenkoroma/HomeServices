@@ -23,7 +23,7 @@ func (p *CropProvider) ProviderName() string {
 // Проверяем, что FarmProvider реализует интерфейс RepositoryProvider
 var _ repository.RepositoryProvider = (*CropProvider)(nil)
 
-func NewCropProvider(tx *sql.Tx) *CropProvider {
+func NewCropProvider(tx *sql.Tx) repository.RepositoryProvider {
 	return &CropProvider{
 		tx: tx,
 	}

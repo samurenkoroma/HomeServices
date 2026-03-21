@@ -44,7 +44,7 @@ func Build(ctx context.Context, dsn string) (*App, error) {
 	bus.Register("farm.field.created", handlers.OnFieldCreated)
 	bus.Register("farm.greenhouse.created", handlers.OnGreenhouseCreated)
 
-	uowFactory := postgres.NewFarmUnitOfWorkFactory(db, bus)
+	uowFactory := repository.NewUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------
 

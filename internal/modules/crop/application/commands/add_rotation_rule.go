@@ -44,14 +44,14 @@ func (h *AddRotationRuleHandler) Handle(ctx context.Context, cmd AddRotationRule
 		return fmt.Errorf("invalid predecessor: %w", err)
 	}
 
-	uow, err := h.uowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx, "crop")
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	var plan *cropplan.CropPlan
 
-	err = uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {
 		cropProvider, ok := provider.(*postgres.CropProvider)
 		if !ok {
 			return fmt.Errorf("invalid provider type: expected CropProvider, got %T", provider)
@@ -108,14 +108,14 @@ func (h *AddRotationRuleHandler) Handle(ctx context.Context, cmd AddRotationRule
 func (h *AddRotationRuleHandler) validatePredecessor(ctx context.Context, predecessorID string) error {
 	// Для временного UOW используем отдельную транзакцию только для чтения
 	// Это позволяет не блокировать основную транзакцию
-	tempUOW, err := h.uowFactory.Begin(ctx)
+	tempUOW, err := h.uowFactory.Begin(ctx, "crop")
 	if err != nil {
 		return err
 	}
 
 	var exists bool
 
-	err = tempUOW.Execute(ctx, func(provider repository.RepositoryProvider) error {
+	err = tempUOW.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {
 		cropProvider, ok := provider.(*postgres.CropProvider)
 		if !ok {
 			return fmt.Errorf("invalid provider type")

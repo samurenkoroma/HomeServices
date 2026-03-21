@@ -20,12 +20,12 @@ type CreateCropTypeHandler struct {
 }
 
 func (h *CreateCropTypeHandler) Handle(ctx context.Context, cmd CreateCropTypeCommand) error {
-	uow, err := h.uowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx, "crop")
 	if err != nil {
 		return err
 	}
 
-	return uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {
 		cropProvider := provider.(*postgres.CropProvider)
 
 		// Создаем тип культуры

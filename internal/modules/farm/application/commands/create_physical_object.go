@@ -46,12 +46,12 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		return errors.New("invalid command type")
 	}
 
-	uow, err := h.uowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx, "farm")
 	if err != nil {
 		return err
 	}
 
-	err = uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewFarmProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {

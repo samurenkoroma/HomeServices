@@ -35,12 +35,12 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		return errors.New("invalid command type")
 	}
 
-	uow, err := h.uowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx, "farm")
 	if err != nil {
 		return err
 	}
 
-	return uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {
 		cropProvider := provider.(*postgres.CropProvider)
 
 		// Создаем план

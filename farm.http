@@ -6,7 +6,7 @@ Content-Type: application/json
   "command": "CreatePhysicalObject",
   "data": {
     "type": "greenhouse",
-    "name": "Теплица 4w",
+    "name": "Теплица 4awtbgyhnw",
     "length": 12,
     "width": 4,
     "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
@@ -25,7 +25,7 @@ Content-Type: application/json
   "command": "CreatePhysicalObject",
   "data": {
     "type": "field",
-    "name": "Участок 22",
+    "name": "Участок sewfgu",
     "soil_type": "Чернозём",
     "geometry" : {
       "type": "Polygon",
@@ -86,7 +86,7 @@ Content-Type: application/json
   "command": "CreateCropPlan",
   "data": {
     "type": "greenhouse",
-    "name": "Теплица 4w",
+    "name": "Теплица 4",
     "length": 12,
     "width": 4,
     "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
