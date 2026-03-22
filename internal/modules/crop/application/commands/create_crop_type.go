@@ -9,7 +9,7 @@ import (
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
 )
 
-type CreateCropTypeCommand struct {
+type CreateCropTypeCmd struct {
 	Name        string `json:"name" validate:"required"`
 	Category    string `json:"category" validate:"required"`
 	Description string `json:"description"`
@@ -29,7 +29,7 @@ func NewCreateCropTypeHandler(uowFactory repository.Factory) command.Handler {
 }
 
 func (h *createCropTypeHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CreateCropTypeCommand)
+	c, ok := cmd.(CreateCropTypeCmd)
 	if !ok {
 		return errors.New("invalid command type")
 	}

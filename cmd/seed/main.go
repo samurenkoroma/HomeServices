@@ -131,7 +131,7 @@ func seedCropTypes(uowFactory repository.Factory, data seedData, dryRun bool) er
 		}
 
 		// Создаём команду
-		cmd := commands.CreateCropTypeCommand{
+		cmd := commands.CreateCropTypeCmd{
 			Name:        ct.Name,
 			Category:    ct.Category,
 			Description: ct.Description,
