@@ -2,110 +2,114 @@ package cultivationarea
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"time"
 )
 
-// GreenhouseArea - теплица как место выращивания
+// GreenhouseArea — теплица как место выращивания
 type GreenhouseArea struct {
-	aggregate.BaseAggregate
+	aggregate.Entity[string]
 
-	ID        string
-	FarmRefID string
-	Name      string
-	Geometry  spatial.GeoJSON
-	Area      float64
+	farmRefID string
+	name      string
+	geometry  spatial.GeoJSON
+	area      float64
 
-	Seasons         map[string]SeasonConfig
-	CurrentSeasonID string
-	ChildBeds       []string // Грядки внутри теплицы
+	// Конфигурации по сезонам
+	seasons         map[string]SeasonConfig
+	currentSeasonID string
+	childBeds       []string // Грядки внутри теплицы
 }
 
-func NewGreenhouseArea(farmRefID string, name string, geom spatial.GeoJSON) *GreenhouseArea {
+// NewGreenhouseArea создаёт новую теплицу как место выращивания
+func NewGreenhouseArea(farmRefID, name string, geom spatial.GeoJSON) *GreenhouseArea {
 	return &GreenhouseArea{
-		ID:        generateID(),
-		FarmRefID: farmRefID,
-		Name:      name,
-		Geometry:  geom,
-		Area:      calculateArea(geom),
-		Seasons:   make(map[string]SeasonConfig),
-		ChildBeds: []string{},
+		Entity:    aggregate.NewEntity(types.NewUUID()),
+		farmRefID: farmRefID,
+		name:      name,
+		geometry:  geom,
+		area:      0,
+		seasons:   make(map[string]SeasonConfig),
+		childBeds: []string{},
 	}
 }
 
-// ConfigureForSeason - настроить теплицу на сезон (всегда монокультура или грядки)
-func (g *GreenhouseArea) ConfigureForSeason(
-	seasonID string,
-	name string,
-	geom spatial.GeoJSON,
-	metadata map[string]interface{},
-) error {
-	if _, exists := g.Seasons[seasonID]; exists {
-		return ErrSeasonAlreadyConfigured
-	}
-
-	config := SeasonConfig{
-		SeasonID:   seasonID,
-		Name:       name,
-		Geometry:   geom,
-		Area:       calculateArea(geom),
-		CropPlanID: nil, // Теплица может иметь несколько культур на грядках
-		BlockIDs:   []string{},
-		Metadata:   metadata,
-		ValidFrom:  time.Now(),
-	}
-
-	g.Seasons[seasonID] = config
-	g.CurrentSeasonID = seasonID
-
-	g.AddEvent(GreenhouseConfigured{
-		GreenhouseID: g.ID,
-		SeasonID:     seasonID,
-	})
-
-	return nil
-}
-
-// AddBed - добавить грядку в теплицу
+// AddBed — добавить грядку в теплицу
 func (g *GreenhouseArea) AddBed(seasonID string, bedID string) error {
-	config, exists := g.Seasons[seasonID]
+	config, exists := g.seasons[seasonID]
 	if !exists {
 		return ErrSeasonConfigNotFound
 	}
 
 	config.BlockIDs = append(config.BlockIDs, bedID)
-	g.Seasons[seasonID] = config
-	g.ChildBeds = append(g.ChildBeds, bedID)
+	g.seasons[seasonID] = config
+	g.childBeds = append(g.childBeds, bedID)
+	g.Update()
 
 	return nil
 }
 
-func (g *GreenhouseArea) GetID() string                { return g.ID }
-func (g *GreenhouseArea) GetFarmRefID() string         { return g.FarmRefID }
-func (g *GreenhouseArea) GetType() AreaType            { return AreaTypeGreenhouse }
-func (g *GreenhouseArea) GetName() string              { return g.Name }
-func (g *GreenhouseArea) GetGeometry() spatial.GeoJSON { return g.Geometry }
-func (g *GreenhouseArea) GetArea() float64             { return g.Area }
-func (g *GreenhouseArea) GetCurrentSeasonID() string   { return g.CurrentSeasonID }
-func (g *GreenhouseArea) HasBlocks() bool              { return len(g.ChildBeds) > 0 }
-func (g *GreenhouseArea) GetBlocks() []string          { return g.ChildBeds }
+// GetCropPlanForSeason — теплица может иметь несколько культур через грядки
+func (g *GreenhouseArea) GetCropPlanForSeason(seasonID string) (string, error) {
+	return "", ErrGreenhouseHasMultipleCrops
+}
 
+// GetSeasonConfig — получить конфигурацию на сезон
 func (g *GreenhouseArea) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
-	if config, exists := g.Seasons[seasonID]; exists {
+	if config, exists := g.seasons[seasonID]; exists {
 		return &config, nil
 	}
 	return nil, ErrSeasonConfigNotFound
 }
 
-func (g *GreenhouseArea) GetCropPlanForSeason(seasonID string) (string, error) {
-	return "", ErrGreenhouseHasMultipleCrops
-}
-
-func (g *GreenhouseArea) IsConfiguredForSeason(seasonID string) bool {
-	_, ok := g.Seasons[seasonID]
-	return ok
-}
-
+// ConfigureForSeason — реализация интерфейса
 func (g *GreenhouseArea) ConfigureForSeason(seasonID string, config AreaConfig) error {
-	return g.ConfigureForSeason(seasonID, config.Name, config.Geometry, config.Metadata)
+	if config.CropPlanID == nil {
+		return ErrCropPlanRequiredForBlock
+	}
+
+	if _, exists := g.seasons[seasonID]; exists {
+		return ErrSeasonAlreadyConfigured
+	}
+
+	seasonConfig := SeasonConfig{
+		SeasonID:   seasonID,
+		Name:       config.Name,
+		Geometry:   config.Geometry,
+		Area:       0,
+		CropPlanID: config.CropPlanID,
+		BlockIDs:   []string{},
+		Metadata:   config.Metadata,
+		ValidFrom:  time.Now(),
+	}
+
+	g.seasons[seasonID] = seasonConfig
+	g.currentSeasonID = seasonID
+	g.name = config.Name
+	g.geometry = config.Geometry
+	g.area = seasonConfig.Area
+	g.Update()
+
+	g.AddEvent(BlockConfigured{
+		BlockID:    g.Id,
+		SeasonID:   seasonID,
+		CropPlanID: *config.CropPlanID,
+		Area:       seasonConfig.Area,
+	})
+
+	return nil
 }
+
+// Геттеры
+func (g *GreenhouseArea) GetID() string                        { return g.Id }
+func (g *GreenhouseArea) GetFarmRefID() string                 { return g.farmRefID }
+func (g *GreenhouseArea) GetType() AreaType                    { return AreaTypeGreenhouse }
+func (g *GreenhouseArea) GetName() string                      { return g.name }
+func (g *GreenhouseArea) GetGeometry() spatial.GeoJSON         { return g.geometry }
+func (g *GreenhouseArea) GetArea() float64                     { return g.area }
+func (g *GreenhouseArea) GetCurrentSeasonID() string           { return g.currentSeasonID }
+func (g *GreenhouseArea) IsConfiguredForSeason(id string) bool { _, ok := g.seasons[id]; return ok }
+func (g *GreenhouseArea) HasBlocks() bool                      { return len(g.childBeds) > 0 }
+func (g *GreenhouseArea) GetBlocks() []string                  { return g.childBeds }
+func (g *GreenhouseArea) GetHistory() []AreaSnapshot           { return []AreaSnapshot{} }

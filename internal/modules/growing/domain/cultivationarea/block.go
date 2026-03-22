@@ -2,109 +2,60 @@ package cultivationarea
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"time"
 )
 
-// Block - участок внутри поля (существует только в рамках сезона)
+// Block — участок внутри поля (существует только в рамках сезона)
 type Block struct {
-	aggregate.BaseAggregate
+	aggregate.Entity[string]
 
-	ID            string
-	FarmRefID     string // Ссылка на ID в farm (если есть)
-	ParentFieldID string // ID поля из growing (FieldArea)
-	Name          string
-	Geometry      spatial.GeoJSON
-	Area          float64
+	farmRefID     string
+	parentFieldID string // ID поля из growing (FieldArea)
+	name          string
+	geometry      spatial.GeoJSON
+	area          float64
 
-	Seasons         map[string]SeasonConfig
-	CurrentSeasonID string
-	ChildBeds       []string // Грядки внутри участка
+	// Конфигурации по сезонам
+	seasons         map[string]SeasonConfig
+	currentSeasonID string
+	childBeds       []string // Грядки внутри участка
 }
 
-func NewBlock(parentFieldID string, name string, geom spatial.GeoJSON) *Block {
+// NewBlock создаёт новый участок
+func NewBlock(parentFieldID, name string, geom spatial.GeoJSON) *Block {
 	return &Block{
-		ID:            generateID(),
-		ParentFieldID: parentFieldID,
-		Name:          name,
-		Geometry:      geom,
-		Area:          calculateArea(geom),
-		Seasons:       make(map[string]SeasonConfig),
-		ChildBeds:     []string{},
+		Entity:        aggregate.NewEntity(types.NewUUID()),
+		parentFieldID: parentFieldID,
+		name:          name,
+		geometry:      geom,
+		area:          0,
+		seasons:       make(map[string]SeasonConfig),
+		childBeds:     []string{},
 	}
 }
 
-// ConfigureForSeason - настроить участок на сезон
-func (b *Block) ConfigureForSeason(
-	seasonID string,
-	name string,
-	geom spatial.GeoJSON,
-	cropPlanID string,
-	metadata map[string]interface{},
-) error {
-	if _, exists := b.Seasons[seasonID]; exists {
-		return ErrSeasonAlreadyConfigured
-	}
-
-	config := SeasonConfig{
-		SeasonID:   seasonID,
-		Name:       name,
-		Geometry:   geom,
-		Area:       calculateArea(geom),
-		CropPlanID: &cropPlanID,
-		BlockIDs:   []string{},
-		Metadata:   metadata,
-		ValidFrom:  time.Now(),
-	}
-
-	b.Seasons[seasonID] = config
-	b.CurrentSeasonID = seasonID
-
-	b.AddEvent(BlockConfigured{
-		BlockID:    b.ID,
-		SeasonID:   seasonID,
-		CropPlanID: cropPlanID,
-		Area:       config.Area,
-	})
-
-	return nil
-}
-
-// AddBed - добавить грядку в участок
+// AddBed — добавить грядку в участок
 func (b *Block) AddBed(seasonID string, bedID string) error {
-	config, exists := b.Seasons[seasonID]
+	config, exists := b.seasons[seasonID]
 	if !exists {
 		return ErrSeasonConfigNotFound
 	}
 
 	config.BlockIDs = append(config.BlockIDs, bedID)
-	b.Seasons[seasonID] = config
-	b.ChildBeds = append(b.ChildBeds, bedID)
+	b.seasons[seasonID] = config
+	b.childBeds = append(b.childBeds, bedID)
+	b.Update()
 
 	return nil
 }
 
-func (b *Block) GetID() string                { return b.ID }
-func (b *Block) GetFarmRefID() string         { return b.FarmRefID }
-func (b *Block) GetType() AreaType            { return AreaTypeBlock }
-func (b *Block) GetName() string              { return b.Name }
-func (b *Block) GetGeometry() spatial.GeoJSON { return b.Geometry }
-func (b *Block) GetArea() float64             { return b.Area }
-func (b *Block) GetCurrentSeasonID() string   { return b.CurrentSeasonID }
-func (b *Block) HasBlocks() bool              { return false }
-func (b *Block) GetBlocks() []string          { return []string{} }
-
-func (b *Block) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
-	if config, exists := b.Seasons[seasonID]; exists {
-		return &config, nil
-	}
-	return nil, ErrSeasonConfigNotFound
-}
-
+// GetCropPlanForSeason — получить план культуры для сезона
 func (b *Block) GetCropPlanForSeason(seasonID string) (string, error) {
-	config, err := b.GetSeasonConfig(seasonID)
-	if err != nil {
-		return "", err
+	config, exists := b.seasons[seasonID]
+	if !exists {
+		return "", ErrSeasonConfigNotFound
 	}
 	if config.CropPlanID == nil {
 		return "", ErrNoCropPlanConfigured
@@ -112,14 +63,61 @@ func (b *Block) GetCropPlanForSeason(seasonID string) (string, error) {
 	return *config.CropPlanID, nil
 }
 
-func (b *Block) IsConfiguredForSeason(seasonID string) bool {
-	_, ok := b.Seasons[seasonID]
-	return ok
+// GetSeasonConfig — получить конфигурацию на сезон
+func (b *Block) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
+	if config, exists := b.seasons[seasonID]; exists {
+		return &config, nil
+	}
+	return nil, ErrSeasonConfigNotFound
 }
 
+// ConfigureForSeason — реализация интерфейса CultivationArea
 func (b *Block) ConfigureForSeason(seasonID string, config AreaConfig) error {
 	if config.CropPlanID == nil {
 		return ErrCropPlanRequiredForBlock
 	}
-	return b.ConfigureForSeason(seasonID, config.Name, config.Geometry, *config.CropPlanID, config.Metadata)
+
+	if _, exists := b.seasons[seasonID]; exists {
+		return ErrSeasonAlreadyConfigured
+	}
+
+	seasonConfig := SeasonConfig{
+		SeasonID:   seasonID,
+		Name:       config.Name,
+		Geometry:   config.Geometry,
+		Area:       0,
+		CropPlanID: config.CropPlanID,
+		BlockIDs:   []string{},
+		Metadata:   config.Metadata,
+		ValidFrom:  time.Now(),
+	}
+
+	b.seasons[seasonID] = seasonConfig
+	b.currentSeasonID = seasonID
+	b.name = config.Name
+	b.geometry = config.Geometry
+	b.area = seasonConfig.Area
+	b.Update()
+
+	b.AddEvent(BlockConfigured{
+		BlockID:    b.Id,
+		SeasonID:   seasonID,
+		CropPlanID: *config.CropPlanID,
+		Area:       seasonConfig.Area,
+	})
+
+	return nil
 }
+
+// Геттеры
+func (b *Block) GetID() string                        { return b.Id }
+func (b *Block) GetFarmRefID() string                 { return b.farmRefID }
+func (b *Block) GetType() AreaType                    { return AreaTypeBlock }
+func (b *Block) GetName() string                      { return b.name }
+func (b *Block) GetGeometry() spatial.GeoJSON         { return b.geometry }
+func (b *Block) GetArea() float64                     { return b.area }
+func (b *Block) GetCurrentSeasonID() string           { return b.currentSeasonID }
+func (b *Block) IsConfiguredForSeason(id string) bool { _, ok := b.seasons[id]; return ok }
+func (b *Block) HasBlocks() bool                      { return false }
+func (b *Block) GetBlocks() []string                  { return []string{} }
+func (b *Block) GetHistory() []AreaSnapshot           { return []AreaSnapshot{} }

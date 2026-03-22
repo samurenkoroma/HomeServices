@@ -3,12 +3,16 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
+	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 )
 
-type ConfigureAreaCommand struct {
+type ConfigureAreaCmd struct {
 	FarmRefID  string                 `json:"farm_ref_id" validate:"required"`
 	SeasonID   string                 `json:"season_id" validate:"required"`
 	Name       string                 `json:"name"`
@@ -22,25 +26,41 @@ type ConfigureAreaHandler struct {
 	uowFactory repository.Factory
 }
 
-func NewConfigureAreaHandler(uowFactory repository.Factory) *ConfigureAreaHandler {
+func (h *ConfigureAreaHandler) Name() string {
+	return "ConfigureArea"
+}
+
+func NewConfigureAreaHandler(uowFactory repository.Factory) command.Handler {
 	return &ConfigureAreaHandler{uowFactory: uowFactory}
 }
 
-func (h *ConfigureAreaHandler) Handle(ctx context.Context, cmd ConfigureAreaCommand) error {
+func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
+	cmd, ok := command.(ConfigureAreaCmd)
+	if !ok {
+		return errors.New("invalid command type")
+	}
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
 	}
-
-	return uow.Execute(ctx, func(provider repository.RepositoryProvider) error {
-		growingProvider := provider.(*postgres.GrowingProvider)
-
-		// Получаем operational объект
-		area, err := growingProvider.CultivationAreas().GetByFarmRefID(ctx, cmd.FarmRefID)
-		if err != nil {
-			return err
+	var area cultivationarea.CultivationArea
+	err = uow.Execute(ctx, postgres.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
+		growingProvider, ok := provider.(*postgres.GrowingProvider)
+		if !ok {
+			return fmt.Errorf("invalid provider type")
 		}
 
+		// Получаем operational объект
+		area, err = growingProvider.CultivationAreas().FindByFarmRefID(ctx, cmd.FarmRefID)
+		if err != nil {
+			return fmt.Errorf("failed to find cultivation area: %w", err)
+		}
+
+		if area == nil {
+			return cultivationarea.ErrAreaNotFound
+		}
+
+		// Создаём конфигурацию
 		config := cultivationarea.AreaConfig{
 			Name:       cmd.Name,
 			Geometry:   cmd.Geometry,
@@ -48,31 +68,75 @@ func (h *ConfigureAreaHandler) Handle(ctx context.Context, cmd ConfigureAreaComm
 			Metadata:   cmd.Metadata,
 		}
 
+		// Используем config для настройки места
 		// Конфигурируем в зависимости от типа
 		switch area.GetType() {
 		case cultivationarea.AreaTypeField:
 			fieldArea := area.(*cultivationarea.FieldArea)
+
+			// Если указан тип использования
 			if cmd.UsageType == "polyculture" {
-				return fieldArea.ConfigureAsPolyculture(cmd.SeasonID, cmd.Name, cmd.Geometry, cmd.Metadata)
+				// Поликультура — поле с участками
+				err = fieldArea.ConfigureAsPolyculture(
+					cmd.SeasonID,
+					config.Name,
+					config.Geometry,
+					config.Metadata,
+				)
+			} else {
+				// Монокультура — одна культура на всём поле
+				if config.CropPlanID == nil {
+					return fmt.Errorf("crop_plan_id required for monoculture field")
+				}
+				err = fieldArea.ConfigureAsMonoculture(
+					cmd.SeasonID,
+					config.Name,
+					config.Geometry,
+					*config.CropPlanID,
+					config.Metadata,
+				)
 			}
-			if cmd.CropPlanID == nil {
-				return errors.New("crop_plan_id required for monoculture field")
-			}
-			return fieldArea.ConfigureAsMonoculture(cmd.SeasonID, cmd.Name, cmd.Geometry, *cmd.CropPlanID, cmd.Metadata)
 
 		case cultivationarea.AreaTypeBlock:
 			blockArea := area.(*cultivationarea.Block)
-			return blockArea.ConfigureForSeason(cmd.SeasonID, cmd.Name, cmd.Geometry, *cmd.CropPlanID, cmd.Metadata)
+			if config.CropPlanID == nil {
+				return fmt.Errorf("crop_plan_id required for block")
+			}
+			err = blockArea.ConfigureForSeason(cmd.SeasonID, config)
 
 		case cultivationarea.AreaTypeBed:
 			bedArea := area.(*cultivationarea.Bed)
-			return bedArea.ConfigureForSeason(cmd.SeasonID, cmd.Name, cmd.Geometry, *cmd.CropPlanID, cmd.Metadata)
+			if config.CropPlanID == nil {
+				return fmt.Errorf("crop_plan_id required for bed")
+			}
+			err = bedArea.ConfigureForSeason(cmd.SeasonID, config)
 
 		case cultivationarea.AreaTypeGreenhouse:
 			greenhouseArea := area.(*cultivationarea.GreenhouseArea)
-			return greenhouseArea.ConfigureForSeason(cmd.SeasonID, cmd.Name, cmd.Geometry, cmd.Metadata)
+			err = greenhouseArea.ConfigureForSeason(cmd.SeasonID, config)
+
+		default:
+			return fmt.Errorf("unsupported area type: %s", area.GetType())
 		}
 
+		if err != nil {
+			return fmt.Errorf("failed to configure area: %w", err)
+		}
+
+		// Сохраняем конфигурацию
+		if err := growingProvider.CultivationAreas().SaveSeasonConfig(ctx, area, cmd.SeasonID); err != nil {
+			return fmt.Errorf("failed to save season config: %w", err)
+		}
+
+		uow.RegisterAggregate(area)
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Area configured: farm_ref_id=%s, season_id=%s, type=%s, name=%s",
+		cmd.FarmRefID, cmd.SeasonID, area.GetType(), cmd.Name)
+
+	return nil
 }

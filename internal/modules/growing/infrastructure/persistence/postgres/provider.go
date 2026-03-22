@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 )
 
@@ -11,7 +12,8 @@ type GrowingProvider struct {
 	tx *sql.Tx
 
 	// Кеш репозиториев
-	seasons season.Repository
+	seasons         season.Repository
+	cultivationArea cultivationarea.Repository
 }
 
 func (p *GrowingProvider) ProviderName() string {
@@ -33,4 +35,12 @@ func (p *GrowingProvider) Seasons() season.Repository {
 		p.seasons = NewSeasonRepository(p.tx)
 	}
 	return p.seasons
+}
+
+// CultivationAreas возвращает репозиторий всех объектов
+func (p *GrowingProvider) CultivationAreas() cultivationarea.Repository {
+	if p.cultivationArea == nil {
+		p.cultivationArea = NewCultivationAreaRepository(p.tx)
+	}
+	return p.cultivationArea
 }

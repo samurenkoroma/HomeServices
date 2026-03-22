@@ -5,6 +5,7 @@ import (
 	"samurenkoroma/services/internal/core/spatial"
 )
 
+// CreateAreaConfig — конфигурация для создания места
 type CreateAreaConfig struct {
 	Type      AreaType
 	FarmRefID string
@@ -13,6 +14,7 @@ type CreateAreaConfig struct {
 	Geometry  spatial.GeoJSON
 }
 
+// CreateArea создаёт место выращивания нужного типа
 func CreateArea(config CreateAreaConfig) (CultivationArea, error) {
 	switch config.Type {
 	case AreaTypeField:
@@ -34,6 +36,6 @@ func CreateArea(config CreateAreaConfig) (CultivationArea, error) {
 		return NewGreenhouseArea(config.FarmRefID, config.Name, config.Geometry), nil
 
 	default:
-		return nil, fmt.Errorf("unknown area type: %s", config.Type)
+		return nil, fmt.Errorf("%w: %s", ErrUnknownAreaType, config.Type)
 	}
 }
