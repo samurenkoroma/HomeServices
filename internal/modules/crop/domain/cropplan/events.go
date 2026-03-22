@@ -1,6 +1,9 @@
 package cropplan
 
-import "samurenkoroma/services/internal/core/domain/event"
+import (
+	"samurenkoroma/services/internal/core/domain/event"
+	"samurenkoroma/services/internal/modules/crop/domain/valueobject"
+)
 
 // CropPlanCreated - план создан
 type CropPlanCreated struct {
@@ -13,14 +16,24 @@ type CropPlanCreated struct {
 func (e CropPlanCreated) EventName() string { return "crop.plan.created" }
 
 // CropPlanPublished - план опубликован
+// CropPlanPublished — событие публикации плана
 type CropPlanPublished struct {
 	event.BaseEvent
-	PlanID  string
-	Version int
-	Name    string
+	PlanID        string                                `json:"plan_id"`
+	CropTypeID    string                                `json:"crop_type_id"`
+	VarietyID     *string                               `json:"variety_id"`
+	Name          string                                `json:"name"`
+	Version       int                                   `json:"version"`
+	Duration      int                                   `json:"duration"`
+	Stages        []GrowthStage                         `json:"stages"`
+	RotationRules []RotationRule                        `json:"rotation_rules"`
+	Environment   valueobject.EnvironmentalRequirements `json:"environment"`
+	Nutrients     valueobject.NutrientRequirements      `json:"nutrients"`
 }
 
-func (e CropPlanPublished) EventName() string { return "crop.plan.published" }
+func (e CropPlanPublished) EventName() string {
+	return "crop.plan.published"
+}
 
 // CropPlanDeprecated - план деактивирован
 type CropPlanDeprecated struct {

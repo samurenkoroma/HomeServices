@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/domain/croptemplate"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 )
@@ -12,15 +13,16 @@ type GrowingProvider struct {
 	tx *sql.Tx
 
 	// Кеш репозиториев
-	seasons         season.Repository
-	cultivationArea cultivationarea.Repository
+	seasons          season.Repository
+	cultivationArea  cultivationarea.Repository
+	cropTemplateRepo croptemplate.Repository
 }
 
 func (p *GrowingProvider) ProviderName() string {
 	return "growing"
 }
 
-// Проверяем, что FarmProvider реализует интерфейс RepositoryProvider
+// Проверяем, что GrowingProvider реализует интерфейс RepositoryProvider
 var _ repository.RepositoryProvider = (*GrowingProvider)(nil)
 
 func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
@@ -43,4 +45,10 @@ func (p *GrowingProvider) CultivationAreas() cultivationarea.Repository {
 		p.cultivationArea = NewCultivationAreaRepository(p.tx)
 	}
 	return p.cultivationArea
+}
+func (p *GrowingProvider) CropTemplates() croptemplate.Repository {
+	if p.cropTemplateRepo == nil {
+		p.cropTemplateRepo = NewCropTemplateRepository(p.tx)
+	}
+	return p.cropTemplateRepo
 }

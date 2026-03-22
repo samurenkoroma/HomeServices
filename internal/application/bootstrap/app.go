@@ -11,10 +11,11 @@ import (
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	cropCommands "samurenkoroma/services/internal/modules/crop/application/commands"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
-	"samurenkoroma/services/internal/modules/farm/application/handlers"
+	farmEventHandlers "samurenkoroma/services/internal/modules/farm/application/handlers"
 	"samurenkoroma/services/internal/modules/farm/application/queries"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
+	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
 
 	_ "github.com/lib/pq"
 )
@@ -30,8 +31,9 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 	// ---------- Unit Of Work Factory ----------
 
 	bus := inmemory.NewInMemoryEventBus()
-	bus.Register("farm.field.created", handlers.OnFieldCreated)
-	bus.Register("farm.greenhouse.created", handlers.OnGreenhouseCreated)
+	bus.Register("farm.field.created", farmEventHandlers.OnFieldCreated)
+	bus.Register("farm.greenhouse.created", farmEventHandlers.OnGreenhouseCreated)
+	bus.Register("crop.plan.published", growingEventHandlers.OnCropPlanPublished)
 
 	uowFactory := repository.NewUnitOfWorkFactory(db, bus)
 

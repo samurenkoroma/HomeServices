@@ -207,9 +207,16 @@ func (p *CropPlan) Publish() error {
 	p.UpdatedAt = now
 
 	p.AddEvent(CropPlanPublished{
-		PlanID:  string(p.ID),
-		Version: p.Version,
-		Name:    p.Name,
+		PlanID:        string(p.ID),
+		CropTypeID:    p.CropTypeID,
+		VarietyID:     p.VarietyID,
+		Name:          p.Name,
+		Version:       p.Version,
+		Duration:      int(p.Duration),
+		Stages:        p.Stages,
+		RotationRules: p.RotationRules,
+		Environment:   p.Environment,
+		Nutrients:     p.Nutrients,
 	})
 
 	return nil
