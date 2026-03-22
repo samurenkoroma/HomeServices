@@ -85,14 +85,48 @@ Content-Type: application/json
 {
   "command": "CreateCropPlan",
   "data": {
-    "name": "Теплица 4",
-    "duration": 12,
-    "crop_type_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
-    "description" : "",
-    "created_by": "me"
+    "crop_type_id": "550e8400-e29b-41d4-a716-446655440000",
+    "variety_id": "660e8400-e29b-41d4-a716-446655441111",
+    "name": "Интенсивная технология пшеницы",
+    "duration": 120,
+    "description": "План с повышенными нормами удобрений",
+    "created_by": "user-123"
   }
 }
+
 ###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreateCropType",
+  "data": {
+    "name": "Пшеница",
+    "category": "cereal",
+    "description": "Озимая мягкая пшеница",
+    "is_perennial": false
+  }
+}
+
+###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreateVariety",
+  "data": {
+    "crop": "Пшеница",
+    "name": "Мироновскаяяц ",
+    "description": "Озимая мягкая пшеница, устойчива к засухе",
+    "vegetation_days": "110..130",
+    "yield_potential": "10..130",
+    "recommended_regions": ["Центральный", "Центрально-Черноземный"],
+    "is_active": true
+  }
+}
+
 
 
 

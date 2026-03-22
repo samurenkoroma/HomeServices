@@ -19,7 +19,7 @@ var (
 type UnitOfWork interface {
 	// Execute выполняет функцию в рамках транзакции
 	Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error
-
+	Tx() *sql.Tx
 	RegisterAggregate(agg aggregate.Aggregate)
 	Commit() error
 	Rollback() error
@@ -42,6 +42,10 @@ func NewUnitOfWork(ctx context.Context, tx *sql.Tx, bus messaging.EventBus) Unit
 		ctx: ctx,
 		bus: bus,
 	}
+}
+
+func (uow *unitOfWork) Tx() *sql.Tx {
+	return uow.tx
 }
 
 func (uow *unitOfWork) Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error {

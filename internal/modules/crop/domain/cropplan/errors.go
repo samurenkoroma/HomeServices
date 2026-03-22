@@ -13,7 +13,6 @@ var (
 	ErrInvalidMinYears         = errors.New("invalid minimum years")
 	ErrInvalidPredecessor      = errors.New("invalid predecessor")
 	ErrInvalidCropType         = errors.New("invalid crop type")
-	ErrInvalidVarietyName      = errors.New("invalid variety name")
 	ErrInvalidVegetationDays   = errors.New("invalid vegetation days")
 
 	// Ошибки плана

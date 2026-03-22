@@ -2,24 +2,37 @@ package commands
 
 import (
 	"context"
+	"errors"
+	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
 	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
 )
 
 type CreateCropTypeCommand struct {
-	Name           string `json:"name" validate:"required"`
-	ScientificName string `json:"scientific_name"`
-	Category       string `json:"category" validate:"required"`
-	VegetationDays int    `json:"vegetation_days" validate:"required,gt=0"`
-	Description    string `json:"description"`
+	Name        string `json:"name" validate:"required"`
+	Category    string `json:"category" validate:"required"`
+	Description string `json:"description"`
+	IsPerennial bool   `json:"is_perennial"`
 }
 
-type CreateCropTypeHandler struct {
+type createCropTypeHandler struct {
 	uowFactory repository.Factory
 }
 
-func (h *CreateCropTypeHandler) Handle(ctx context.Context, cmd CreateCropTypeCommand) error {
+func (h *createCropTypeHandler) Name() string {
+	return "CreateCropType"
+}
+
+func NewCreateCropTypeHandler(uowFactory repository.Factory) command.Handler {
+	return &createCropTypeHandler{uowFactory: uowFactory}
+}
+
+func (h *createCropTypeHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(CreateCropTypeCommand)
+	if !ok {
+		return errors.New("invalid command type")
+	}
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err
@@ -30,16 +43,14 @@ func (h *CreateCropTypeHandler) Handle(ctx context.Context, cmd CreateCropTypeCo
 
 		// Создаем тип культуры
 		cropType, err := croptype.NewCropType(
-			cmd.Name,
-			cmd.ScientificName,
-			croptype.CropCategory(cmd.Category),
-			cmd.VegetationDays,
+			c.Name,
+			croptype.CropCategory(c.Category),
+			c.Description,
+			c.IsPerennial,
 		)
 		if err != nil {
 			return err
 		}
-
-		cropType.SetDescription(cmd.Description)
 
 		// Сохраняем
 		if err := cropProvider.CropTypes().Save(ctx, cropType); err != nil {

@@ -1,0 +1,2240 @@
+{
+  "crop_types": [
+    {
+      "name": "Пшеница",
+      "scientific_name": "Triticum aestivum",
+      "category": "cereal",
+      "description": "Озимая мягкая пшеница",
+      "is_perennial": false
+    },
+    {
+      "name": "Ячмень",
+      "scientific_name": "Hordeum vulgare",
+      "category": "cereal",
+      "description": "Ячмень яровой",
+      "is_perennial": false
+    },
+    {
+      "name": "Овес",
+      "scientific_name": "Avena sativa",
+      "category": "cereal",
+      "description": "Овес посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Кукуруза",
+      "scientific_name": "Zea mays",
+      "category": "cereal",
+      "description": "Кукуруза на зерно",
+      "is_perennial": false
+    },
+    {
+      "name": "Рожь",
+      "scientific_name": "Secale cereale",
+      "category": "cereal",
+      "description": "Рожь озимая",
+      "is_perennial": false
+    },
+    {
+      "name": "Рис",
+      "scientific_name": "Oryza sativa",
+      "category": "cereal",
+      "description": "Рис посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Гречиха",
+      "scientific_name": "Fagopyrum esculentum",
+      "category": "cereal",
+      "description": "Гречиха посевная",
+      "is_perennial": false
+    },
+    {
+      "name": "Просо",
+      "scientific_name": "Panicum miliaceum",
+      "category": "cereal",
+      "description": "Просо посевное",
+      "is_perennial": false
+    },
+    {
+      "name": "Сорго",
+      "scientific_name": "Sorghum bicolor",
+      "category": "cereal",
+      "description": "Сорго зерновое",
+      "is_perennial": false
+    },
+    {
+      "name": "Горох",
+      "scientific_name": "Pisum sativum",
+      "category": "grain",
+      "description": "Горох посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Фасоль",
+      "scientific_name": "Phaseolus vulgaris",
+      "category": "grain",
+      "description": "Фасоль обыкновенная",
+      "is_perennial": false
+    },
+    {
+      "name": "Соя",
+      "scientific_name": "Glycine max",
+      "category": "grain",
+      "description": "Соя культурная",
+      "is_perennial": false
+    },
+    {
+      "name": "Чечевица",
+      "scientific_name": "Lens culinaris",
+      "category": "grain",
+      "description": "Чечевица пищевая",
+      "is_perennial": false
+    },
+    {
+      "name": "Нут",
+      "scientific_name": "Cicer arietinum",
+      "category": "grain",
+      "description": "Нут бараний",
+      "is_perennial": false
+    },
+    {
+      "name": "Бобы",
+      "scientific_name": "Vicia faba",
+      "category": "grain",
+      "description": "Бобы кормовые",
+      "is_perennial": false
+    },
+    {
+      "name": "Люпин",
+      "scientific_name": "Lupinus",
+      "category": "grain",
+      "description": "Люпин узколистный",
+      "is_perennial": false
+    },
+    {
+      "name": "Подсолнечник",
+      "scientific_name": "Helianthus annuus",
+      "category": "oilseed",
+      "description": "Подсолнечник масличный",
+      "is_perennial": false
+    },
+    {
+      "name": "Рапс",
+      "scientific_name": "Brassica napus",
+      "category": "oilseed",
+      "description": "Рапс яровой",
+      "is_perennial": false
+    },
+    {
+      "name": "Горчица",
+      "scientific_name": "Sinapis alba",
+      "category": "oilseed",
+      "description": "Горчица белая",
+      "is_perennial": false
+    },
+    {
+      "name": "Лен масличный",
+      "scientific_name": "Linum usitatissimum",
+      "category": "oilseed",
+      "description": "Лен масличный",
+      "is_perennial": false
+    },
+    {
+      "name": "Рыжик",
+      "scientific_name": "Camelina sativa",
+      "category": "oilseed",
+      "description": "Рыжик посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Сафлор",
+      "scientific_name": "Carthamus tinctorius",
+      "category": "oilseed",
+      "description": "Сафлор красильный",
+      "is_perennial": false
+    },
+    {
+      "name": "Лен-долгунец",
+      "scientific_name": "Linum usitatissimum",
+      "category": "industrial",
+      "description": "Лен-долгунец",
+      "is_perennial": false
+    },
+    {
+      "name": "Конопля",
+      "scientific_name": "Cannabis sativa",
+      "category": "industrial",
+      "description": "Конопля техническая",
+      "is_perennial": false
+    },
+    {
+      "name": "Хлопчатник",
+      "scientific_name": "Gossypium",
+      "category": "industrial",
+      "description": "Хлопчатник обыкновенный",
+      "is_perennial": false
+    },
+    {
+      "name": "Сахарная свекла",
+      "scientific_name": "Beta vulgaris",
+      "category": "sugar",
+      "description": "Свекла для производства сахара",
+      "is_perennial": false
+    },
+    {
+      "name": "Томат",
+      "scientific_name": "Solanum lycopersicum",
+      "category": "vegetable",
+      "description": "Томат для открытого грунта",
+      "is_perennial": false
+    },
+    {
+      "name": "Огурец",
+      "scientific_name": "Cucumis sativus",
+      "category": "vegetable",
+      "description": "Огурец для открытого грунта",
+      "is_perennial": false
+    },
+    {
+      "name": "Перец сладкий",
+      "scientific_name": "Capsicum annuum",
+      "category": "vegetable",
+      "description": "Перец сладкий",
+      "is_perennial": false
+    },
+    {
+      "name": "Баклажан",
+      "scientific_name": "Solanum melongena",
+      "category": "vegetable",
+      "description": "Баклажан",
+      "is_perennial": false
+    },
+    {
+      "name": "Капуста белокочанная",
+      "scientific_name": "Brassica oleracea",
+      "category": "vegetable",
+      "description": "Капуста белокочанная",
+      "is_perennial": false
+    },
+    {
+      "name": "Капуста цветная",
+      "scientific_name": "Brassica oleracea var. botrytis",
+      "category": "vegetable",
+      "description": "Капуста цветная",
+      "is_perennial": false
+    },
+    {
+      "name": "Капуста брокколи",
+      "scientific_name": "Brassica oleracea var. italica",
+      "category": "vegetable",
+      "description": "Брокколи",
+      "is_perennial": false
+    },
+    {
+      "name": "Капуста пекинская",
+      "scientific_name": "Brassica rapa subsp. pekinensis",
+      "category": "vegetable",
+      "description": "Пекинская капуста",
+      "is_perennial": false
+    },
+    {
+      "name": "Лук репчатый",
+      "scientific_name": "Allium cepa",
+      "category": "vegetable",
+      "description": "Лук репчатый",
+      "is_perennial": false
+    },
+    {
+      "name": "Лук-порей",
+      "scientific_name": "Allium ampeloprasum",
+      "category": "vegetable",
+      "description": "Лук-порей",
+      "is_perennial": false
+    },
+    {
+      "name": "Чеснок",
+      "scientific_name": "Allium sativum",
+      "category": "vegetable",
+      "description": "Чеснок озимый",
+      "is_perennial": false
+    },
+    {
+      "name": "Салат",
+      "scientific_name": "Lactuca sativa",
+      "category": "vegetable",
+      "description": "Салат листовой",
+      "is_perennial": false
+    },
+    {
+      "name": "Шпинат",
+      "scientific_name": "Spinacia oleracea",
+      "category": "vegetable",
+      "description": "Шпинат огородный",
+      "is_perennial": false
+    },
+    {
+      "name": "Укроп",
+      "scientific_name": "Anethum graveolens",
+      "category": "vegetable",
+      "description": "Укроп пахучий",
+      "is_perennial": false
+    },
+    {
+      "name": "Петрушка",
+      "scientific_name": "Petroselinum crispum",
+      "category": "vegetable",
+      "description": "Петрушка листовая",
+      "is_perennial": false
+    },
+    {
+      "name": "Сельдерей",
+      "scientific_name": "Apium graveolens",
+      "category": "vegetable",
+      "description": "Сельдерей черешковый",
+      "is_perennial": false
+    },
+    {
+      "name": "Редис",
+      "scientific_name": "Raphanus sativus",
+      "category": "root",
+      "description": "Редис",
+      "is_perennial": false
+    },
+    {
+      "name": "Морковь",
+      "scientific_name": "Daucus carota",
+      "category": "root",
+      "description": "Морковь столовая",
+      "is_perennial": false
+    },
+    {
+      "name": "Свекла столовая",
+      "scientific_name": "Beta vulgaris",
+      "category": "root",
+      "description": "Свекла столовая",
+      "is_perennial": false
+    },
+    {
+      "name": "Картофель",
+      "scientific_name": "Solanum tuberosum",
+      "category": "root",
+      "description": "Картофель продовольственный",
+      "is_perennial": false
+    },
+    {
+      "name": "Редька",
+      "scientific_name": "Raphanus sativus var. niger",
+      "category": "root",
+      "description": "Редька черная",
+      "is_perennial": false
+    },
+    {
+      "name": "Дайкон",
+      "scientific_name": "Raphanus sativus var. longipinnatus",
+      "category": "root",
+      "description": "Дайкон",
+      "is_perennial": false
+    },
+    {
+      "name": "Пастернак",
+      "scientific_name": "Pastinaca sativa",
+      "category": "root",
+      "description": "Пастернак посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Хрен",
+      "scientific_name": "Armoracia rusticana",
+      "category": "root",
+      "description": "Хрен обыкновенный",
+      "is_perennial": true
+    },
+    {
+      "name": "Топинамбур",
+      "scientific_name": "Helianthus tuberosus",
+      "category": "root",
+      "description": "Топинамбур",
+      "is_perennial": true
+    },
+    {
+      "name": "Арбуз",
+      "scientific_name": "Citrullus lanatus",
+      "category": "melon",
+      "description": "Арбуз столовый",
+      "is_perennial": false
+    },
+    {
+      "name": "Дыня",
+      "scientific_name": "Cucumis melo",
+      "category": "melon",
+      "description": "Дыня",
+      "is_perennial": false
+    },
+    {
+      "name": "Тыква",
+      "scientific_name": "Cucurbita pepo",
+      "category": "melon",
+      "description": "Тыква обыкновенная",
+      "is_perennial": false
+    },
+    {
+      "name": "Кабачок",
+      "scientific_name": "Cucurbita pepo",
+      "category": "melon",
+      "description": "Кабачок",
+      "is_perennial": false
+    },
+    {
+      "name": "Патиссон",
+      "scientific_name": "Cucurbita pepo var. patisson",
+      "category": "melon",
+      "description": "Патиссон",
+      "is_perennial": false
+    },
+    {
+      "name": "Яблоня",
+      "scientific_name": "Malus domestica",
+      "category": "fruit",
+      "description": "Яблоня домашняя",
+      "is_perennial": true
+    },
+    {
+      "name": "Груша",
+      "scientific_name": "Pyrus communis",
+      "category": "fruit",
+      "description": "Груша обыкновенная",
+      "is_perennial": true
+    },
+    {
+      "name": "Слива",
+      "scientific_name": "Prunus domestica",
+      "category": "fruit",
+      "description": "Слива домашняя",
+      "is_perennial": true
+    },
+    {
+      "name": "Вишня",
+      "scientific_name": "Prunus cerasus",
+      "category": "fruit",
+      "description": "Вишня обыкновенная",
+      "is_perennial": true
+    },
+    {
+      "name": "Черешня",
+      "scientific_name": "Prunus avium",
+      "category": "fruit",
+      "description": "Черешня",
+      "is_perennial": true
+    },
+    {
+      "name": "Абрикос",
+      "scientific_name": "Prunus armeniaca",
+      "category": "fruit",
+      "description": "Абрикос",
+      "is_perennial": true
+    },
+    {
+      "name": "Персик",
+      "scientific_name": "Prunus persica",
+      "category": "fruit",
+      "description": "Персик",
+      "is_perennial": true
+    },
+    {
+      "name": "Клубника",
+      "scientific_name": "Fragaria × ananassa",
+      "category": "berry",
+      "description": "Клубника садовая",
+      "is_perennial": true
+    },
+    {
+      "name": "Малина",
+      "scientific_name": "Rubus idaeus",
+      "category": "berry",
+      "description": "Малина",
+      "is_perennial": true
+    },
+    {
+      "name": "Смородина черная",
+      "scientific_name": "Ribes nigrum",
+      "category": "berry",
+      "description": "Смородина черная",
+      "is_perennial": true
+    },
+    {
+      "name": "Смородина красная",
+      "scientific_name": "Ribes rubrum",
+      "category": "berry",
+      "description": "Смородина красная",
+      "is_perennial": true
+    },
+    {
+      "name": "Крыжовник",
+      "scientific_name": "Ribes uva-crispa",
+      "category": "berry",
+      "description": "Крыжовник",
+      "is_perennial": true
+    },
+    {
+      "name": "Ежевика",
+      "scientific_name": "Rubus fruticosus",
+      "category": "berry",
+      "description": "Ежевика",
+      "is_perennial": true
+    },
+    {
+      "name": "Голубика",
+      "scientific_name": "Vaccinium corymbosum",
+      "category": "berry",
+      "description": "Голубика садовая",
+      "is_perennial": true
+    },
+    {
+      "name": "Клюква",
+      "scientific_name": "Vaccinium macrocarpon",
+      "category": "berry",
+      "description": "Клюква крупноплодная",
+      "is_perennial": true
+    },
+    {
+      "name": "Виноград",
+      "scientific_name": "Vitis vinifera",
+      "category": "berry",
+      "description": "Виноград культурный",
+      "is_perennial": true
+    },
+    {
+      "name": "Грецкий орех",
+      "scientific_name": "Juglans regia",
+      "category": "nut",
+      "description": "Орех грецкий",
+      "is_perennial": true
+    },
+    {
+      "name": "Фундук",
+      "scientific_name": "Corylus avellana",
+      "category": "nut",
+      "description": "Фундук",
+      "is_perennial": true
+    },
+    {
+      "name": "Миндаль",
+      "scientific_name": "Prunus dulcis",
+      "category": "nut",
+      "description": "Миндаль",
+      "is_perennial": true
+    },
+    {
+      "name": "Люцерна",
+      "scientific_name": "Medicago sativa",
+      "category": "forage",
+      "description": "Люцерна посевная",
+      "is_perennial": true
+    },
+    {
+      "name": "Клевер",
+      "scientific_name": "Trifolium pratense",
+      "category": "forage",
+      "description": "Клевер луговой",
+      "is_perennial": true
+    },
+    {
+      "name": "Эспарцет",
+      "scientific_name": "Onobrychis viciifolia",
+      "category": "forage",
+      "description": "Эспарцет посевной",
+      "is_perennial": true
+    },
+    {
+      "name": "Кукуруза на силос",
+      "scientific_name": "Zea mays",
+      "category": "silage",
+      "description": "Кукуруза на силос",
+      "is_perennial": false
+    },
+    {
+      "name": "Подсолнечник на силос",
+      "scientific_name": "Helianthus annuus",
+      "category": "silage",
+      "description": "Подсолнечник на силос",
+      "is_perennial": false
+    },
+    {
+      "name": "Горчица белая",
+      "scientific_name": "Sinapis alba",
+      "category": "green_manure",
+      "description": "Сидеральная культура",
+      "is_perennial": false
+    },
+    {
+      "name": "Редька масличная",
+      "scientific_name": "Raphanus sativus var. oleifera",
+      "category": "green_manure",
+      "description": "Редька масличная",
+      "is_perennial": false
+    },
+    {
+      "name": "Фацелия",
+      "scientific_name": "Phacelia tanacetifolia",
+      "category": "green_manure",
+      "description": "Фацелия пижмолистная",
+      "is_perennial": false
+    },
+    {
+      "name": "Вика",
+      "scientific_name": "Vicia sativa",
+      "category": "green_manure",
+      "description": "Вика яровая",
+      "is_perennial": false
+    },
+    {
+      "name": "Овес на зеленое удобрение",
+      "scientific_name": "Avena sativa",
+      "category": "green_manure",
+      "description": "Овес как сидерат",
+      "is_perennial": false
+    },
+    {
+      "name": "Покровная культура",
+      "scientific_name": "",
+      "category": "cover",
+      "description": "Покровные культуры для защиты почвы",
+      "is_perennial": false
+    },
+    {
+      "name": "Ромашка аптечная",
+      "scientific_name": "Matricaria chamomilla",
+      "category": "medicinal",
+      "description": "Лекарственное растение",
+      "is_perennial": false
+    },
+    {
+      "name": "Календула",
+      "scientific_name": "Calendula officinalis",
+      "category": "medicinal",
+      "description": "Календула лекарственная",
+      "is_perennial": false
+    },
+    {
+      "name": "Зверобой",
+      "scientific_name": "Hypericum perforatum",
+      "category": "medicinal",
+      "description": "Зверобой продырявленный",
+      "is_perennial": true
+    },
+    {
+      "name": "Мелисса",
+      "scientific_name": "Melissa officinalis",
+      "category": "medicinal",
+      "description": "Мелисса лекарственная",
+      "is_perennial": true
+    },
+    {
+      "name": "Мята",
+      "scientific_name": "Mentha piperita",
+      "category": "medicinal",
+      "description": "Мята перечная",
+      "is_perennial": true
+    },
+    {
+      "name": "Базилик",
+      "scientific_name": "Ocimum basilicum",
+      "category": "spice",
+      "description": "Базилик душистый",
+      "is_perennial": false
+    },
+    {
+      "name": "Кинза",
+      "scientific_name": "Coriandrum sativum",
+      "category": "spice",
+      "description": "Кориандр посевной",
+      "is_perennial": false
+    },
+    {
+      "name": "Розмарин",
+      "scientific_name": "Rosmarinus officinalis",
+      "category": "spice",
+      "description": "Розмарин лекарственный",
+      "is_perennial": true
+    },
+    {
+      "name": "Тимьян",
+      "scientific_name": "Thymus vulgaris",
+      "category": "spice",
+      "description": "Тимьян обыкновенный",
+      "is_perennial": true
+    },
+    {
+      "name": "Роза",
+      "scientific_name": "Rosa",
+      "category": "ornamental",
+      "description": "Роза садовая",
+      "is_perennial": true
+    },
+    {
+      "name": "Пион",
+      "scientific_name": "Paeonia",
+      "category": "ornamental",
+      "description": "Пион",
+      "is_perennial": true
+    },
+    {
+      "name": "Лилия",
+      "scientific_name": "Lilium",
+      "category": "floral",
+      "description": "Лилия садовая",
+      "is_perennial": true
+    },
+    {
+      "name": "Тюльпан",
+      "scientific_name": "Tulipa",
+      "category": "floral",
+      "description": "Тюльпан",
+      "is_perennial": true
+    },
+    {
+      "name": "Нарцисс",
+      "scientific_name": "Narcissus",
+      "category": "floral",
+      "description": "Нарцисс",
+      "is_perennial": true
+    }
+  ],
+  "varieties": [
+    {
+      "crop": "Пшеница",
+      "name": "Мироновская 65",
+      "description": "Озимая мягкая пшеница, устойчива к засухе",
+      "vegetation_days": "110..130",
+      "yield_potential": "4000..5500",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Пшеница",
+      "name": "Московская 56",
+      "description": "Озимая мягкая пшеница, устойчива к полеганию",
+      "vegetation_days": "105..125",
+      "yield_potential": "3800..5200",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Пшеница",
+      "name": "Алтайская 50",
+      "description": "Яровая мягкая пшеница, засухоустойчивая",
+      "vegetation_days": "85..100",
+      "yield_potential": "3000..4200",
+      "recommended_regions": [
+        "Западно-Сибирский",
+        "Восточно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Пшеница",
+      "name": "Скипетр",
+      "description": "Озимая мягкая пшеница, высокоурожайная",
+      "vegetation_days": "115..135",
+      "yield_potential": "4500..6000",
+      "recommended_regions": [
+        "Северо-Кавказский",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Пшеница",
+      "name": "Таня",
+      "description": "Яровая мягкая пшеница, устойчива к болезням",
+      "vegetation_days": "90..105",
+      "yield_potential": "3500..4800",
+      "recommended_regions": [
+        "Уральский",
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Ячмень",
+      "name": "Вакула",
+      "description": "Яровой ячмень, высокоурожайный",
+      "vegetation_days": "75..90",
+      "yield_potential": "4500..6000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Ячмень",
+      "name": "Михайловский",
+      "description": "Озимый ячмень, зимостойкий",
+      "vegetation_days": "80..95",
+      "yield_potential": "4200..5800",
+      "recommended_regions": [
+        "Северо-Кавказский",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Ячмень",
+      "name": "Раушан",
+      "description": "Яровой ячмень, устойчив к засухе",
+      "vegetation_days": "70..85",
+      "yield_potential": "4000..5500",
+      "recommended_regions": [
+        "Западно-Сибирский",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Ячмень",
+      "name": "Нур",
+      "description": "Яровой ячмень, пивоваренный",
+      "vegetation_days": "78..92",
+      "yield_potential": "4300..5900",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Ячмень",
+      "name": "Ларец",
+      "description": "Озимый ячмень, высокоурожайный",
+      "vegetation_days": "85..100",
+      "yield_potential": "4600..6200",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Овес",
+      "name": "Яков",
+      "description": "Яровой овес, устойчив к полеганию",
+      "vegetation_days": "75..90",
+      "yield_potential": "3500..4800",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Овес",
+      "name": "Аргамак",
+      "description": "Яровой овес, высокоурожайный",
+      "vegetation_days": "80..95",
+      "yield_potential": "3800..5200",
+      "recommended_regions": [
+        "Уральский",
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Овес",
+      "name": "Скакун",
+      "description": "Яровой овес, устойчив к засухе",
+      "vegetation_days": "70..85",
+      "yield_potential": "3200..4500",
+      "recommended_regions": [
+        "Восточно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Овес",
+      "name": "Фаэтон",
+      "description": "Яровой овес, пленчатый",
+      "vegetation_days": "78..92",
+      "yield_potential": "3600..4900",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Овес",
+      "name": "Талисман",
+      "description": "Яровой овес, высокобелковый",
+      "vegetation_days": "82..98",
+      "yield_potential": "3900..5300",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Кукуруза",
+      "name": "Катерина СВ",
+      "description": "Среднеранний гибрид кукурузы на зерно",
+      "vegetation_days": "100..115",
+      "yield_potential": "7000..9500",
+      "recommended_regions": [
+        "Северо-Кавказский",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Кукуруза",
+      "name": "Россия 3",
+      "description": "Среднеспелый гибрид кукурузы",
+      "vegetation_days": "110..125",
+      "yield_potential": "7500..10000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Кукуруза",
+      "name": "Краснодарский 291",
+      "description": "Раннеспелый гибрид кукурузы",
+      "vegetation_days": "90..105",
+      "yield_potential": "6000..8500",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Кукуруза",
+      "name": "Урожайный",
+      "description": "Среднеранний гибрид кукурузы",
+      "vegetation_days": "95..110",
+      "yield_potential": "6800..9200",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Кукуруза",
+      "name": "Росс 299",
+      "description": "Среднеспелый гибрид кукурузы",
+      "vegetation_days": "105..120",
+      "yield_potential": "7200..9800",
+      "recommended_regions": [
+        "Северо-Кавказский",
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Рожь",
+      "name": "Вятка",
+      "description": "Озимая рожь, зимостойкая",
+      "vegetation_days": "100..115",
+      "yield_potential": "3000..4200",
+      "recommended_regions": [
+        "Северо-Западный",
+        "Волго-Вятский"
+      ]
+    },
+    {
+      "crop": "Рожь",
+      "name": "Чулпан",
+      "description": "Озимая рожь, устойчива к болезням",
+      "vegetation_days": "105..120",
+      "yield_potential": "3200..4500",
+      "recommended_regions": [
+        "Поволжский",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Рожь",
+      "name": "Саратовская 7",
+      "description": "Озимая рожь, засухоустойчивая",
+      "vegetation_days": "95..110",
+      "yield_potential": "2800..4000",
+      "recommended_regions": [
+        "Нижневолжский"
+      ]
+    },
+    {
+      "crop": "Рожь",
+      "name": "Таловская 41",
+      "description": "Озимая рожь, высокоурожайная",
+      "vegetation_days": "100..115",
+      "yield_potential": "3500..4800",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Рожь",
+      "name": "Фаленская 4",
+      "description": "Озимая рожь, устойчива к полеганию",
+      "vegetation_days": "98..112",
+      "yield_potential": "3100..4300",
+      "recommended_regions": [
+        "Волго-Вятский",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Рис",
+      "name": "Лидер",
+      "description": "Среднеспелый сорт риса",
+      "vegetation_days": "110..125",
+      "yield_potential": "6000..8000",
+      "recommended_regions": [
+        "Краснодарский край",
+        "Ростовская область"
+      ]
+    },
+    {
+      "crop": "Рис",
+      "name": "Рапан",
+      "description": "Раннеспелый сорт риса",
+      "vegetation_days": "95..110",
+      "yield_potential": "5500..7500",
+      "recommended_regions": [
+        "Краснодарский край"
+      ]
+    },
+    {
+      "crop": "Рис",
+      "name": "Новатор",
+      "description": "Среднеспелый сорт риса",
+      "vegetation_days": "105..120",
+      "yield_potential": "6500..8500",
+      "recommended_regions": [
+        "Краснодарский край"
+      ]
+    },
+    {
+      "crop": "Рис",
+      "name": "Соната",
+      "description": "Среднепоздний сорт риса",
+      "vegetation_days": "115..130",
+      "yield_potential": "7000..9000",
+      "recommended_regions": [
+        "Краснодарский край",
+        "Адыгея"
+      ]
+    },
+    {
+      "crop": "Рис",
+      "name": "Волгоградский",
+      "description": "Среднеспелый сорт риса",
+      "vegetation_days": "100..115",
+      "yield_potential": "5800..7800",
+      "recommended_regions": [
+        "Волгоградская область"
+      ]
+    },
+    {
+      "crop": "Гречиха",
+      "name": "Девятка",
+      "description": "Скороспелый сорт гречихи",
+      "vegetation_days": "70..85",
+      "yield_potential": "1800..2500",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Гречиха",
+      "name": "Саулык",
+      "description": "Среднеспелый сорт гречихи",
+      "vegetation_days": "80..95",
+      "yield_potential": "2000..2800",
+      "recommended_regions": [
+        "Уральский",
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Гречиха",
+      "name": "Диалог",
+      "description": "Среднеспелый сорт гречихи",
+      "vegetation_days": "75..90",
+      "yield_potential": "1900..2600",
+      "recommended_regions": [
+        "Центральный",
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Гречиха",
+      "name": "Башкирская",
+      "description": "Среднеспелый сорт гречихи",
+      "vegetation_days": "78..92",
+      "yield_potential": "2100..2900",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Гречиха",
+      "name": "Изумруд",
+      "description": "Скороспелый сорт гречихи",
+      "vegetation_days": "68..82",
+      "yield_potential": "1700..2400",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Просо",
+      "name": "Саратовское 6",
+      "description": "Среднеспелый сорт проса",
+      "vegetation_days": "85..100",
+      "yield_potential": "2500..3500",
+      "recommended_regions": [
+        "Нижневолжский",
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Просо",
+      "name": "Орловское",
+      "description": "Среднеспелый сорт проса",
+      "vegetation_days": "90..105",
+      "yield_potential": "2800..3800",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Просо",
+      "name": "Быстрое",
+      "description": "Скороспелый сорт проса",
+      "vegetation_days": "75..90",
+      "yield_potential": "2200..3200",
+      "recommended_regions": [
+        "Уральский",
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Просо",
+      "name": "Веселоподолянское",
+      "description": "Среднеспелый сорт проса",
+      "vegetation_days": "88..102",
+      "yield_potential": "2600..3600",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Просо",
+      "name": "Казахстанское",
+      "description": "Среднеранний сорт проса",
+      "vegetation_days": "82..96",
+      "yield_potential": "2400..3400",
+      "recommended_regions": [
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Сорго",
+      "name": "Камбарка",
+      "description": "Среднеспелый сорт сорго",
+      "vegetation_days": "100..115",
+      "yield_potential": "3500..4500",
+      "recommended_regions": [
+        "Нижневолжский",
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Сорго",
+      "name": "Славянское",
+      "description": "Среднеранний сорт сорго",
+      "vegetation_days": "95..110",
+      "yield_potential": "3200..4200",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Сорго",
+      "name": "Зерноградское",
+      "description": "Среднеспелый сорт сорго",
+      "vegetation_days": "105..120",
+      "yield_potential": "3800..4800",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Сорго",
+      "name": "Альфа",
+      "description": "Раннеспелый сорт сорго",
+      "vegetation_days": "85..100",
+      "yield_potential": "3000..4000",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Сорго",
+      "name": "Кинельское",
+      "description": "Среднеспелый сорт сорго",
+      "vegetation_days": "98..112",
+      "yield_potential": "3400..4400",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Горох",
+      "name": "Фараон",
+      "description": "Среднеспелый сорт гороха",
+      "vegetation_days": "70..85",
+      "yield_potential": "3000..4000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Горох",
+      "name": "Афина",
+      "description": "Среднеранний сорт гороха",
+      "vegetation_days": "65..80",
+      "yield_potential": "2800..3800",
+      "recommended_regions": [
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Горох",
+      "name": "Аксайский",
+      "description": "Среднеспелый сорт гороха",
+      "vegetation_days": "72..86",
+      "yield_potential": "3200..4200",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Горох",
+      "name": "Самарец",
+      "description": "Среднеранний сорт гороха",
+      "vegetation_days": "68..82",
+      "yield_potential": "2900..3900",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Горох",
+      "name": "Тимирязевский",
+      "description": "Скороспелый сорт гороха",
+      "vegetation_days": "60..75",
+      "yield_potential": "2600..3600",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Фасоль",
+      "name": "Сакса без волокна",
+      "description": "Среднеспелый сорт фасоли",
+      "vegetation_days": "50..65",
+      "yield_potential": "12000..18000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Фасоль",
+      "name": "Золотая",
+      "description": "Среднеспелый сорт фасоли",
+      "vegetation_days": "55..70",
+      "yield_potential": "13000..19000",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Фасоль",
+      "name": "Ласточка",
+      "description": "Скороспелый сорт фасоли",
+      "vegetation_days": "45..60",
+      "yield_potential": "10000..15000",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Фасоль",
+      "name": "Триумф",
+      "description": "Среднеспелый сорт фасоли",
+      "vegetation_days": "52..67",
+      "yield_potential": "11000..17000",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Фасоль",
+      "name": "Московская белая",
+      "description": "Среднеспелый сорт фасоли",
+      "vegetation_days": "58..72",
+      "yield_potential": "12500..18500",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Соя",
+      "name": "Вилана",
+      "description": "Скороспелый сорт сои",
+      "vegetation_days": "95..110",
+      "yield_potential": "2500..3200",
+      "recommended_regions": [
+        "Центрально-Черноземный",
+        "Дальневосточный"
+      ]
+    },
+    {
+      "crop": "Соя",
+      "name": "Светлая",
+      "description": "Среднеранний сорт сои",
+      "vegetation_days": "105..120",
+      "yield_potential": "2800..3600",
+      "recommended_regions": [
+        "Дальневосточный"
+      ]
+    },
+    {
+      "crop": "Соя",
+      "name": "Витязь",
+      "description": "Среднеспелый сорт сои",
+      "vegetation_days": "110..125",
+      "yield_potential": "3000..3800",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Соя",
+      "name": "Лира",
+      "description": "Среднеранний сорт сои",
+      "vegetation_days": "100..115",
+      "yield_potential": "2700..3500",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Соя",
+      "name": "Припять",
+      "description": "Среднеспелый сорт сои",
+      "vegetation_days": "108..122",
+      "yield_potential": "2900..3700",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Чечевица",
+      "name": "Веховская",
+      "description": "Среднеспелый сорт чечевицы",
+      "vegetation_days": "70..85",
+      "yield_potential": "1500..2200",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Чечевица",
+      "name": "Петровская",
+      "description": "Среднеспелый сорт чечевицы",
+      "vegetation_days": "75..90",
+      "yield_potential": "1600..2300",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Чечевица",
+      "name": "Айка",
+      "description": "Скороспелый сорт чечевицы",
+      "vegetation_days": "65..80",
+      "yield_potential": "1400..2100",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Чечевица",
+      "name": "Степная",
+      "description": "Среднеспелый сорт чечевицы",
+      "vegetation_days": "72..86",
+      "yield_potential": "1550..2250",
+      "recommended_regions": [
+        "Нижневолжский"
+      ]
+    },
+    {
+      "crop": "Чечевица",
+      "name": "Золотистая",
+      "description": "Среднеранний сорт чечевицы",
+      "vegetation_days": "68..82",
+      "yield_potential": "1450..2150",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Нут",
+      "name": "Приво 1",
+      "description": "Среднеспелый сорт нута",
+      "vegetation_days": "85..100",
+      "yield_potential": "1800..2500",
+      "recommended_regions": [
+        "Нижневолжский"
+      ]
+    },
+    {
+      "crop": "Нут",
+      "name": "Волгоградский",
+      "description": "Среднеранний сорт нута",
+      "vegetation_days": "80..95",
+      "yield_potential": "1700..2400",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Нут",
+      "name": "Азовский",
+      "description": "Среднеспелый сорт нута",
+      "vegetation_days": "88..102",
+      "yield_potential": "1900..2600",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Нут",
+      "name": "Золотой",
+      "description": "Скороспелый сорт нута",
+      "vegetation_days": "75..90",
+      "yield_potential": "1600..2300",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Нут",
+      "name": "Саратовский",
+      "description": "Среднеспелый сорт нута",
+      "vegetation_days": "82..96",
+      "yield_potential": "1750..2450",
+      "recommended_regions": [
+        "Нижневолжский"
+      ]
+    },
+    {
+      "crop": "Бобы",
+      "name": "Русские черные",
+      "description": "Среднеспелый сорт бобов",
+      "vegetation_days": "95..110",
+      "yield_potential": "2500..3500",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Бобы",
+      "name": "Виндзорские",
+      "description": "Среднеспелый сорт бобов",
+      "vegetation_days": "100..115",
+      "yield_potential": "2800..3800",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Бобы",
+      "name": "Аушра",
+      "description": "Скороспелый сорт бобов",
+      "vegetation_days": "85..100",
+      "yield_potential": "2200..3200",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Бобы",
+      "name": "Белорусские",
+      "description": "Среднеспелый сорт бобов",
+      "vegetation_days": "92..106",
+      "yield_potential": "2600..3600",
+      "recommended_regions": [
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Бобы",
+      "name": "Омские",
+      "description": "Среднеранний сорт бобов",
+      "vegetation_days": "88..102",
+      "yield_potential": "2400..3400",
+      "recommended_regions": [
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Люпин",
+      "name": "Белорусский",
+      "description": "Кормовой люпин",
+      "vegetation_days": "100..115",
+      "yield_potential": "3000..4000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Люпин",
+      "name": "Сидерат 38",
+      "description": "Сидеральный люпин",
+      "vegetation_days": "90..105",
+      "yield_potential": "2800..3800",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Люпин",
+      "name": "Альфа",
+      "description": "Кормовой люпин",
+      "vegetation_days": "95..110",
+      "yield_potential": "3200..4200",
+      "recommended_regions": [
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Люпин",
+      "name": "Снежок",
+      "description": "Белый люпин",
+      "vegetation_days": "105..120",
+      "yield_potential": "3500..4500",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Люпин",
+      "name": "Немчиновский",
+      "description": "Кормовой люпин",
+      "vegetation_days": "98..112",
+      "yield_potential": "3100..4100",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Томат",
+      "name": "Бычье сердце",
+      "description": "Крупноплодный сорт для открытого грунта, мясистый",
+      "vegetation_days": "110..130",
+      "yield_potential": "50000..70000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Томат",
+      "name": "Черри",
+      "description": "Мелкоплодный сорт для теплиц, сладкий",
+      "vegetation_days": "95..110",
+      "yield_potential": "30000..45000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Томат",
+      "name": "Де Барао",
+      "description": "Позднеспелый сорт для открытого грунта",
+      "vegetation_days": "120..140",
+      "yield_potential": "60000..80000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Томат",
+      "name": "Розовый мед",
+      "description": "Среднеспелый сорт, розовые плоды",
+      "vegetation_days": "105..120",
+      "yield_potential": "45000..65000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Томат",
+      "name": "Балконное чудо",
+      "description": "Карликовый сорт для балконов и подоконников",
+      "vegetation_days": "85..95",
+      "yield_potential": "15000..25000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Огурец",
+      "name": "Конкурент",
+      "description": "Скороспелый сорт для открытого грунта",
+      "vegetation_days": "40..50",
+      "yield_potential": "30000..50000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Огурец",
+      "name": "Зозуля",
+      "description": "Раннеспелый партенокарпический гибрид",
+      "vegetation_days": "45..55",
+      "yield_potential": "40000..60000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Огурец",
+      "name": "Герман",
+      "description": "Суперранний партенокарпический гибрид",
+      "vegetation_days": "35..45",
+      "yield_potential": "35000..55000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Огурец",
+      "name": "Феникс",
+      "description": "Позднеспелый сорт для открытого грунта",
+      "vegetation_days": "55..65",
+      "yield_potential": "45000..65000",
+      "recommended_regions": [
+        "Северо-Кавказский",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Огурец",
+      "name": "Маша",
+      "description": "Раннеспелый партенокарпический гибрид",
+      "vegetation_days": "38..48",
+      "yield_potential": "38000..58000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Перец сладкий",
+      "name": "Калифорнийское чудо",
+      "description": "Среднеспелый сорт, крупные плоды",
+      "vegetation_days": "110..130",
+      "yield_potential": "40000..60000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Перец сладкий",
+      "name": "Ласточка",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "95..110",
+      "yield_potential": "35000..55000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Перец сладкий",
+      "name": "Белозерка",
+      "description": "Среднеспелый сорт, белые плоды",
+      "vegetation_days": "105..120",
+      "yield_potential": "38000..58000",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Перец сладкий",
+      "name": "Золотое чудо",
+      "description": "Раннеспелый сорт, желтые плоды",
+      "vegetation_days": "100..115",
+      "yield_potential": "36000..56000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Перец сладкий",
+      "name": "Красный куб",
+      "description": "Среднеспелый сорт, кубовидные плоды",
+      "vegetation_days": "108..122",
+      "yield_potential": "42000..62000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Баклажан",
+      "name": "Алмаз",
+      "description": "Среднеспелый сорт, темно-фиолетовые плоды",
+      "vegetation_days": "110..130",
+      "yield_potential": "35000..50000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Баклажан",
+      "name": "Черный красавец",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "95..110",
+      "yield_potential": "30000..45000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Баклажан",
+      "name": "Солярис",
+      "description": "Раннеспелый гибрид, белые плоды",
+      "vegetation_days": "90..105",
+      "yield_potential": "32000..48000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Баклажан",
+      "name": "Король Севера",
+      "description": "Холодостойкий сорт для северных регионов",
+      "vegetation_days": "100..115",
+      "yield_potential": "28000..42000",
+      "recommended_regions": [
+        "Северо-Западный",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Баклажан",
+      "name": "Фиолетовое чудо",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "105..120",
+      "yield_potential": "34000..50000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Картофель",
+      "name": "Невский",
+      "description": "Среднеранний сорт, белые клубни",
+      "vegetation_days": "70..90",
+      "yield_potential": "25000..40000",
+      "recommended_regions": [
+        "Северо-Западный",
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Картофель",
+      "name": "Гала",
+      "description": "Раннеспелый сорт, желтые клубни",
+      "vegetation_days": "65..80",
+      "yield_potential": "28000..43000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Картофель",
+      "name": "Ред Скарлет",
+      "description": "Раннеспелый сорт, красные клубни",
+      "vegetation_days": "60..75",
+      "yield_potential": "26000..41000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Картофель",
+      "name": "Синеглазка",
+      "description": "Среднепоздний сорт, высокие вкусовые качества",
+      "vegetation_days": "85..105",
+      "yield_potential": "30000..45000",
+      "recommended_regions": [
+        "Центральный",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Картофель",
+      "name": "Адретта",
+      "description": "Среднеспелый сорт, желтые клубни",
+      "vegetation_days": "75..95",
+      "yield_potential": "27000..42000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Капуста белокочанная",
+      "name": "Слава",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "120..140",
+      "yield_potential": "50000..80000",
+      "recommended_regions": [
+        "Центральный",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Капуста белокочанная",
+      "name": "Московская поздняя",
+      "description": "Позднеспелый сорт для хранения",
+      "vegetation_days": "140..160",
+      "yield_potential": "60000..90000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Капуста белокочанная",
+      "name": "Июньская",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "90..110",
+      "yield_potential": "35000..55000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Капуста белокочанная",
+      "name": "Амагер",
+      "description": "Позднеспелый сорт, лежкий",
+      "vegetation_days": "130..150",
+      "yield_potential": "55000..85000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Капуста белокочанная",
+      "name": "Колобок",
+      "description": "Позднеспелый гибрид, плотные кочаны",
+      "vegetation_days": "135..155",
+      "yield_potential": "58000..88000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Морковь",
+      "name": "Нантская",
+      "description": "Скороспелый сорт",
+      "vegetation_days": "80..100",
+      "yield_potential": "40000..60000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Морковь",
+      "name": "Лосиноостровская",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "90..110",
+      "yield_potential": "45000..65000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Морковь",
+      "name": "Королева осени",
+      "description": "Позднеспелый сорт для хранения",
+      "vegetation_days": "110..130",
+      "yield_potential": "50000..70000",
+      "recommended_regions": [
+        "Центральный",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Морковь",
+      "name": "Шантанэ",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "95..115",
+      "yield_potential": "42000..62000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Морковь",
+      "name": "Витаминная",
+      "description": "Среднеспелый сорт, высокое содержание каротина",
+      "vegetation_days": "85..105",
+      "yield_potential": "38000..58000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Свекла столовая",
+      "name": "Бордо",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "90..110",
+      "yield_potential": "40000..60000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Свекла столовая",
+      "name": "Цилиндра",
+      "description": "Среднеспелый сорт, цилиндрическая форма",
+      "vegetation_days": "100..120",
+      "yield_potential": "45000..65000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Свекла столовая",
+      "name": "Детройт",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "80..100",
+      "yield_potential": "35000..55000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Свекла столовая",
+      "name": "Египетская плоская",
+      "description": "Среднеспелый сорт, плоские корнеплоды",
+      "vegetation_days": "95..115",
+      "yield_potential": "42000..62000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Свекла столовая",
+      "name": "Мулатка",
+      "description": "Среднеспелый сорт, темно-бордовая мякоть",
+      "vegetation_days": "105..125",
+      "yield_potential": "43000..63000",
+      "recommended_regions": [
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Лук репчатый",
+      "name": "Стригуновский",
+      "description": "Острый сорт для хранения",
+      "vegetation_days": "90..110",
+      "yield_potential": "25000..35000",
+      "recommended_regions": [
+        "Центральный",
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Лук репчатый",
+      "name": "Бессоновский",
+      "description": "Острый сорт, лежкий",
+      "vegetation_days": "85..105",
+      "yield_potential": "23000..33000",
+      "recommended_regions": [
+        "Поволжский",
+        "Уральский"
+      ]
+    },
+    {
+      "crop": "Лук репчатый",
+      "name": "Штутгартер Ризен",
+      "description": "Среднеострый сорт",
+      "vegetation_days": "100..120",
+      "yield_potential": "28000..38000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Лук репчатый",
+      "name": "Красный барон",
+      "description": "Салатный сорт, красный",
+      "vegetation_days": "95..115",
+      "yield_potential": "26000..36000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Лук репчатый",
+      "name": "Эксибишен",
+      "description": "Сладкий сорт, крупные луковицы",
+      "vegetation_days": "120..140",
+      "yield_potential": "30000..40000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Чеснок",
+      "name": "Любаша",
+      "description": "Озимый сорт, стрелкующийся",
+      "vegetation_days": "90..110",
+      "yield_potential": "12000..18000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Чеснок",
+      "name": "Грибовский",
+      "description": "Озимый сорт",
+      "vegetation_days": "95..115",
+      "yield_potential": "10000..16000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Чеснок",
+      "name": "Рокамболь",
+      "description": "Крупноплодный сорт",
+      "vegetation_days": "100..120",
+      "yield_potential": "15000..22000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Чеснок",
+      "name": "Алькор",
+      "description": "Яровой сорт",
+      "vegetation_days": "85..100",
+      "yield_potential": "8000..12000",
+      "recommended_regions": [
+        "Уральский",
+        "Западно-Сибирский"
+      ]
+    },
+    {
+      "crop": "Чеснок",
+      "name": "Сочинский",
+      "description": "Озимый сорт для южных регионов",
+      "vegetation_days": "100..115",
+      "yield_potential": "11000..17000",
+      "recommended_regions": [
+        "Северо-Кавказский"
+      ]
+    },
+    {
+      "crop": "Капуста цветная",
+      "name": "Снежный шар",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "80..100",
+      "yield_potential": "20000..30000",
+      "recommended_regions": [
+        "Центральный",
+        "Северо-Западный"
+      ]
+    },
+    {
+      "crop": "Капуста цветная",
+      "name": "Мовир",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "100..120",
+      "yield_potential": "25000..35000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Капуста цветная",
+      "name": "Отечественная",
+      "description": "Среднепоздний сорт",
+      "vegetation_days": "110..130",
+      "yield_potential": "28000..38000",
+      "recommended_regions": [
+        "Центрально-Черноземный"
+      ]
+    },
+    {
+      "crop": "Капуста брокколи",
+      "name": "Тонус",
+      "description": "Раннеспелый сорт",
+      "vegetation_days": "70..90",
+      "yield_potential": "18000..25000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Капуста брокколи",
+      "name": "Линда",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "85..105",
+      "yield_potential": "20000..28000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Редис",
+      "name": "Французский завтрак",
+      "description": "Скороспелый сорт",
+      "vegetation_days": "20..30",
+      "yield_potential": "15000..25000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Редис",
+      "name": "Кармен",
+      "description": "Раннеспелый сорт, красные корнеплоды",
+      "vegetation_days": "22..32",
+      "yield_potential": "16000..26000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Редис",
+      "name": "Дуро",
+      "description": "Скороспелый сорт, устойчив к стрелкованию",
+      "vegetation_days": "18..28",
+      "yield_potential": "14000..24000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Салат",
+      "name": "Московский парниковый",
+      "description": "Скороспелый сорт",
+      "vegetation_days": "35..45",
+      "yield_potential": "20000..30000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Салат",
+      "name": "Лолло Росса",
+      "description": "Среднеспелый сорт, красный",
+      "vegetation_days": "45..55",
+      "yield_potential": "22000..32000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Укроп",
+      "name": "Грибовский",
+      "description": "Скороспелый сорт",
+      "vegetation_days": "30..40",
+      "yield_potential": "8000..12000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Укроп",
+      "name": "Кибрай",
+      "description": "Позднеспелый сорт",
+      "vegetation_days": "40..50",
+      "yield_potential": "9000..13000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Петрушка",
+      "name": "Обыкновенная листовая",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "60..80",
+      "yield_potential": "15000..25000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Петрушка",
+      "name": "Сахарная корневая",
+      "description": "Корневая петрушка",
+      "vegetation_days": "90..110",
+      "yield_potential": "18000..28000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Тыква",
+      "name": "Волжская серая",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "110..130",
+      "yield_potential": "30000..50000",
+      "recommended_regions": [
+        "Нижневолжский",
+        "Поволжский"
+      ]
+    },
+    {
+      "crop": "Тыква",
+      "name": "Атлант",
+      "description": "Крупноплодный сорт",
+      "vegetation_days": "120..140",
+      "yield_potential": "35000..60000",
+      "recommended_regions": [
+        "Центральный"
+      ]
+    },
+    {
+      "crop": "Кабачок",
+      "name": "Цукеша",
+      "description": "Скороспелый сорт",
+      "vegetation_days": "40..50",
+      "yield_potential": "40000..60000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    },
+    {
+      "crop": "Кабачок",
+      "name": "Грибовский",
+      "description": "Среднеспелый сорт",
+      "vegetation_days": "45..55",
+      "yield_potential": "35000..55000",
+      "recommended_regions": [
+        "Все регионы"
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
+	"samurenkoroma/services/internal/modules/crop/domain/variety"
 )
 
 // CropProvider — провайдер репозиториев для контекста культур
@@ -14,6 +15,7 @@ type CropProvider struct {
 	// Кеш репозиториев
 	cropPlans cropplan.Repository
 	cropTypes croptype.Repository
+	varieties variety.Repository
 }
 
 func (p *CropProvider) ProviderName() string {
@@ -27,6 +29,14 @@ func NewCropProvider(tx *sql.Tx) repository.RepositoryProvider {
 	return &CropProvider{
 		tx: tx,
 	}
+}
+
+// Varieties возвращает репозиторий всех объектов
+func (p *CropProvider) Varieties() variety.Repository {
+	if p.varieties == nil {
+		p.varieties = NewVarietyRepository(p.tx)
+	}
+	return p.varieties
 }
 
 // CropPlans возвращает репозиторий всех объектов

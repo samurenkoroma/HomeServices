@@ -1,6 +1,34 @@
-.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-status
+.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-status seed seed-crop seed-farm seed-growing
 
 DB_DSN ?= postgres://tiun:tiun@lab.note:5432/tiun?sslmode=disable
+
+
+# Запуск всех seed-данных
+seed:
+	@echo "Seeding all data..."
+	go run cmd/seed/main.go -data=./data -module=all
+
+# Только crop
+seed-crop:
+	@echo "Seeding crop data..."
+	go run cmd/seed/main.go -data=./data -module=crop
+
+# Только farm
+seed-farm:
+	@echo "Seeding farm data..."
+	go run cmd/seed/main.go -data=./data -module=farm
+
+# Только growing
+seed-growing:
+	@echo "Seeding growing data..."
+	go run cmd/seed/main.go -data=./data -module=growing
+
+# Проверка seed-данных (dry-run)
+seed-dry-run:
+	@echo "Validating seed data..."
+	go run cmd/seed/main.go -data=./data -dry-run -module=all
+
+
 
 help:
 	@echo "Commands:"

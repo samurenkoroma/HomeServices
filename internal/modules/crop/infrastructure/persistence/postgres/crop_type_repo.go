@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	sqlErrors "samurenkoroma/services/internal/core/errors"
 	"time"
 
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
@@ -21,43 +22,31 @@ func NewCropTypeRepository(tx *sql.Tx) croptype.Repository {
 // Save сохраняет или обновляет тип культуры
 func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) error {
 	query := `
-        INSERT INTO crop_types (
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        INSERT INTO crop_types (id, name, category, description, is_perennial, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
-            scientific_name = EXCLUDED.scientific_name,
             category = EXCLUDED.category,
             description = EXCLUDED.description,
-            root_depth = EXCLUDED.root_depth,
             is_perennial = EXCLUDED.is_perennial,
-            vegetation_days = EXCLUDED.vegetation_days,
-            default_yield = EXCLUDED.default_yield,
-            market_price = EXCLUDED.market_price,
-            is_active = EXCLUDED.is_active,
             updated_at = EXCLUDED.updated_at
     `
 
 	_, err := r.tx.ExecContext(ctx, query,
 		ct.GetID(),
 		ct.GetName(),
-		ct.GetScientificName(),
 		string(ct.GetCategory()),
 		ct.GetDescription(),
-		ct.GetRootDepth(),
 		ct.IsPerennial(),
-		ct.GetVegetationDays(),
-		ct.GetDefaultYield(),
-		ct.GetMarketPrice(),
 		ct.IsActive(),
 		ct.GetCreatedAt(),
 		ct.GetUpdatedAt(),
 	)
 
 	if err != nil {
+		if sqlErrors.IsUniqueViolation(err) {
+			return croptype.ErrCropTypeAlreadyExists
+		}
 		return fmt.Errorf("failed to save crop type: %w", err)
 	}
 
@@ -65,38 +54,26 @@ func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) er
 }
 
 // FindByID находит тип культуры по ID
-func (r *cropTypeRepository) FindByID(ctx context.Context, id croptype.CropTypeID) (*croptype.CropType, error) {
+func (r *cropTypeRepository) FindByID(ctx context.Context, search croptype.CropTypeID) (*croptype.CropType, error) {
 	query := `
-        SELECT 
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
+        SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
         FROM crop_types
         WHERE id = $1
     `
 
 	var (
-		ctID           string
-		name           string
-		scientificName sql.NullString
-		category       string
-		description    sql.NullString
-		rootDepth      sql.NullInt64
-		isPerennial    bool
-		vegetationDays int
-		defaultYield   sql.NullFloat64
-		marketPrice    sql.NullFloat64
-		isActive       bool
-		createdAt      time.Time
-		updatedAt      time.Time
+		id          string
+		name        string
+		category    string
+		description sql.NullString
+		isPerennial bool
+		isActive    bool
+		createdAt   time.Time
+		updatedAt   time.Time
 	)
 
-	err := r.tx.QueryRowContext(ctx, query, string(id)).Scan(
-		&ctID, &name, &scientificName, &category, &description,
-		&rootDepth, &isPerennial, &vegetationDays,
-		&defaultYield, &marketPrice, &isActive,
-		&createdAt, &updatedAt,
+	err := r.tx.QueryRowContext(ctx, query, string(search)).Scan(
+		&id, &name, &category, &description, &isPerennial, &isActive, &createdAt, &updatedAt,
 	)
 
 	if err != nil {
@@ -106,95 +83,55 @@ func (r *cropTypeRepository) FindByID(ctx context.Context, id croptype.CropTypeI
 		return nil, fmt.Errorf("failed to find crop type: %w", err)
 	}
 
-	// Создаем тип культуры через конструктор
-	ct, err := croptype.NewCropType(
+	ct := croptype.Rehydrate(
+		id,
 		name,
-		scientificName.String,
-		croptype.CropCategory(category),
-		vegetationDays,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Восстанавливаем остальные поля
-	ct.Rehydrate(
-		croptype.CropTypeID(ctID),
+		category,
 		description.String,
-		int(rootDepth.Int64),
 		isPerennial,
-		defaultYield.Float64,
-		marketPrice.Float64,
 		isActive,
-		createdAt,
-		updatedAt,
 	)
 
 	return ct, nil
 }
 
 // FindByName находит тип культуры по имени
-func (r *cropTypeRepository) FindByName(ctx context.Context, name string) (*croptype.CropType, error) {
+func (r *cropTypeRepository) FindByName(ctx context.Context, search string) (*croptype.CropType, error) {
 	query := `
-        SELECT 
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
+        SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
         FROM crop_types
         WHERE name = $1
     `
 
 	var (
-		ctID           string
-		ctName         string
-		scientificName sql.NullString
-		category       string
-		description    sql.NullString
-		rootDepth      sql.NullInt64
-		isPerennial    bool
-		vegetationDays int
-		defaultYield   sql.NullFloat64
-		marketPrice    sql.NullFloat64
-		isActive       bool
-		createdAt      time.Time
-		updatedAt      time.Time
+		id          string
+		name        string
+		category    string
+		description sql.NullString
+		isPerennial bool
+		isActive    bool
+		createdAt   time.Time
+		updatedAt   time.Time
 	)
 
-	err := r.tx.QueryRowContext(ctx, query, name).Scan(
-		&ctID, &ctName, &scientificName, &category, &description,
-		&rootDepth, &isPerennial, &vegetationDays,
-		&defaultYield, &marketPrice, &isActive,
-		&createdAt, &updatedAt,
+	err := r.tx.QueryRowContext(ctx, query, search).Scan(
+		&id, &name, &category, &description, &isPerennial, &isActive, &createdAt, &updatedAt,
 	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, croptype.ErrCropTypeNotFound
 		}
-		return nil, fmt.Errorf("failed to find crop type by name: %w", err)
+		return nil, fmt.Errorf("failed to find crop type: %w", err)
 	}
 
-	ct, err := croptype.NewCropType(
-		ctName,
-		scientificName.String,
-		croptype.CropCategory(category),
-		vegetationDays,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	ct.Rehydrate(
-		croptype.CropTypeID(ctID),
+	ct := croptype.Rehydrate(
+		id,
+		name,
+		category,
 		description.String,
-		int(rootDepth.Int64),
 		isPerennial,
-		defaultYield.Float64,
-		marketPrice.Float64,
 		isActive,
-		createdAt,
-		updatedAt,
 	)
 
 	return ct, nil
@@ -203,11 +140,7 @@ func (r *cropTypeRepository) FindByName(ctx context.Context, name string) (*crop
 // FindAll возвращает все типы культур
 func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType, error) {
 	query := `
-        SELECT 
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
+        SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
         FROM crop_types
         ORDER BY name
     `
@@ -222,51 +155,31 @@ func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType,
 
 	for rows.Next() {
 		var (
-			ctID           string
-			name           string
-			scientificName sql.NullString
-			category       string
-			description    sql.NullString
-			rootDepth      sql.NullInt64
-			isPerennial    bool
-			vegetationDays int
-			defaultYield   sql.NullFloat64
-			marketPrice    sql.NullFloat64
-			isActive       bool
-			createdAt      time.Time
-			updatedAt      time.Time
+			id          string
+			name        string
+			category    string
+			description sql.NullString
+			isPerennial bool
+			isActive    bool
+			createdAt   time.Time
+			updatedAt   time.Time
 		)
 
 		err := rows.Scan(
-			&ctID, &name, &scientificName, &category, &description,
-			&rootDepth, &isPerennial, &vegetationDays,
-			&defaultYield, &marketPrice, &isActive,
-			&createdAt, &updatedAt,
+			&id, &name, &category, &description,
+			&isPerennial, &isActive, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan crop type: %w", err)
 		}
 
-		ct, err := croptype.NewCropType(
+		ct := croptype.Rehydrate(
+			id,
 			name,
-			scientificName.String,
-			croptype.CropCategory(category),
-			vegetationDays,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ct.Rehydrate(
-			croptype.CropTypeID(ctID),
+			category,
 			description.String,
-			int(rootDepth.Int64),
 			isPerennial,
-			defaultYield.Float64,
-			marketPrice.Float64,
 			isActive,
-			createdAt,
-			updatedAt,
 		)
 
 		cropTypes = append(cropTypes, ct)
@@ -280,19 +193,15 @@ func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType,
 }
 
 // FindByCategory возвращает типы культур по категории
-func (r *cropTypeRepository) FindByCategory(ctx context.Context, category croptype.CropCategory) ([]*croptype.CropType, error) {
+func (r *cropTypeRepository) FindByCategory(ctx context.Context, search croptype.CropCategory) ([]*croptype.CropType, error) {
 	query := `
-        SELECT 
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
+	SELECT  id, name, category,  description, is_perennial,is_active, created_at, updated_at 
         FROM crop_types
         WHERE category = $1
         ORDER BY name
     `
 
-	rows, err := r.tx.QueryContext(ctx, query, string(category))
+	rows, err := r.tx.QueryContext(ctx, query, string(search))
 	if err != nil {
 		return nil, fmt.Errorf("failed to query crop types by category: %w", err)
 	}
@@ -302,53 +211,31 @@ func (r *cropTypeRepository) FindByCategory(ctx context.Context, category cropty
 
 	for rows.Next() {
 		var (
-			ctID           string
-			name           string
-			scientificName sql.NullString
-			cat            string
-			description    sql.NullString
-			rootDepth      sql.NullInt64
-			isPerennial    bool
-			vegetationDays int
-			defaultYield   sql.NullFloat64
-			marketPrice    sql.NullFloat64
-			isActive       bool
-			createdAt      time.Time
-			updatedAt      time.Time
+			ctID        string
+			name        string
+			category    string
+			description sql.NullString
+			isPerennial bool
+			isActive    bool
+			createdAt   time.Time
+			updatedAt   time.Time
 		)
 
 		err := rows.Scan(
-			&ctID, &name, &scientificName, &cat, &description,
-			&rootDepth, &isPerennial, &vegetationDays,
-			&defaultYield, &marketPrice, &isActive,
-			&createdAt, &updatedAt,
+			&ctID, &name, &category, &description,
+			&isPerennial, &isActive, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan crop type: %w", err)
 		}
 
-		ct, err := croptype.NewCropType(
+		ct := croptype.Rehydrate(
+			ctID,
 			name,
-			scientificName.String,
-			croptype.CropCategory(cat),
-			vegetationDays,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ct.Rehydrate(
-			croptype.CropTypeID(ctID),
+			category,
 			description.String,
-			int(rootDepth.Int64),
-			isPerennial,
-			defaultYield.Float64,
-			marketPrice.Float64,
-			isActive,
-			createdAt,
-			updatedAt,
+			isPerennial, isActive,
 		)
-
 		cropTypes = append(cropTypes, ct)
 	}
 
@@ -358,11 +245,7 @@ func (r *cropTypeRepository) FindByCategory(ctx context.Context, category cropty
 // FindActive возвращает все активные типы культур
 func (r *cropTypeRepository) FindActive(ctx context.Context) ([]*croptype.CropType, error) {
 	query := `
-        SELECT 
-            id, name, scientific_name, category, description,
-            root_depth, is_perennial, vegetation_days,
-            default_yield, market_price, is_active,
-            created_at, updated_at
+        SELECT id, name, category,  description, is_perennial,is_active, created_at, updated_at 
         FROM crop_types
         WHERE is_active = true
         ORDER BY name
@@ -378,51 +261,30 @@ func (r *cropTypeRepository) FindActive(ctx context.Context) ([]*croptype.CropTy
 
 	for rows.Next() {
 		var (
-			ctID           string
-			name           string
-			scientificName sql.NullString
-			category       string
-			description    sql.NullString
-			rootDepth      sql.NullInt64
-			isPerennial    bool
-			vegetationDays int
-			defaultYield   sql.NullFloat64
-			marketPrice    sql.NullFloat64
-			isActive       bool
-			createdAt      time.Time
-			updatedAt      time.Time
+			ctID        string
+			name        string
+			category    string
+			description sql.NullString
+			isPerennial bool
+			isActive    bool
+			createdAt   time.Time
+			updatedAt   time.Time
 		)
 
 		err := rows.Scan(
-			&ctID, &name, &scientificName, &category, &description,
-			&rootDepth, &isPerennial, &vegetationDays,
-			&defaultYield, &marketPrice, &isActive,
-			&createdAt, &updatedAt,
+			&ctID, &name, &category, &description,
+			&isPerennial, &isActive, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan crop type: %w", err)
 		}
 
-		ct, err := croptype.NewCropType(
+		ct := croptype.Rehydrate(
+			ctID,
 			name,
-			scientificName.String,
-			croptype.CropCategory(category),
-			vegetationDays,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ct.Rehydrate(
-			croptype.CropTypeID(ctID),
+			category,
 			description.String,
-			int(rootDepth.Int64),
-			isPerennial,
-			defaultYield.Float64,
-			marketPrice.Float64,
-			isActive,
-			createdAt,
-			updatedAt,
+			isPerennial, isActive,
 		)
 
 		cropTypes = append(cropTypes, ct)
