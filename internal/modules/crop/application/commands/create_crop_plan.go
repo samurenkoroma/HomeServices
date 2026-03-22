@@ -11,6 +11,7 @@ import (
 
 type CreateCropPlanCommand struct {
 	CropTypeID  string `json:"crop_type_id" validate:"required"`
+	VarietyID   string `json:"variety_id"`
 	Name        string `json:"name" validate:"required"`
 	Duration    int    `json:"duration" validate:"required,gt=0"`
 	Description string `json:"description"`
@@ -46,6 +47,7 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		// Создаем план
 		plan, err := cropplan.NewCropPlan(
 			c.CropTypeID,
+			c.VarietyID,
 			c.Name,
 			c.Duration,
 			c.CreatedBy,

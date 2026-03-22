@@ -172,7 +172,7 @@ func (r *cropPlanRepository) GetByID(ctx context.Context, id cropplan.PlanID) (*
 	}
 
 	// Восстанавливаем план
-	plan, err := cropplan.NewCropPlan(cropTypeID, name, duration, createdBy)
+	plan, err := cropplan.NewCropPlan(cropTypeID, *varietyID, name, duration, createdBy)
 	if err != nil {
 		return nil, err
 	}

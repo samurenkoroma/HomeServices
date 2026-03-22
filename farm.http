@@ -85,9 +85,9 @@ Content-Type: application/json
 {
   "command": "CreateCropPlan",
   "data": {
-    "crop_type_id": "550e8400-e29b-41d4-a716-446655440000",
-    "variety_id": "660e8400-e29b-41d4-a716-446655441111",
-    "name": "Интенсивная технология пшеницы",
+    "crop_type_id": "e3db564e-c6e6-47c7-aa90-a84cdef1c846",
+    "variety_id": "bc6f1c3a-ff7e-467a-9870-7120fa51775a",
+    "name": "Интенсивная технология кабачка",
     "duration": 120,
     "description": "План с повышенными нормами удобрений",
     "created_by": "user-123"

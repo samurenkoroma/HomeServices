@@ -51,6 +51,7 @@ type CropPlan struct {
 
 func NewCropPlan(
 	cropTypeID string,
+	varietyID string,
 	name string,
 	durationDays int,
 	createdBy string,
@@ -69,6 +70,7 @@ func NewCropPlan(
 		Name:          name,
 		Duration:      duration,
 		Version:       1,
+		VarietyID:     &varietyID,
 		Status:        PlanStatusDraft,
 		Stages:        []GrowthStage{},
 		RotationRules: []RotationRule{},
