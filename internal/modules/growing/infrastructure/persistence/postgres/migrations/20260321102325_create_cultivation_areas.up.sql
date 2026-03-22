@@ -1,5 +1,5 @@
 -- Места выращивания
-CREATE TABLE cultivation_areas
+CREATE TABLE growing_cultivation_areas
 (
     id          UUID PRIMARY KEY,
     farm_ref_id UUID                     NOT NULL,
@@ -7,15 +7,15 @@ CREATE TABLE cultivation_areas
     name        TEXT                     NOT NULL,
     geometry    GEOMETRY(Geometry, 4326) NOT NULL,
     area        DOUBLE PRECISION         NOT NULL,
-    parent_id   UUID REFERENCES cultivation_areas (id),
+    parent_id   UUID REFERENCES growing_cultivation_areas (id),
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
     UNIQUE (farm_ref_id, type)
 );
 
-CREATE INDEX idx_cultivation_areas_farm_ref ON cultivation_areas (farm_ref_id);
-CREATE INDEX idx_cultivation_areas_type ON cultivation_areas (type);
-CREATE INDEX idx_cultivation_areas_parent ON cultivation_areas (parent_id);
-CREATE INDEX idx_cultivation_areas_geometry ON cultivation_areas USING GIST (geometry);
+CREATE INDEX idx_cultivation_areas_farm_ref ON growing_cultivation_areas (farm_ref_id);
+CREATE INDEX idx_cultivation_areas_type ON growing_cultivation_areas (type);
+CREATE INDEX idx_cultivation_areas_parent ON growing_cultivation_areas (parent_id);
+CREATE INDEX idx_cultivation_areas_geometry ON growing_cultivation_areas USING GIST (geometry);
 

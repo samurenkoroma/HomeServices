@@ -21,7 +21,7 @@ func NewSeasonRepository(tx *sql.Tx) season.Repository {
 // Save сохраняет или обновляет сезон
 func (r *seasonRepo) Save(ctx context.Context, s *season.Season) error {
 	query := `
-        INSERT INTO seasons (
+        INSERT INTO growing_seasons (
             id, name, start_date, end_date, description, status, created_by, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (id) DO UPDATE SET
@@ -55,7 +55,7 @@ func (r *seasonRepo) Save(ctx context.Context, s *season.Season) error {
 func (r *seasonRepo) FindByID(ctx context.Context, id season.SeasonID) (*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         WHERE id = $1
     `
 
@@ -102,7 +102,7 @@ func (r *seasonRepo) FindByID(ctx context.Context, id season.SeasonID) (*season.
 func (r *seasonRepo) FindAll(ctx context.Context) ([]*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         ORDER BY start_date DESC
     `
 
@@ -174,7 +174,7 @@ func (r *seasonRepo) Delete(ctx context.Context, id season.SeasonID) error {
 
 	// Мягкое удаление — архивируем
 	_, err = r.tx.ExecContext(ctx, `
-        UPDATE seasons SET status = 'archived', updated_at = $1 WHERE id = $2
+        UPDATE growing_seasons SET status = 'archived', updated_at = $1 WHERE id = $2
     `, time.Now(), string(id))
 
 	if err != nil {
@@ -188,7 +188,7 @@ func (r *seasonRepo) Delete(ctx context.Context, id season.SeasonID) error {
 func (r *seasonRepo) FindByName(ctx context.Context, name string) (*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         WHERE name = $1
     `
 
@@ -235,7 +235,7 @@ func (r *seasonRepo) FindByName(ctx context.Context, name string) (*season.Seaso
 func (r *seasonRepo) FindByStatus(ctx context.Context, status season.SeasonStatus) ([]*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         WHERE status = $1
         ORDER BY start_date DESC
     `
@@ -293,7 +293,7 @@ func (r *seasonRepo) FindActive(ctx context.Context) (*season.Season, error) {
 
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         WHERE status = 'active' AND start_date <= $1 AND end_date >= $1
         LIMIT 1
     `
@@ -341,7 +341,7 @@ func (r *seasonRepo) FindActive(ctx context.Context) (*season.Season, error) {
 func (r *seasonRepo) FindOverlapping(ctx context.Context, start, end time.Time) ([]*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM seasons
+        FROM growing_seasons
         WHERE (start_date, end_date) OVERLAPS ($1, $2)
         ORDER BY start_date
     `
@@ -408,7 +408,7 @@ func (r *seasonRepo) ExistsOverlapping(ctx context.Context, start, end time.Time
 	var exists bool
 	err := r.tx.QueryRowContext(ctx, `
         SELECT EXISTS(
-            SELECT 1 FROM seasons 
+            SELECT 1 FROM growing_seasons 
             WHERE (start_date, end_date) OVERLAPS ($1, $2)
         )
     `, start, end).Scan(&exists)

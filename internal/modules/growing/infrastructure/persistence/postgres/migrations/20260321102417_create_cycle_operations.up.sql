@@ -1,8 +1,8 @@
 -- Операции в цикле
-CREATE TABLE cycle_operations
+CREATE TABLE growing_cycle_operations
 (
     id           UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
-    cycle_id     UUID                     NOT NULL REFERENCES crop_cycles (id) ON DELETE CASCADE,
+    cycle_id     UUID                     NOT NULL REFERENCES growing_crop_cycles (id) ON DELETE CASCADE,
     type         TEXT                     NOT NULL,
     description  TEXT,
     amount       DOUBLE PRECISION,
@@ -16,5 +16,5 @@ CREATE TABLE cycle_operations
                                   'other'))
 );
 
-CREATE INDEX idx_cycle_operations_cycle ON cycle_operations (cycle_id);
-CREATE INDEX idx_cycle_operations_type ON cycle_operations (type);
+CREATE INDEX idx_cycle_operations_cycle ON growing_cycle_operations (cycle_id);
+CREATE INDEX idx_cycle_operations_type ON growing_cycle_operations (type);

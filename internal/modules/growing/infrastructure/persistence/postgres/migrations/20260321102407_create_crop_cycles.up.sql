@@ -1,10 +1,10 @@
 -- Циклы выращивания
-CREATE TABLE crop_cycles
+CREATE TABLE growing_crop_cycles
 (
-    id                UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
-    template_id       UUID                     NOT NULL REFERENCES crop_templates (id),
-    area_id           UUID                     NOT NULL REFERENCES cultivation_areas (id),
-    season_id         UUID                     NOT NULL REFERENCES seasons (id),
+    id                UUID PRIMARY KEY,
+    template_id       UUID                     NOT NULL REFERENCES growing_crop_templates (id),
+    area_id           UUID                     NOT NULL REFERENCES growing_cultivation_areas (id),
+    season_id         UUID                     NOT NULL REFERENCES growing_seasons (id),
     crop_plan_id      UUID                     NOT NULL,
     crop_plan_version INTEGER                  NOT NULL,
     status            TEXT                     NOT NULL DEFAULT 'draft',
@@ -22,7 +22,7 @@ CREATE TABLE crop_cycles
                                    ('draft', 'active', 'growing', 'harvested', 'completed', 'failed', 'cancelled'))
 );
 
-CREATE INDEX idx_crop_cycles_area ON crop_cycles (area_id);
-CREATE INDEX idx_crop_cycles_season ON crop_cycles (season_id);
-CREATE INDEX idx_crop_cycles_status ON crop_cycles (status);
-CREATE INDEX idx_crop_cycles_crop_plan ON crop_cycles (crop_plan_id);
+CREATE INDEX idx_crop_cycles_area ON growing_crop_cycles (area_id);
+CREATE INDEX idx_crop_cycles_season ON growing_crop_cycles (season_id);
+CREATE INDEX idx_crop_cycles_status ON growing_crop_cycles (status);
+CREATE INDEX idx_crop_cycles_crop_plan ON growing_crop_cycles (crop_plan_id);

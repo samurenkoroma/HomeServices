@@ -1,7 +1,7 @@
 -- Сезоны
-CREATE TABLE seasons
+CREATE TABLE growing_seasons
 (
-    id          TEXT PRIMARY KEY,
+    id          UUID PRIMARY KEY,
     name        TEXT                     NOT NULL,
     start_date  DATE                     NOT NULL,
     end_date    DATE                     NOT NULL,
@@ -13,5 +13,5 @@ CREATE TABLE seasons
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX idx_seasons_status ON seasons (status);
-CREATE INDEX idx_seasons_dates ON seasons (start_date, end_date);
+CREATE INDEX idx_seasons_status ON growing_seasons (status);
+CREATE INDEX idx_seasons_dates ON growing_seasons (start_date, end_date);

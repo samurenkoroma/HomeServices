@@ -1,7 +1,7 @@
 -- Шаблоны выращивания
-CREATE TABLE crop_templates
+CREATE TABLE growing_crop_templates
 (
-    id           UUID PRIMARY KEY                  DEFAULT,
+    id           UUID PRIMARY KEY,
     crop_plan_id UUID                     NOT NULL,
     name         TEXT                     NOT NULL,
     version      INTEGER                  NOT NULL DEFAULT 1,
@@ -14,5 +14,5 @@ CREATE TABLE crop_templates
     UNIQUE (crop_plan_id, version)
 );
 
-CREATE INDEX idx_crop_templates_crop_plan ON crop_templates (crop_plan_id);
-CREATE INDEX idx_crop_templates_status ON crop_templates (status);
+CREATE INDEX idx_crop_templates_crop_plan ON growing_crop_templates (crop_plan_id);
+CREATE INDEX idx_crop_templates_status ON growing_crop_templates (status);

@@ -1,8 +1,8 @@
 -- Конфигурации мест по сезонам
-CREATE TABLE area_season_configs
+CREATE TABLE growing_area_season_configs
 (
-    area_id      UUID                     NOT NULL REFERENCES cultivation_areas (id) ON DELETE CASCADE,
-    season_id    UUID                     NOT NULL REFERENCES seasons (id) ON DELETE CASCADE,
+    area_id      UUID                     NOT NULL REFERENCES growing_cultivation_areas (id) ON DELETE CASCADE,
+    season_id    UUID                     NOT NULL REFERENCES growing_seasons (id) ON DELETE CASCADE,
     name         TEXT                     NOT NULL,
     geometry     GEOMETRY(Geometry, 4326) NOT NULL,
     area         DOUBLE PRECISION         NOT NULL,
@@ -16,6 +16,6 @@ CREATE TABLE area_season_configs
     PRIMARY KEY (area_id, season_id)
 );
 
-CREATE INDEX idx_area_configs_season ON area_season_configs (season_id);
-CREATE INDEX idx_area_configs_crop_plan ON area_season_configs (crop_plan_id);
-CREATE INDEX idx_area_configs_geometry ON area_season_configs USING GIST (geometry);
+CREATE INDEX idx_area_configs_season ON growing_area_season_configs (season_id);
+CREATE INDEX idx_area_configs_crop_plan ON growing_area_season_configs (crop_plan_id);
+CREATE INDEX idx_area_configs_geometry ON growing_area_season_configs USING GIST (geometry);
