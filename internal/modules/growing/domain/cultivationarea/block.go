@@ -109,6 +109,23 @@ func (b *Block) ConfigureForSeason(seasonID string, config AreaConfig) error {
 	return nil
 }
 
+// Rehydrate восстанавливает блок из БД
+func (b *Block) Rehydrate(id, farmRefID string, createdAt, updatedAt time.Time) {
+	b.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	b.farmRefID = farmRefID
+}
+
+// GetParentFieldID возвращает ID родительского поля
+func (b *Block) GetParentFieldID() string {
+	return b.parentFieldID
+}
+
+// SetFarmRefID устанавливает ссылку на farm модуль
+func (b *Block) SetFarmRefID(farmRefID string) {
+	b.farmRefID = farmRefID
+	b.Update()
+}
+
 // Геттеры
 func (b *Block) GetID() string                        { return b.Id }
 func (b *Block) GetFarmRefID() string                 { return b.farmRefID }

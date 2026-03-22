@@ -171,6 +171,17 @@ func (f *FieldArea) ConfigureForSeason(seasonID string, config AreaConfig) error
 	return f.ConfigureAsPolyculture(seasonID, config.Name, config.Geometry, config.Metadata)
 }
 
+// Rehydrate восстанавливает поле из БД
+func (f *FieldArea) Rehydrate(id string, createdAt, updatedAt time.Time) {
+	f.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+}
+
+// SetFarmRefID устанавливает ссылку на farm модуль
+func (f *FieldArea) SetFarmRefID(farmRefID string) {
+	f.farmRefID = farmRefID
+	f.Update()
+}
+
 // Геттеры
 func (f *FieldArea) GetID() string                        { return f.Id }
 func (f *FieldArea) GetFarmRefID() string                 { return f.farmRefID }

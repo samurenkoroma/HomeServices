@@ -101,6 +101,17 @@ func (g *GreenhouseArea) ConfigureForSeason(seasonID string, config AreaConfig) 
 	return nil
 }
 
+// Rehydrate восстанавливает теплицу из БД
+func (g *GreenhouseArea) Rehydrate(id string, createdAt, updatedAt time.Time) {
+	g.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+}
+
+// SetFarmRefID устанавливает ссылку на farm модуль
+func (g *GreenhouseArea) SetFarmRefID(farmRefID string) {
+	g.farmRefID = farmRefID
+	g.Update()
+}
+
 // Геттеры
 func (g *GreenhouseArea) GetID() string                        { return g.Id }
 func (g *GreenhouseArea) GetFarmRefID() string                 { return g.farmRefID }

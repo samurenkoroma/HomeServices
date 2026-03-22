@@ -92,6 +92,23 @@ func (b *Bed) ConfigureForSeason(seasonID string, config AreaConfig) error {
 	return nil
 }
 
+// Rehydrate восстанавливает грядку из БД
+func (b *Bed) Rehydrate(id, farmRefID string, createdAt, updatedAt time.Time) {
+	b.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	b.farmRefID = farmRefID
+}
+
+// GetParentID возвращает ID родителя (блока или теплицы)
+func (b *Bed) GetParentID() string {
+	return b.parentID
+}
+
+// SetFarmRefID устанавливает ссылку на farm модуль
+func (b *Bed) SetFarmRefID(farmRefID string) {
+	b.farmRefID = farmRefID
+	b.Update()
+}
+
 // Геттеры
 func (b *Bed) GetID() string                        { return b.Id }
 func (b *Bed) GetFarmRefID() string                 { return b.farmRefID }
