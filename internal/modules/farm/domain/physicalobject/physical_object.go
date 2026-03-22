@@ -95,7 +95,11 @@ func NewField(
 			SoilType: &soilType,
 		},
 	}
-	obj.AddEvent(NewFieldCreated(string(obj.Id), obj.Name, obj.Area))
+	obj.AddEvent(FieldCreated{
+		ID:       string(obj.Id),
+		Name:     obj.Name,
+		Geometry: obj.Geometry,
+	})
 	return obj
 }
 
@@ -127,7 +131,11 @@ func NewGreenhouse(
 		},
 	}
 
-	obj.AddEvent(NewGreenhouseCreated(string(obj.Id), obj.Name, obj.Area))
+	obj.AddEvent(GreenhouseCreated{
+		ID:       string(obj.Id),
+		Name:     obj.Name,
+		Geometry: obj.Geometry,
+	})
 	return obj
 }
 

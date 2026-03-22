@@ -2,6 +2,7 @@ package croptemplate
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
@@ -19,7 +20,7 @@ const (
 
 // CropTemplate — шаблон выращивания культуры (из CropPlan)
 type CropTemplate struct {
-	aggregate.BaseAggregate
+	aggregate.Entity[TemplateID]
 
 	id         TemplateID
 	cropPlanID string // ID из модуля crop
@@ -62,16 +63,13 @@ type Requirements struct {
 
 // NewCropTemplate создаёт новый шаблон из CropPlan
 func NewCropTemplate(cropPlanID, name string, version int) *CropTemplate {
-	now := time.Now()
 	return &CropTemplate{
-		id:         TemplateID(generateID()),
+		Entity:     aggregate.NewEntity(TemplateID(types.NewUUID())),
 		cropPlanID: cropPlanID,
 		name:       name,
 		version:    version,
 		status:     TemplateStatusDraft,
 		stages:     []GrowthStage{},
-		createdAt:  now,
-		updatedAt:  now,
 	}
 }
 

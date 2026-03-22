@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/domain/cropcycle"
 	"samurenkoroma/services/internal/modules/growing/domain/croptemplate"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
@@ -13,9 +14,10 @@ type GrowingProvider struct {
 	tx *sql.Tx
 
 	// Кеш репозиториев
-	seasons          season.Repository
-	cultivationArea  cultivationarea.Repository
-	cropTemplateRepo croptemplate.Repository
+	seasonsRepo         season.Repository
+	cultivationAreaRepo cultivationarea.Repository
+	cropTemplateRepo    croptemplate.Repository
+	cropCyclesRepo      cropcycle.Repository
 }
 
 func (p *GrowingProvider) ProviderName() string {
@@ -33,22 +35,29 @@ func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
 
 // Seasons возвращает репозиторий всех объектов
 func (p *GrowingProvider) Seasons() season.Repository {
-	if p.seasons == nil {
-		p.seasons = NewSeasonRepository(p.tx)
+	if p.seasonsRepo == nil {
+		p.seasonsRepo = NewSeasonRepository(p.tx)
 	}
-	return p.seasons
+	return p.seasonsRepo
 }
 
 // CultivationAreas возвращает репозиторий всех объектов
 func (p *GrowingProvider) CultivationAreas() cultivationarea.Repository {
-	if p.cultivationArea == nil {
-		p.cultivationArea = NewCultivationAreaRepository(p.tx)
+	if p.cultivationAreaRepo == nil {
+		p.cultivationAreaRepo = NewCultivationAreaRepository(p.tx)
 	}
-	return p.cultivationArea
+	return p.cultivationAreaRepo
 }
 func (p *GrowingProvider) CropTemplates() croptemplate.Repository {
 	if p.cropTemplateRepo == nil {
 		p.cropTemplateRepo = NewCropTemplateRepository(p.tx)
 	}
 	return p.cropTemplateRepo
+}
+
+func (p *GrowingProvider) CropCycles() cropcycle.Repository {
+	if p.cropCyclesRepo == nil {
+		p.cropCyclesRepo = NewCropCycleRepository(p.tx)
+	}
+	return p.cropCyclesRepo
 }

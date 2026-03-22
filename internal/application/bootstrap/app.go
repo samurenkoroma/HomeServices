@@ -76,11 +76,16 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 
 	// ---- Command Registration ----
 	commandRouter.Register(farmCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
+
 	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropPlanCmd])
 	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropTypeCmd])
 	commandRouter.Register(cropCommands.NewCreateVarietyHandler(uowFactory), command.DecodeCmd[cropCommands.CreateVarietyCmd])
 	commandRouter.Register(cropCommands.NewAddStageHandler(uowFactory), command.DecodeCmd[cropCommands.AddStageCmd])
+
 	commandRouter.Register(growingCommands.NewCreateSeasonCommand(uowFactory), command.DecodeCmd[growingCommands.CreateSeasonCmd])
+	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), command.DecodeCmd[growingCommands.RecordOperationCmd])
+	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), command.DecodeCmd[growingCommands.ConfigureAreaCmd])
+	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), command.DecodeCmd[growingCommands.StartCropCycleCmd])
 
 	//commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
 	//commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])

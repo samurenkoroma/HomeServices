@@ -1,10 +1,11 @@
 -- Циклы выращивания
 CREATE TABLE crop_cycles
 (
-    id                TEXT PRIMARY KEY,
-    area_id           TEXT                     NOT NULL REFERENCES cultivation_areas (id),
-    season_id         TEXT                     NOT NULL REFERENCES seasons (id),
-    crop_plan_id      TEXT                     NOT NULL,
+    id                UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+    template_id       UUID                     NOT NULL REFERENCES crop_templates (id),
+    area_id           UUID                     NOT NULL REFERENCES cultivation_areas (id),
+    season_id         UUID                     NOT NULL REFERENCES seasons (id),
+    crop_plan_id      UUID                     NOT NULL,
     crop_plan_version INTEGER                  NOT NULL,
     status            TEXT                     NOT NULL DEFAULT 'draft',
     started_at        TIMESTAMP WITH TIME ZONE,
@@ -12,10 +13,13 @@ CREATE TABLE crop_cycles
     yield_actual      DOUBLE PRECISION,
     yield_estimated   DOUBLE PRECISION,
     yield_quality     TEXT,
-    created_at        TIMESTAMP WITH TIME ZONE NOT NULL,
-    updated_at        TIMESTAMP WITH TIME ZONE NOT NULL,
+    yield_notes       TEXT,
+    version           INTEGER                  NOT NULL DEFAULT 1,
+    created_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
-    version           INTEGER                  NOT NULL DEFAULT 1
+    CONSTRAINT check_status CHECK (status IN
+                                   ('draft', 'active', 'growing', 'harvested', 'completed', 'failed', 'cancelled'))
 );
 
 CREATE INDEX idx_crop_cycles_area ON crop_cycles (area_id);
