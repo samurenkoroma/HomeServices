@@ -14,6 +14,7 @@ import (
 	"samurenkoroma/services/internal/modules/farm/application/handlers"
 	"samurenkoroma/services/internal/modules/farm/application/queries"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
+	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
 
 	_ "github.com/lib/pq"
 )
@@ -77,6 +78,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropTypeCmd])
 	commandRouter.Register(cropCommands.NewCreateVarietyHandler(uowFactory), command.DecodeCmd[cropCommands.CreateVarietyCmd])
 	commandRouter.Register(cropCommands.NewAddStageHandler(uowFactory), command.DecodeCmd[cropCommands.AddStageCmd])
+	commandRouter.Register(growingCommands.NewCreateSeasonCommand(uowFactory), command.DecodeCmd[growingCommands.CreateSeasonCmd])
 
 	//commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
 	//commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])

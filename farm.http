@@ -148,7 +148,22 @@ Content-Type: application/json
 ###
 
 
+POST http://localhost:8080/commands/
+Content-Type: application/json
 
+{
+  "command": "AddSeason",
+  "data": {
+    "plan_id": "42350992-46fc-4ff4-83e9-1581b4e805c1",
+    "order": 1,
+    "name": "Всходы",
+    "duration": 10,
+    "min_temp": 5,
+    "max_temp": 20,
+    "optimal_temp": 12,
+    "water_per_day": 1.5
+  }
+}
 ### queries
 
 POST http://localhost:8080/queries/

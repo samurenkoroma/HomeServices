@@ -2,10 +2,12 @@ package season
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
 type SeasonStatus string
+type SeasonID string
 
 const (
 	SeasonStatusPlanning  SeasonStatus = "planning"
@@ -16,66 +18,154 @@ const (
 
 // Season - агрономический сезон
 type Season struct {
-	aggregate.BaseAggregate
-
-	ID          string
-	Name        string
-	StartDate   time.Time
-	EndDate     time.Time
-	Status      SeasonStatus
-	Description string
+	aggregate.Entity[SeasonID]
+	name        string
+	startDate   time.Time
+	endDate     time.Time
+	status      SeasonStatus
+	description string
+	createdBy   string
 
 	// План на сезон
-	Plan *SeasonPlan
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	plan *SeasonPlan
 }
 
-func NewSeason(name string, startDate, endDate time.Time) *Season {
-	return &Season{
-		ID:        generateID(),
-		Name:      name,
-		StartDate: startDate,
-		EndDate:   endDate,
-		Status:    SeasonStatusPlanning,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+func NewSeason(
+	name string,
+	startDate, endDate time.Time,
+	createdBy string,
+	description string,
+) (*Season, error) {
+	if name == "" {
+		return nil, ErrInvalidName
 	}
+	if startDate.After(endDate) {
+		return nil, ErrInvalidPeriod
+	}
+	if createdBy == "" {
+		return nil, ErrInvalidCreatedBy
+	}
+
+	s := &Season{
+		Entity:      aggregate.NewEntity(SeasonID(types.NewUUID())),
+		name:        name,
+		startDate:   startDate,
+		endDate:     endDate,
+		status:      SeasonStatusPlanning,
+		createdBy:   createdBy,
+		description: description,
+	}
+
+	s.AddEvent(SeasonCreated{
+		SeasonID:  string(s.Id),
+		Name:      s.name,
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+
+	return s, nil
 }
 
+// Activate активирует сезон
 func (s *Season) Activate() error {
-	if s.Status != SeasonStatusPlanning {
+	if s.status != SeasonStatusPlanning {
 		return ErrInvalidStatusTransition
 	}
 
 	now := time.Now()
-	if now.Before(s.StartDate) {
+	if now.Before(s.startDate) {
 		return ErrSeasonNotStarted
 	}
 
-	s.Status = SeasonStatusActive
-	s.UpdatedAt = now
+	s.status = SeasonStatusActive
+	s.Update()
 
 	s.AddEvent(SeasonActivated{
-		SeasonID: s.ID,
-		Name:     s.Name,
+		SeasonID: string(s.Id),
+		Name:     s.name,
 	})
 
 	return nil
 }
 
+// Complete завершает сезон
 func (s *Season) Complete() error {
-	if s.Status != SeasonStatusActive {
+	if s.status != SeasonStatusActive {
 		return ErrInvalidStatusTransition
 	}
 
-	s.Status = SeasonStatusCompleted
-	s.UpdatedAt = time.Now()
+	s.status = SeasonStatusCompleted
+	s.Update()
 
 	s.AddEvent(SeasonCompleted{
-		SeasonID: s.ID,
+		SeasonID: string(s.Id),
+		Name:     s.name,
 	})
 
 	return nil
+}
+
+// Archive архивирует сезон
+func (s *Season) Archive() error {
+	if s.status == SeasonStatusArchived {
+		return ErrAlreadyArchived
+	}
+
+	s.status = SeasonStatusArchived
+	s.Update()
+
+	s.AddEvent(SeasonArchived{
+		SeasonID: string(s.Id),
+	})
+
+	return nil
+}
+
+// SetPlan устанавливает план на сезон
+func (s *Season) SetPlan(plan *SeasonPlan) {
+	s.plan = plan
+	s.Update()
+}
+
+// GetPlan возвращает план на сезон
+func (s *Season) GetPlan() *SeasonPlan {
+	return s.plan
+}
+
+// IsActive проверяет, активен ли сезон в указанную дату
+func (s *Season) IsActiveAt(date time.Time) bool {
+	return !date.Before(s.startDate) && !date.After(s.endDate)
+}
+
+// Getters
+func (s *Season) GetID() SeasonID         { return s.Id }
+func (s *Season) GetName() string         { return s.name }
+func (s *Season) GetStartDate() time.Time { return s.startDate }
+func (s *Season) GetEndDate() time.Time   { return s.endDate }
+func (s *Season) GetDescription() string  { return s.description }
+func (s *Season) GetStatus() SeasonStatus { return s.status }
+func (s *Season) GetCreatedBy() string    { return s.createdBy }
+func (s *Season) GetCreatedAt() time.Time { return s.CreatedAt }
+func (s *Season) GetUpdatedAt() time.Time { return s.UpdatedAt }
+
+// Duration возвращает длительность сезона в днях
+func (s *Season) Duration() int {
+	return int(s.endDate.Sub(s.startDate).Hours() / 24)
+}
+
+// Rehydrate восстанавливает тип культуры из БД
+func Rehydrate(id SeasonID, status SeasonStatus, createdBy, name, description string, startDate, endDate, createdAt, updatedAt time.Time) *Season {
+	return &Season{
+		Entity: aggregate.Entity[SeasonID]{
+			Id:        id,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		},
+		name:        name,
+		startDate:   startDate,
+		endDate:     endDate,
+		status:      status,
+		description: description,
+		createdBy:   createdBy,
+	}
 }

@@ -48,7 +48,7 @@ func (b *Bed) ConfigureForSeason(
 		SeasonID:   seasonID,
 		Name:       name,
 		Geometry:   geom,
-		Area:       calculateArea(geom),
+		Area:       CalculateArea(geom),
 		CropPlanID: &cropPlanID,
 		Metadata:   metadata,
 		ValidFrom:  time.Now(),

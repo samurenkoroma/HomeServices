@@ -6,6 +6,8 @@ CREATE TABLE seasons
     start_date  DATE                     NOT NULL,
     end_date    DATE                     NOT NULL,
     status      TEXT                     NOT NULL DEFAULT 'planning',
+    created_by  TEXT                     NOT NULL,
+    is_active   BOOLEAN                           DEFAULT FALSE,
     description TEXT,
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL

@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	cropcycle2 "samurenkoroma/services/internal/modules/growing/domain/cropcycle"
+	"samurenkoroma/services/internal/modules/growing/domain/cropcycle"
 	"time"
 )
 
@@ -16,7 +16,7 @@ func NewSqlCropCycleRepository(tx *sql.Tx) *SqlCropCycleRepository {
 }
 func (r *SqlCropCycleRepository) Save(
 	ctx context.Context,
-	c *cropcycle2.CropCycle,
+	c *cropcycle.CropCycle,
 ) error {
 
 	if c.Version() == 0 {
