@@ -28,10 +28,12 @@ func (repo *varietyRepo) Save(ctx context.Context, obj *variety.Variety) error {
 						is_active = EXCLUDED.is_active,
 						updated_at = EXCLUDED.updated_at`
 
-	attrData, err := obj.Attributes.Marshal()
+	attr := obj.Attributes()
+	attrData, err := attr.Marshal()
 	if err != nil {
 		return err
 	}
+
 	_, err = repo.tx.ExecContext(ctx, query,
 		obj.Id,
 		obj.CropTypeID,

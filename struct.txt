@@ -1,17 +1,112 @@
-{Name: "growing", Path: "growing/infrastructure/persistence/postgres/migrations", Order: 4},
+.
+├── cmd
+│   ├── main.go
+│   ├── migrate
+│   │   └── main.go
+│   └── seed
+│       └── main.go
+├── data
+│   ├── Export 2024-12-11 1529.json
+│   └── seeds.json
+├── data.vault
+├── Dockerfile
+├── Dockerfile-scaner
+├── farm.http
+├── go.mod
+├── go.sum
+├── internal
+│   ├── application
+│   │   ├── bootstrap
+│   │   │   └── app.go
+│   │   ├── command
+│   │   │   ├── decoder.go
+│   │   │   ├── dto
+│   │   │   ├── middleware.go
+│   │   │   └── router.go
+│   │   └── query
+│   │       ├── dto
+│   │       ├── json_decoder.go
+│   │       ├── router.go
+│   │       └── router_impl.go
+│   ├── core
+│   │   ├── domain
+│   │   │   ├── aggregate
+│   │   │   ├── errors.go
+│   │   │   ├── event
+│   │   │   ├── repository
+│   │   │   └── types
+│   │   ├── errors
+│   │   │   ├── sql.go
+│   │   │   └── validation.go
+│   │   ├── port
+│   │   │   └── messaging
+│   │   └── spatial
+│   │       ├── distance.go
+│   │       ├── errors.go
+│   │       ├── functions.go
+│   │       ├── geojson_codec.go
+│   │       ├── geojson.go
+│   │       ├── geometry.go
+│   │       ├── operations.go
+│   │       ├── postgis.go
+│   │       ├── queries.go
+│   │       ├── sql_builder.go
+│   │       ├── types.go
+│   │       └── validator.go
+│   ├── infrastructure
+│   │   ├── configs
+│   │   │   └── config.go
+│   │   └── messaging
+│   │       ├── inmemory
+│   │       └── rabbitmq
+│   ├── interfaces
+│   │   └── httpapi
+│   │       ├── command_endpoint.go
+│   │       ├── middleware.go
+│   │       ├── query_endpoint.go
+│   │       ├── response.go
+│   │       └── router.go
+│   └── modules
+│       ├── crop
+│       │   ├── application
+│       │   ├── domain
+│       │   └── infrastructure
+│       ├── farm
+│       │   ├── application
+│       │   ├── domain
+│       │   └── infrastructure
+│       ├── growing
+│       │   ├── application
+│       │   ├── domain
+│       │   ├── infrastructure
+│       │   └── TASK.md
+│       └── shared
+│           └── migrations
+├── Makefile
+├── pkg
+│   ├── db
+│   │   └── db.go
+│   ├── di
+│   │   └── interfaces.go
+│   ├── jwt
+│   │   └── jwt.go
+│   ├── logger
+│   │   └── logger.go
+│   ├── middleware
+│   │   ├── auth.go
+│   │   ├── chain.go
+│   │   ├── common.go
+│   │   ├── cors.go
+│   │   └── logs.go
+│   ├── request
+│   │   ├── decode.go
+│   │   ├── handle.go
+│   │   └── validate.go
+│   └── response
+│       ├── fiber.go
+│       └── response.go
+├── README.md
+├── struct.txt
+└── TODO.md
 
-
-
-
-	conf := configs.LoadConfig()
-	ctx := context.Background()
-
-	conn, err := db.NewDB(ctx, conf.Db.Dsn)
-	if err != nil {
-		return
-	}
-
-
-
-			driver, err := postgres.WithInstance(conn, &postgres.Config{MigrationsTable: "schema_versions"})
-    		m, err := migrate.NewWithDatabaseInstance(sourceURL, "postgres", driver)
+52 directories, 58 files

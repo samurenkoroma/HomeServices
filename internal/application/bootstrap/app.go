@@ -10,10 +10,13 @@ import (
 	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	cropCommands "samurenkoroma/services/internal/modules/crop/application/commands"
+	cropQueries "samurenkoroma/services/internal/modules/crop/application/queries"
+	postgres2 "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
+	cropProjection "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/projections"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	farmEventHandlers "samurenkoroma/services/internal/modules/farm/application/handlers"
-	"samurenkoroma/services/internal/modules/farm/application/queries"
-	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
+	farmQueries "samurenkoroma/services/internal/modules/farm/application/queries"
+	projections2 "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
 
@@ -75,7 +78,8 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register(farmCommands.NewCreateFieldHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
+	commandRouter.Register(farmCommands.NewCreatePhysicalObjectHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
+	commandRouter.Register(farmCommands.NewUpdatePhysicalObjectHandler(uowFactory), command.DecodeCmd[farmCommands.UpdatePhysicalObjectCommand])
 
 	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropPlanCmd])
 	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropTypeCmd])
@@ -103,9 +107,11 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	if err != nil {
 		return err
 	}
-	farmQueries := queries.NewListObjectsOnMapHandler(postgres.NewPhysicalObjectRepository(tx))
-	queryRouter.Register("ListObjects", query.DecodeJSON[queries.ListObjectsOnMapQuery], farmQueries.AsHandler())
-	//queryRouter.Register("GetFacilitiesList", query.DecodeJSON[query2.GetFacilitiesListQuery], getListHandler.AsHandler())
+	cropProjector := cropProjection.NewCropProjection(db)
+	poProjector := projections2.NewPoProjection(db)
+	queryRouter.Register(cropQueries.NewGetCropTypesHandler(postgres2.NewCropTypeRepository(tx)), query.DecodeJSON[cropQueries.GetCropTypesQuery])
+	queryRouter.Register(cropQueries.NewGetVarietyHandler(cropProjector), query.DecodeJSON[cropQueries.GetVarietyQuery])
+	queryRouter.Register(farmQueries.NewGetPhysicalObjectsHandler(poProjector), query.DecodeJSON[farmQueries.GetPhysicalObjectsQuery])
 
 	return nil
 }

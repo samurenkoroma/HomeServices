@@ -9,13 +9,16 @@ import (
 // в конкретный query struct
 type Decoder func([]byte) (any, error)
 
-// HandlerFunc — универсальный query handler
-// Возвращает результат (DTO) и ошибку
-type HandlerFunc func(ctx context.Context, payload any) (any, error)
+type QueryHandler interface {
+	Handle(ctx context.Context, payload any) (any, error)
+	Name() string
+}
+
+//type HandlerFunc func(ctx context.Context, payload any) (any, error)
 
 type Router interface {
 	// Register регистрирует query
-	Register(name string, decoder Decoder, handler HandlerFunc)
+	Register(handler QueryHandler, decoder Decoder)
 	// Dispatch выполняет query
 	Dispatch(ctx context.Context, name string, payload []byte) (any, error)
 }

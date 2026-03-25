@@ -36,7 +36,7 @@ func (h *createPhysicalHandler) Name() string {
 	return "CreatePhysicalObject"
 }
 
-func NewCreateFieldHandler(uowFactory repository.Factory) command.Handler {
+func NewCreatePhysicalObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &createPhysicalHandler{uowFactory: uowFactory}
 }
 

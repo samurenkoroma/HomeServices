@@ -26,3 +26,25 @@ type FieldCreated struct {
 func (e FieldCreated) EventName() string {
 	return "farm.field.created"
 }
+
+// PhysicalObjectActivated — событие активации объекта
+type PhysicalObjectActivated struct {
+	event.BaseEvent
+	ObjectID string `json:"object_id"`
+	Type     string `json:"type"`
+}
+
+func (e PhysicalObjectActivated) EventName() string {
+	return "farm.object.activated"
+}
+
+// PhysicalObjectDeactivated — событие деактивации объекта
+type PhysicalObjectDeactivated struct {
+	event.BaseEvent
+	ObjectID string `json:"object_id"`
+	Type     string `json:"type"`
+}
+
+func (e PhysicalObjectDeactivated) EventName() string {
+	return "farm.object.deactivated"
+}

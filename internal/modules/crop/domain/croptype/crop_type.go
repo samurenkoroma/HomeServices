@@ -53,11 +53,13 @@ func (c *CropType) GetCreatedAt() time.Time   { return c.Entity.CreatedAt }
 func (c *CropType) GetUpdatedAt() time.Time   { return c.Entity.UpdatedAt }
 
 // Rehydrate восстанавливает тип культуры из БД
-func Rehydrate(id, name, category, description string, isPerennial, isActive bool) *CropType {
+func Rehydrate(id, name, category, description string, isPerennial, isActive bool, createdAt, updatedAt time.Time) *CropType {
 	return &CropType{
 		Entity: aggregate.Entity[CropTypeID]{
-			Id:       CropTypeID(id),
-			IsActive: isActive,
+			Id:        CropTypeID(id),
+			IsActive:  isActive,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		},
 		name:        name,
 		category:    CropCategory(category),

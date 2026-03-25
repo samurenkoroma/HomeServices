@@ -14,7 +14,7 @@ type router struct {
 
 type registeredQuery struct {
 	decoder Decoder
-	handler HandlerFunc
+	handler QueryHandler
 }
 
 func NewRouter() Router {
@@ -23,11 +23,11 @@ func NewRouter() Router {
 	}
 }
 
-func (r *router) Register(name string, decoder Decoder, handler HandlerFunc) {
+func (r *router) Register(handler QueryHandler, decoder Decoder) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.handlers[name] = registeredQuery{
+	r.handlers[handler.Name()] = registeredQuery{
 		decoder: decoder,
 		handler: handler,
 	}
@@ -48,5 +48,5 @@ func (r *router) Dispatch(ctx context.Context, name string, payload []byte) (any
 		return nil, err
 	}
 
-	return q.handler(ctx, decoded)
+	return q.handler.Handle(ctx, decoded)
 }

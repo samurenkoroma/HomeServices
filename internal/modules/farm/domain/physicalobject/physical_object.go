@@ -116,7 +116,7 @@ func NewGreenhouse(
 		Type:     ObjectTypeGreenhouse,
 		Name:     name,
 		Geometry: geom,
-		Status:   "active",
+		Status:   valueobject.Active,
 		Area:     dim.Area(),
 		OwnerID:  ownerID,
 		Attributes: Attributes{
@@ -141,32 +141,120 @@ func NewGreenhouse(
 
 // Методы для работы с атрибутами
 
-func (o *PhysicalObject) SetSoilType(soilType string) {
-	if o.Type != ObjectTypeField {
+func (p *PhysicalObject) SetSoilType(soilType string) {
+	if p.Type != ObjectTypeField {
 		return // или ошибка
 	}
-	o.Attributes.SoilType = &soilType
-	o.UpdatedAt = time.Now()
+	p.Attributes.SoilType = &soilType
+	p.UpdatedAt = time.Now()
 }
 
-func (o *PhysicalObject) SetGreenhouseEquipment(heating, ventilation, lighting bool) {
-	if o.Type != ObjectTypeGreenhouse {
+func (p *PhysicalObject) SetGreenhouseEquipment(heating, ventilation, lighting bool) {
+	if p.Type != ObjectTypeGreenhouse {
 		return
 	}
-	o.Attributes.HasHeating = &heating
-	o.Attributes.HasVentilation = &ventilation
-	o.Attributes.HasLighting = &lighting
-	o.UpdatedAt = time.Now()
+	p.Attributes.HasHeating = &heating
+	p.Attributes.HasVentilation = &ventilation
+	p.Attributes.HasLighting = &lighting
+	p.UpdatedAt = time.Now()
+}
+
+// SetName устанавливает новое имя
+func (p *PhysicalObject) SetName(name string) {
+	p.Name = name
+	p.UpdatedAt = time.Now()
+}
+
+// SetDescription устанавливает описание
+func (p *PhysicalObject) SetDescription(desc string) {
+	p.Description = desc
+	p.UpdatedAt = time.Now()
+}
+
+// SetGeometry устанавливает новую геометрию
+func (p *PhysicalObject) SetGeometry(geom spatial.GeoJSON) error {
+	// Валидация геометрии
+	if err := validateGeometry(geom); err != nil {
+		return err
+	}
+
+	p.Geometry = geom
+	// Пересчитываем площадь
+	//p.TotalArea = calculateArea(geom)
+	p.Update()
+
+	return nil
+}
+
+// SetAttributes устанавливает атрибуты
+func (p *PhysicalObject) SetAttributes(attrs map[string]interface{}) {
+	// Обновляем атрибуты, сохраняя существующие
+	for k, v := range attrs {
+		p.Attributes.Metadata[k] = v
+	}
+	p.UpdatedAt = time.Now()
+}
+
+// Activate активирует объект
+func (p *PhysicalObject) Activate() error {
+	if p.Status == "active" {
+		return ErrAlreadyActive
+	}
+
+	p.Status = "active"
+	p.UpdatedAt = time.Now()
+
+	p.AddEvent(PhysicalObjectActivated{
+		ObjectID: string(p.Id),
+		Type:     string(p.Type),
+	})
+
+	return nil
+}
+
+// Deactivate деактивирует объект
+func (p *PhysicalObject) Deactivate() error {
+	if p.Status == "inactive" {
+		return ErrAlreadyInactive
+	}
+
+	p.Status = "inactive"
+	p.UpdatedAt = time.Now()
+
+	p.AddEvent(PhysicalObjectDeactivated{
+		ObjectID: string(p.Id),
+		Type:     string(p.Type),
+	})
+
+	return nil
+}
+
+// validateGeometry проверяет корректность геометрии
+func validateGeometry(geom spatial.GeoJSON) error {
+	if geom.Type != spatial.Polygon && geom.Type != spatial.MultiPolygon {
+		return ErrInvalidGeometry
+	}
+	if len(geom.Coordinates) == 0 {
+		return ErrEmptyGeometry
+	}
+	return nil
+}
+
+// calculateArea вычисляет площадь по геометрии
+func calculateArea(geom spatial.GeoJSON) float64 {
+	// В реальности используем PostGIS ST_Area
+	// Здесь заглушка
+	return 0
 }
 
 // Вспомогательные методы для получения данных
 
-func (o *PhysicalObject) IsField() bool {
-	return o.Type == ObjectTypeField
+func (p *PhysicalObject) IsField() bool {
+	return p.Type == ObjectTypeField
 }
 
-func (o *PhysicalObject) IsGreenhouse() bool {
-	return o.Type == ObjectTypeGreenhouse
+func (p *PhysicalObject) IsGreenhouse() bool {
+	return p.Type == ObjectTypeGreenhouse
 }
 
 func RehydrateField(

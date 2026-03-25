@@ -90,6 +90,8 @@ func (r *cropTypeRepository) FindByID(ctx context.Context, search croptype.CropT
 		description.String,
 		isPerennial,
 		isActive,
+		createdAt,
+		updatedAt,
 	)
 
 	return ct, nil
@@ -132,6 +134,8 @@ func (r *cropTypeRepository) FindByName(ctx context.Context, search string) (*cr
 		description.String,
 		isPerennial,
 		isActive,
+		createdAt,
+		updatedAt,
 	)
 
 	return ct, nil
@@ -180,6 +184,8 @@ func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType,
 			description.String,
 			isPerennial,
 			isActive,
+			createdAt,
+			updatedAt,
 		)
 
 		cropTypes = append(cropTypes, ct)
@@ -235,6 +241,8 @@ func (r *cropTypeRepository) FindByCategory(ctx context.Context, search croptype
 			category,
 			description.String,
 			isPerennial, isActive,
+			createdAt,
+			updatedAt,
 		)
 		cropTypes = append(cropTypes, ct)
 	}
@@ -285,6 +293,8 @@ func (r *cropTypeRepository) FindActive(ctx context.Context) ([]*croptype.CropTy
 			category,
 			description.String,
 			isPerennial, isActive,
+			createdAt,
+			updatedAt,
 		)
 
 		cropTypes = append(cropTypes, ct)
