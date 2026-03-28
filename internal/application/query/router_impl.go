@@ -14,7 +14,7 @@ type router struct {
 
 type registeredQuery struct {
 	decoder Decoder
-	handler QueryHandler
+	handler Handler
 }
 
 func NewRouter() Router {
@@ -23,7 +23,7 @@ func NewRouter() Router {
 	}
 }
 
-func (r *router) Register(handler QueryHandler, decoder Decoder) {
+func (r *router) Register(handler Handler, decoder Decoder) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 

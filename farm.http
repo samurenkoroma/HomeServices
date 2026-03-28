@@ -195,7 +195,7 @@ POST http://localhost:8080/queries/
 Content-Type: application/json
 
 {
-  "query": "GetCropTypes",
+  "query": "GetCategories",
   "data": {
     
   }

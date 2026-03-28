@@ -2,9 +2,7 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"log"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 
@@ -13,7 +11,6 @@ import (
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 )
 
-// UpdatePhysicalObjectCommand — команда обновления физического объекта
 type UpdatePhysicalObjectCommand struct {
 	ID          string                 `json:"id" validate:"required"`
 	Name        *string                `json:"name,omitempty"`
@@ -22,8 +19,6 @@ type UpdatePhysicalObjectCommand struct {
 	Geometry    *spatial.GeoJSON       `json:"geometry,omitempty"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty"`
 }
-
-// UpdatePhysicalObjectHandler — обработчик обновления
 type updatePhysicalObjectHandler struct {
 	uowFactory repository.Factory
 }
@@ -32,23 +27,20 @@ func (h *updatePhysicalObjectHandler) Name() string {
 	return "UpdatePhysicalObject"
 }
 
-// NewUpdatePhysicalObjectHandler создаёт новый обработчик
 func NewUpdatePhysicalObjectHandler(uowFactory repository.Factory) command.Handler {
-	return &updatePhysicalObjectHandler{
-		uowFactory: uowFactory,
-	}
+	return &updatePhysicalObjectHandler{uowFactory: uowFactory}
 }
 
 // Handle обрабатывает команду
-func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, command any) error {
-
-	cmd, ok := command.(UpdatePhysicalObjectCommand)
+func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(UpdatePhysicalObjectCommand)
 	if !ok {
-		return errors.New("invalid command type")
-	} // Валидация статуса
-	if cmd.Status != nil {
-		if *cmd.Status != "active" && *cmd.Status != "inactive" {
-			return fmt.Errorf("invalid status: %s, must be 'active' or 'inactive'", *cmd.Status)
+		return command.ErrInvalidCommandType
+	}
+
+	if c.Status != nil {
+		if *c.Status != "active" && *c.Status != "inactive" {
+			return fmt.Errorf("invalid status: %s, must be 'active' or 'inactive'", *c.Status)
 		}
 	}
 
@@ -64,7 +56,7 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, command any) e
 		}
 
 		// Получаем объект
-		obj, err := farmProvider.Objects().FindByID(ctx, physicalobject.PhysicalObjectID(cmd.ID))
+		obj, err := farmProvider.Objects().FindByID(ctx, physicalobject.PhysicalObjectID(c.ID))
 		if err != nil {
 			return fmt.Errorf("failed to find physical object: %w", err)
 		}
@@ -73,34 +65,34 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, command any) e
 		}
 
 		// Обновляем поля
-		if cmd.Name != nil {
-			obj.SetName(*cmd.Name)
+		if c.Name != nil {
+			obj.SetName(*c.Name)
 		}
 
-		if cmd.Description != nil {
-			obj.SetDescription(*cmd.Description)
+		if c.Description != nil {
+			obj.SetDescription(*c.Description)
 		}
 
-		if cmd.Status != nil {
-			if *cmd.Status == "active" {
+		if c.Status != nil {
+			if *c.Status == "active" {
 				if err := obj.Activate(); err != nil {
 					return err
 				}
-			} else if *cmd.Status == "inactive" {
+			} else if *c.Status == "inactive" {
 				if err := obj.Deactivate(); err != nil {
 					return err
 				}
 			}
 		}
 
-		if cmd.Geometry != nil {
-			if err := obj.SetGeometry(*cmd.Geometry); err != nil {
+		if c.Geometry != nil {
+			if err := obj.SetGeometry(*c.Geometry); err != nil {
 				return fmt.Errorf("failed to set geometry: %w", err)
 			}
 		}
 
-		if cmd.Attributes != nil {
-			obj.SetAttributes(cmd.Attributes)
+		if c.Attributes != nil {
+			obj.SetAttributes(c.Attributes)
 		}
 
 		// Сохраняем
@@ -116,6 +108,5 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, command any) e
 		return err
 	}
 
-	log.Printf("Physical object updated: id=%s", cmd.ID)
 	return nil
 }

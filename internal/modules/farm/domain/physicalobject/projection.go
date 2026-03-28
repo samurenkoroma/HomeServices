@@ -40,8 +40,7 @@ type PODetail struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
-type POProjection interface {
+type ObjectProjections interface {
 	GetList(ctx context.Context, filter POFilter) ([]POListItem, error)
-
 	GetByID(ctx context.Context, id string) (PODetail, error)
 }

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
@@ -27,7 +26,6 @@ type CreatePhysicalObjectCmd struct {
 	Height         *float64 `json:"height,omitempty"`          // для greenhouse
 	Length         *float64 `json:"length,omitempty"`          // для greenhouse
 }
-
 type createPhysicalHandler struct {
 	uowFactory repository.Factory
 }
@@ -43,12 +41,12 @@ func NewCreatePhysicalObjectHandler(uowFactory repository.Factory) command.Handl
 func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 	c, ok := cmd.(CreatePhysicalObjectCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	err = uow.Execute(ctx, postgres.NewFarmProvider, func(provider repository.RepositoryProvider) error {

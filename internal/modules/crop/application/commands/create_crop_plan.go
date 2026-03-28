@@ -2,7 +2,7 @@ package commands
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
@@ -33,12 +33,12 @@ func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
 func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 	c, ok := cmd.(CreateCropPlanCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	return uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {

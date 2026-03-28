@@ -2,12 +2,10 @@ package variety
 
 import (
 	"encoding/json"
-	"fmt"
 	"samurenkoroma/services/internal/core/domain/aggregate"
 	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
-	"strconv"
-	"strings"
+	"samurenkoroma/services/internal/modules/crop/domain/valueobject"
 )
 
 type (
@@ -28,25 +26,6 @@ type (
 	}
 )
 
-type MinMax struct {
-	Min int
-	Max int
-}
-
-func (m *MinMax) String() string {
-	return fmt.Sprintf("%d..%d", m.Min, m.Max)
-}
-
-func parseRange(data string) MinMax {
-	parse := strings.Split(data, "..")
-	minValue, _ := strconv.Atoi(parse[0])
-	maxValue, _ := strconv.Atoi(parse[1])
-	return MinMax{
-		Min: minValue,
-		Max: maxValue,
-	}
-}
-
 func (a *Attributes) Marshal() ([]byte, error) {
 	return json.Marshal(a)
 }
@@ -54,12 +33,12 @@ func (a *Attributes) Marshal() ([]byte, error) {
 func (a *Attributes) Unmarshal(data []byte) error {
 	return json.Unmarshal(data, a)
 }
-func (a *Attributes) VD() MinMax {
-	return parseRange(a.VegetationDays)
+func (a *Attributes) VD() valueobject.MinMax {
+	return valueobject.ParseRange(a.VegetationDays)
 }
 
-func (a *Attributes) YP() MinMax {
-	return parseRange(a.YieldPotential)
+func (a *Attributes) YP() valueobject.MinMax {
+	return valueobject.ParseRange(a.YieldPotential)
 }
 
 // Variety - сорт культуры
@@ -94,7 +73,7 @@ func (v *Variety) RecommendedRegions() []string { return v.attributes.Recommende
 
 func (v *Variety) DiseaseResistance() []string { return v.attributes.DiseaseResistance }
 
-func (v *Variety) VegetationDays() MinMax {
+func (v *Variety) VegetationDays() valueobject.MinMax {
 	return v.attributes.VD()
 }
 

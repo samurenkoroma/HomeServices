@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
@@ -24,14 +23,24 @@ type createVarietyHandler struct {
 	uowFactory repository.Factory
 }
 
+func (h *createVarietyHandler) Name() string {
+	return "CreateVariety"
+}
+
+func NewCreateVarietyHandler(uowFactory repository.Factory) command.Handler {
+	return &createVarietyHandler{
+		uowFactory: uowFactory,
+	}
+}
+
 func (h *createVarietyHandler) Handle(ctx context.Context, cmd any) error {
 	c, ok := cmd.(CreateVarietyCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	err = uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {
@@ -60,14 +69,4 @@ func (h *createVarietyHandler) Handle(ctx context.Context, cmd any) error {
 	}
 
 	return nil
-}
-
-func (h *createVarietyHandler) Name() string {
-	return "CreateVariety"
-}
-
-func NewCreateVarietyHandler(uowFactory repository.Factory) command.Handler {
-	return &createVarietyHandler{
-		uowFactory: uowFactory,
-	}
 }

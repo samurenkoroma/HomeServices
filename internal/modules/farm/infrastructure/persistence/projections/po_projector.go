@@ -14,6 +14,10 @@ type poProjection struct {
 	db *sql.DB
 }
 
+func NewPoProjection(db *sql.DB) physicalobject.ObjectProjections {
+	return &poProjection{db: db}
+}
+
 func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilter) ([]physicalobject.POListItem, error) {
 	query := `
 	SELECT
@@ -82,8 +86,4 @@ func (f poProjection) GetByID(ctx context.Context, id string) (physicalobject.PO
 	}
 
 	return detail, nil
-}
-
-func NewPoProjection(db *sql.DB) physicalobject.POProjection {
-	return &poProjection{db: db}
 }

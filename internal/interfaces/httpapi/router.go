@@ -9,10 +9,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func NewRouter(
-	commandRouter command.Router,
-	queryRouter query.Router,
-) http.Handler {
+func NewRouter(commandRouter command.Router, queryRouter query.Router) http.Handler {
 
 	mux := chi.NewMux()
 	mux.Use(cors.Handler(cors.Options{

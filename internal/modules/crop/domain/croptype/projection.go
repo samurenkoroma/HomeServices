@@ -1,6 +1,24 @@
-package projections
+package croptype
 
-import "time"
+import (
+	"context"
+	"time"
+)
+
+type Filter struct {
+	Category string
+	IsActive bool
+	Search   string
+	Limit    int
+	Offset   int
+}
+
+type VarietySimpleDTO struct {
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	VegetationDays string `json:"vegetation_days"`
+	IsActive       bool   `json:"is_active"`
+}
 
 // CropTypeWithVarietiesDTO — денормализованный объект
 type CropTypeWithVarietiesDTO struct {
@@ -12,13 +30,6 @@ type CropTypeWithVarietiesDTO struct {
 	VarietiesCount int                `json:"varieties_count"`
 	Varieties      []VarietySimpleDTO `json:"varieties,omitempty"`
 	CreatedAt      time.Time          `json:"created_at"`
-}
-
-type VarietySimpleDTO struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	VegetationDays string `json:"vegetation_days"`
-	IsActive       bool   `json:"is_active"`
 }
 
 // CropTypeSimpleDTO — упрощённый DTO для списка
@@ -44,28 +55,20 @@ type CropTypeDetailDTO struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
-type MinMax struct {
-	Min     int `json:"min"`
-	Max     int `json:"max"`
-	Optimal int `json:"optimal"`
+
+// CategoryDTO — DTO для категории
+type CategoryDTO struct {
+	Code          string   `json:"code"`
+	Name          string   `json:"name"`
+	NameEn        string   `json:"nameEn"`
+	Description   string   `json:"description"`
+	Parent        *string  `json:"parent,omitempty"`
+	Subcategories []string `json:"subcategories"`
 }
 
-// VarietyDTO — DTO для ответа
-type VarietyDTO struct {
-	ID                 string    `json:"id"`
-	CropTypeID         string    `json:"crop_type_id"`
-	CropTypeName       string    `json:"crop_type_name"`
-	Name               string    `json:"name"`
-	Description        string    `json:"description"`
-	VegetationDays     MinMax    `json:"vegetation_days"`
-	YieldPotential     MinMax    `json:"yield_potential"`
-	DiseaseResistance  []string  `json:"disease_resistance"`
-	RecommendedRegions []string  `json:"recommended_regions"`
-	PlantingDensity    int       `json:"planting_density"`
-	SeedRate           float64   `json:"seed_rate"`
-	Breeder            string    `json:"breeder"`
-	YearReleased       int       `json:"year_released"`
-	IsActive           bool      `json:"is_active"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+type Projections interface {
+	GetList(ctx context.Context, filter Filter) ([]CropTypeSimpleDTO, error)
+	GetByID(ctx context.Context, id string) (*CropTypeDetailDTO, error)
+	GetCropTypeWithVarieties(ctx context.Context, id string) (*CropTypeWithVarietiesDTO, error)
+	GetAllCropTypesSimple(ctx context.Context) ([]CropTypeSimpleDTO, error)
 }

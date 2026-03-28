@@ -2,35 +2,51 @@ package queries
 
 import (
 	"context"
-	"samurenkoroma/services/internal/modules/crop/infrastructure/persistence/projections"
+	"errors"
+	"samurenkoroma/services/internal/application/query"
+	"samurenkoroma/services/internal/modules/crop/domain/variety"
 )
 
 // GetVarietyQuery — параметры запроса сорта
 type GetVarietyQuery struct {
-	ID string `json:"id" validate:"required"`
+	ID     string `json:"id" validate:"required"`
+	Search string `json:"search"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
 }
 
 // GetVarietyHandler — обработчик запроса
 type GetVarietyHandler struct {
-	projector *projections.CropProjection
+	projector variety.Projections
 }
 
 func (h *GetVarietyHandler) Name() string {
 	return "GetVarieties"
 }
 
-func NewGetVarietyHandler(projector *projections.CropProjection) *GetVarietyHandler {
+func NewGetVarietyHandler(projector variety.Projections) query.Handler {
 	return &GetVarietyHandler{
 		projector: projector,
 	}
 }
 
-func (h *GetVarietyHandler) Handle(ctx context.Context, q any) (any, error) {
+func (h *GetVarietyHandler) Handle(ctx context.Context, query any) (any, error) {
 	// Получаем сорт
-	varieties, err := h.projector.GetVarieties(ctx)
-	if err != nil {
-		return nil, err
+	q, ok := query.(*GetVarietyQuery)
+	if !ok {
+		return nil, errors.New("invalid query")
+	}
+	if q.ID != "" {
+		return h.projector.GetVariety(ctx, q.ID)
+	}
+	filter := variety.Filter{
+		Search: q.Search,
+		Limit:  q.Limit,
+		Offset: q.Offset,
 	}
 
-	return varieties, nil
+	if q.Limit == 0 {
+		filter.Limit = 10
+	}
+	return h.projector.GetVarieties(ctx, filter)
 }

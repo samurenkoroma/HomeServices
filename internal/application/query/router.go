@@ -9,7 +9,7 @@ import (
 // в конкретный query struct
 type Decoder func([]byte) (any, error)
 
-type QueryHandler interface {
+type Handler interface {
 	Handle(ctx context.Context, payload any) (any, error)
 	Name() string
 }
@@ -18,7 +18,7 @@ type QueryHandler interface {
 
 type Router interface {
 	// Register регистрирует query
-	Register(handler QueryHandler, decoder Decoder)
+	Register(handler Handler, decoder Decoder)
 	// Dispatch выполняет query
 	Dispatch(ctx context.Context, name string, payload []byte) (any, error)
 }

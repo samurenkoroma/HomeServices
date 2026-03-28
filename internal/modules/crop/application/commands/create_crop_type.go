@@ -2,7 +2,7 @@ package commands
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
@@ -31,11 +31,11 @@ func NewCreateCropTypeHandler(uowFactory repository.Factory) command.Handler {
 func (h *createCropTypeHandler) Handle(ctx context.Context, cmd any) error {
 	c, ok := cmd.(CreateCropTypeCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	return uow.Execute(ctx, postgres.NewCropProvider, func(provider repository.RepositoryProvider) error {

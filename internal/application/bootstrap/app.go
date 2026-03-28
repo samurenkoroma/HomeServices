@@ -11,14 +11,14 @@ import (
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	cropCommands "samurenkoroma/services/internal/modules/crop/application/commands"
 	cropQueries "samurenkoroma/services/internal/modules/crop/application/queries"
-	postgres2 "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/postgres"
-	cropProjection "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/projections"
+	cropProjections "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/projections"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	farmEventHandlers "samurenkoroma/services/internal/modules/farm/application/handlers"
 	farmQueries "samurenkoroma/services/internal/modules/farm/application/queries"
-	projections2 "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
+	farmProjections "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
+	"samurenkoroma/services/pkg/utils"
 
 	_ "github.com/lib/pq"
 )
@@ -31,13 +31,13 @@ type App struct {
 }
 
 func Build(ctx context.Context, db *sql.DB) (*App, error) {
-	// ---------- Unit Of Work Factory ----------
 
 	bus := inmemory.NewInMemoryEventBus()
 	bus.Register("farm.field.created", farmEventHandlers.OnFieldCreated)
 	bus.Register("farm.greenhouse.created", farmEventHandlers.OnGreenhouseCreated)
 	bus.Register("crop.plan.published", growingEventHandlers.OnCropPlanPublished)
 
+	// ---------- Unit Of Work Factory ----------
 	uowFactory := repository.NewUnitOfWorkFactory(db, bus)
 
 	// ---------- Routers ----------
@@ -47,15 +47,15 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 
 	// ---------- Register Bounded Contexts ----------
 
-	if err := registerGrowing(
-		commandRouter,
-		queryRouter,
-		uowFactory,
-		db,
-	); err != nil {
+	if err := registerGrowing(commandRouter, queryRouter, uowFactory); err != nil {
 		return nil, err
 	}
-
+	if err := registerFarm(commandRouter, queryRouter, uowFactory); err != nil {
+		return nil, err
+	}
+	if err := registerCrop(commandRouter, queryRouter, uowFactory); err != nil {
+		return nil, err
+	}
 	// можно добавить:
 	// registerCrop(...)
 	// registerSeason(...)
@@ -75,43 +75,36 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 	}, nil
 }
 
-func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
+func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
+	// ---- Command Registration ----
+	commandRouter.Register(growingCommands.NewCreateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.CreateSeasonCmd])
+	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), utils.DecodeJSON[growingCommands.RecordOperationCmd])
+	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
+	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), utils.DecodeJSON[growingCommands.StartCropCycleCmd])
+	return nil
+}
+func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
+	// ---- Command Registration ----
+	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateCropPlanCmd])
+	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateCropTypeCmd])
+	commandRouter.Register(cropCommands.NewCreateVarietyHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateVarietyCmd])
+	commandRouter.Register(cropCommands.NewAddStageHandler(uowFactory), utils.DecodeJSON[cropCommands.AddStageCmd])
+
+	cropProvider := cropProjections.NewCropProjectionsProvider(uowFactory.DB())
+	queryRouter.Register(cropQueries.NewGetCropTypesHandler(cropProvider.CropTypes()), utils.DecodeJSON[cropQueries.GetCropTypesQuery])
+	queryRouter.Register(cropQueries.NewGetVarietyHandler(cropProvider.Varieties()), utils.DecodeJSON[cropQueries.GetVarietyQuery])
+	queryRouter.Register(cropQueries.NewGetCategoriesHandler(cropProvider), utils.DecodeJSON[cropQueries.GetCategoriesQuery])
+
+	return nil
+}
+func registerFarm(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register(farmCommands.NewCreatePhysicalObjectHandler(uowFactory), command.DecodeCmd[farmCommands.CreatePhysicalObjectCmd])
-	commandRouter.Register(farmCommands.NewUpdatePhysicalObjectHandler(uowFactory), command.DecodeCmd[farmCommands.UpdatePhysicalObjectCommand])
+	commandRouter.Register(farmCommands.NewCreatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.CreatePhysicalObjectCmd])
+	commandRouter.Register(farmCommands.NewUpdatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.UpdatePhysicalObjectCommand])
 
-	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropPlanCmd])
-	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), command.DecodeCmd[cropCommands.CreateCropTypeCmd])
-	commandRouter.Register(cropCommands.NewCreateVarietyHandler(uowFactory), command.DecodeCmd[cropCommands.CreateVarietyCmd])
-	commandRouter.Register(cropCommands.NewAddStageHandler(uowFactory), command.DecodeCmd[cropCommands.AddStageCmd])
-
-	commandRouter.Register(growingCommands.NewCreateSeasonCommand(uowFactory), command.DecodeCmd[growingCommands.CreateSeasonCmd])
-	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), command.DecodeCmd[growingCommands.RecordOperationCmd])
-	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), command.DecodeCmd[growingCommands.ConfigureAreaCmd])
-	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), command.DecodeCmd[growingCommands.StartCropCycleCmd])
-
-	//commandRouter.Register("CreateGreenhouse", fieldCommands.NewCreateGreenhouseHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateGreenhouseCmd])
-	//commandRouter.Register("CreateFieldBlock", fieldCommands.NewCreateFieldBlockHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateFieldBlockCmd])
-	//commandRouter.Register("CreateBed", fieldCommands.NewCreateBedHandler(uowFactory), command.DecodeCmd[fieldCommands.CreateBedCmd])
-	//commandRouter.Register("CreateCropPlan", &cropCommand.CreateCropPlanHandler{UowFactory: uowFactory}, cropCommand.DecodeCreateCropPlan)
-
-	// ---- Query Handlers ----
-	//facilityReadRepo := postgres.NewGrowingFacilitiesRepository(uowFactory.Begin())
-	//
-	//getOverviewHandler := query2.NewGetFacilityOverviewHandler(facilityReadRepo)
-	//getListHandler := queries.NewListObjectsOnMapHandler(facilityReadRepo)
-	//
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	cropProjector := cropProjection.NewCropProjection(db)
-	poProjector := projections2.NewPoProjection(db)
-	queryRouter.Register(cropQueries.NewGetCropTypesHandler(postgres2.NewCropTypeRepository(tx)), query.DecodeJSON[cropQueries.GetCropTypesQuery])
-	queryRouter.Register(cropQueries.NewGetVarietyHandler(cropProjector), query.DecodeJSON[cropQueries.GetVarietyQuery])
-	queryRouter.Register(farmQueries.NewGetPhysicalObjectsHandler(poProjector), query.DecodeJSON[farmQueries.GetPhysicalObjectsQuery])
+	farmProvider := farmProjections.NewFarmProjectionsProvider(uowFactory.DB())
+	queryRouter.Register(farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()), utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery])
 
 	return nil
 }

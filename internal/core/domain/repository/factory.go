@@ -8,6 +8,7 @@ import (
 
 type Factory interface {
 	Begin(ctx context.Context) (UnitOfWork, error)
+	DB() *sql.DB
 }
 
 type UoWFactory struct {
@@ -20,6 +21,10 @@ func NewUnitOfWorkFactory(db *sql.DB, bus messaging.EventBus) Factory {
 		db:  db,
 		bus: bus,
 	}
+}
+
+func (f *UoWFactory) DB() *sql.DB {
+	return f.db
 }
 
 func (f *UoWFactory) Begin(ctx context.Context) (UnitOfWork, error) {
