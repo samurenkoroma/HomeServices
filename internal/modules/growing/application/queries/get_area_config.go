@@ -1,37 +1,32 @@
 package queries
 
-import (
-	"context"
-	"errors"
-	"samurenkoroma/services/internal/modules/farm/domain/field"
-)
-
-type GetFacilitiesListQuery struct {
-	Limit string `json:"limit"`
-}
-
-type GetFacilitiesListHandler struct {
-	repo field.FieldReadRepository
-}
-
-func NewGetFacilitiesListHandler(
-	repo field.FieldReadRepository,
-) *GetFacilitiesListHandler {
-	return &GetFacilitiesListHandler{
-		repo: repo,
-	}
-}
-func (h *GetFacilitiesListHandler) AsHandler() func(context.Context, any) (any, error) {
-	return func(ctx context.Context, payload any) (any, error) {
-		q, ok := payload.(*GetFacilitiesListQuery)
-		if !ok {
-			return nil, errors.New("invalid payload type")
-		}
-		return h.Handle(ctx, *q)
-	}
-}
-
-func (h *GetFacilitiesListHandler) Handle(ctx context.Context, q GetFacilitiesListQuery) (any, error) {
-
-	return h.repo.GetList(ctx, field.FacilitiesListParams{})
-}
+//
+//type GetFacilitiesListQuery struct {
+//	Limit string `json:"limit"`
+//}
+//
+//type GetFacilitiesListHandler struct {
+//	repo field.FieldReadRepository
+//}
+//
+//func NewGetFacilitiesListHandler(
+//	repo field.FieldReadRepository,
+//) *GetFacilitiesListHandler {
+//	return &GetFacilitiesListHandler{
+//		repo: repo,
+//	}
+//}
+//func (h *GetFacilitiesListHandler) AsHandler() func(context.Context, any) (any, error) {
+//	return func(ctx context.Context, payload any) (any, error) {
+//		q, ok := payload.(*GetFacilitiesListQuery)
+//		if !ok {
+//			return nil, errors.New("invalid payload type")
+//		}
+//		return h.Handle(ctx, *q)
+//	}
+//}
+//
+//func (h *GetFacilitiesListHandler) Handle(ctx context.Context, q GetFacilitiesListQuery) (any, error) {
+//
+//	return h.repo.GetList(ctx, field.FacilitiesListParams{})
+//}

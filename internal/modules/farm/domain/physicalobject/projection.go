@@ -41,6 +41,6 @@ type PODetail struct {
 }
 
 type ObjectProjections interface {
-	GetList(ctx context.Context, filter POFilter) ([]POListItem, error)
-	GetByID(ctx context.Context, id string) (PODetail, error)
+	GetList(ctx context.Context, filter POFilter) ([]*POListItem, error)
+	GetByID(ctx context.Context, id string) (*PODetail, error)
 }

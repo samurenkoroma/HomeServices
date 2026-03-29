@@ -18,7 +18,7 @@ func NewPoProjection(db *sql.DB) physicalobject.ObjectProjections {
 	return &poProjection{db: db}
 }
 
-func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilter) ([]physicalobject.POListItem, error) {
+func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilter) ([]*physicalobject.POListItem, error) {
 	query := `
 	SELECT
 		po.id, po.type, po.name,  po.area, po.status, po.owner_id, po.created_at
@@ -35,23 +35,23 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	rows, err := f.db.QueryContext(ctx, query,
 		filter.Status, filter.Type, filter.OwnerId, filter.Search, filter.Limit, filter.Offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query seasons: %w", err)
+		return nil, fmt.Errorf("failed to query objects: %w", err)
 	}
 	defer rows.Close()
 
-	var items []physicalobject.POListItem
+	var items []*physicalobject.POListItem
 	for rows.Next() {
 		var item physicalobject.POListItem
 		if err := rows.Scan(&item.Id, &item.TypeObj, &item.Name, &item.Area, &item.Status, &item.OwnerId, &item.CreatedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan item: %w", err)
 		}
-		items = append(items, item)
+		items = append(items, &item)
 	}
 
 	return items, nil
 }
 
-func (f poProjection) GetByID(ctx context.Context, id string) (physicalobject.PODetail, error) {
+func (f poProjection) GetByID(ctx context.Context, id string) (*physicalobject.PODetail, error) {
 	query := `
         SELECT 
             id, type, name, ST_AsGeoJSON(geometry), area, status, owner_id, description, attributes, created_at, updated_at
@@ -70,20 +70,20 @@ func (f poProjection) GetByID(ctx context.Context, id string) (physicalobject.PO
 	// Парсим GeoJSON
 	//var geom spatial.GeoJSON
 	if err := json.Unmarshal([]byte(geomJSON), &detail.Geometry); err != nil {
-		return physicalobject.PODetail{}, err
+		return &physicalobject.PODetail{}, err
 	}
 	//detail.Geometry = geom
 	var attrs physicalobject.Attributes
 	if err := json.Unmarshal(attrJSON, &attrs); err != nil {
-		return physicalobject.PODetail{}, err
+		return &physicalobject.PODetail{}, err
 	}
 	detail.Attributes = attrs
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return physicalobject.PODetail{}, season.ErrSeasonNotFound
+			return &physicalobject.PODetail{}, season.ErrSeasonNotFound
 		}
-		return physicalobject.PODetail{}, fmt.Errorf("failed to get season detail: %w", err)
+		return &physicalobject.PODetail{}, fmt.Errorf("failed to get season detail: %w", err)
 	}
 
-	return detail, nil
+	return &detail, nil
 }

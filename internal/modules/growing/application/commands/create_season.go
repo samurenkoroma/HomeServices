@@ -23,7 +23,10 @@ type createSeasonHandler struct {
 }
 
 func (h *createSeasonHandler) Handle(ctx context.Context, command any) error {
-	cmd, ok := command.(CreateSeasonCmd)
+	cmd, ok := command.(*CreateSeasonCmd)
+	if !ok {
+		return errors.New("invalid command type")
+	}
 	// Парсим даты
 	startDate, err := time.Parse("2006-01-02", cmd.StartDate)
 	if err != nil {
@@ -40,9 +43,6 @@ func (h *createSeasonHandler) Handle(ctx context.Context, command any) error {
 		return season.ErrInvalidPeriod
 	}
 
-	if !ok {
-		return errors.New("invalid command type")
-	}
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
 		return err

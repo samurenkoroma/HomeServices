@@ -18,6 +18,8 @@ import (
 	farmProjections "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
+	growingQueries "samurenkoroma/services/internal/modules/growing/application/queries"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/projections"
 	"samurenkoroma/services/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -81,6 +83,10 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), utils.DecodeJSON[growingCommands.RecordOperationCmd])
 	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
 	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), utils.DecodeJSON[growingCommands.StartCropCycleCmd])
+
+	growingProvider := projections.NewGrowingProjectionsProvider(uowFactory.DB())
+	queryRouter.Register(growingQueries.NewGetSeasons(growingProvider.Seasons()), utils.DecodeJSON[growingQueries.GetSeasonsQuery])
+	queryRouter.Register(growingQueries.NewGetCultivationAreasHandler(growingProvider.Areas()), utils.DecodeJSON[growingQueries.GetCultivationAreasQuery])
 	return nil
 }
 func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
