@@ -15,21 +15,32 @@ type GreenhouseArea struct {
 	name      string
 	geometry  spatial.GeoJSON
 	area      float64
-
+	length    float64
+	width     float64
 	// Конфигурации по сезонам
 	seasons         map[string]SeasonConfig
 	currentSeasonID string
 	childBeds       []string // Грядки внутри теплицы
 }
 
+func (g *GreenhouseArea) GetLength() float64 {
+	return g.length
+}
+
+func (g *GreenhouseArea) GetWidth() float64 {
+	return g.width
+}
+
 // NewGreenhouseArea создаёт новую теплицу как место выращивания
-func NewGreenhouseArea(farmRefID, name string, geom spatial.GeoJSON) *GreenhouseArea {
+func NewGreenhouseArea(farmRefID, name string, dim types.Dimension, geom spatial.GeoJSON) *GreenhouseArea {
 	return &GreenhouseArea{
 		Entity:    aggregate.NewEntity(types.NewUUID()),
 		farmRefID: farmRefID,
 		name:      name,
 		geometry:  geom,
-		area:      0,
+		length:    *dim.Length,
+		width:     *dim.Width,
+		area:      dim.Area(),
 		seasons:   make(map[string]SeasonConfig),
 		childBeds: []string{},
 	}
@@ -65,9 +76,9 @@ func (g *GreenhouseArea) GetSeasonConfig(seasonID string) (*SeasonConfig, error)
 
 // ConfigureForSeason — реализация интерфейса
 func (g *GreenhouseArea) ConfigureForSeason(seasonID string, config AreaConfig) error {
-	if config.CropPlanID == nil {
-		return ErrCropPlanRequiredForBlock
-	}
+	//if config.CropPlanID == nil {
+	//	return ErrCropPlanRequiredForBlock
+	//}
 
 	if _, exists := g.seasons[seasonID]; exists {
 		return ErrSeasonAlreadyConfigured
@@ -91,11 +102,9 @@ func (g *GreenhouseArea) ConfigureForSeason(seasonID string, config AreaConfig) 
 	g.area = seasonConfig.Area
 	g.Update()
 
-	g.AddEvent(BlockConfigured{
-		BlockID:    g.Id,
-		SeasonID:   seasonID,
-		CropPlanID: *config.CropPlanID,
-		Area:       seasonConfig.Area,
+	g.AddEvent(GreenhouseConfigured{
+		GreenhouseID: g.Id,
+		SeasonID:     seasonID,
 	})
 
 	return nil

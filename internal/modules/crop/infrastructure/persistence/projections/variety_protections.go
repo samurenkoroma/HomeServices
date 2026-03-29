@@ -18,11 +18,11 @@ func NewVarietyProjections(db *sql.DB) variety.Projections {
 	return &varietyProjections{db: db}
 }
 
-func (p *varietyProjections) GetVariety(ctx context.Context, s string) (any, error) {
+func (p *varietyProjections) GetByID(ctx context.Context, s string) (*variety.VarietyDTO, error) {
 	query := `
 SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name, v.is_active
-FROM varieties v
-LEFT OUTER JOIN public.crop_types ct on v.crop_type_id = ct.id
+FROM crop_varieties v
+LEFT OUTER JOIN crop_crop_types ct on v.crop_type_id = ct.id
 WHERE  v.id = $1 
 	`
 
@@ -47,20 +47,22 @@ WHERE  v.id = $1
 		Max: attrs.YP().Max,
 	}
 
-	return dto, nil
+	return &dto, nil
 }
 
 // GetVarieties — получить сорта
-func (p *varietyProjections) GetVarieties(ctx context.Context, filter variety.Filter) ([]*variety.VarietyDTO, error) {
+func (p *varietyProjections) GetList(ctx context.Context, filter variety.Filter) ([]*variety.VarietyDTO, error) {
 	// Основная информация о типе культуры
 	query := `
 SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name, v.is_active
-FROM varieties v
-LEFT OUTER JOIN public.crop_types ct on v.crop_type_id = ct.id
-WHERE  v.is_active = true ORDER BY v.name
+FROM crop_varieties v
+LEFT OUTER JOIN crop_crop_types ct on v.crop_type_id = ct.id
+WHERE ($1 = '' OR v.crop_type_id = $1)
+          AND ($2 = false OR v.is_active = true)
+               ORDER BY v.name
 	`
 
-	rows, err := p.db.QueryContext(ctx, query)
+	rows, err := p.db.QueryContext(ctx, query, filter.CropTypeId, filter.IsActive)
 	if err != nil {
 		return nil, err
 	}

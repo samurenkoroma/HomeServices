@@ -6,7 +6,7 @@ Content-Type: application/json
   "command": "CreatePhysicalObject",
   "data": {
     "type": "greenhouse",
-    "name": "Теплица 4awtbgyhnw",
+    "name": "Теплица 1",
     "length": 12,
     "width": 4,
     "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
@@ -177,7 +177,7 @@ Content-Type: application/json
 POST http://localhost:8080/queries/
 Content-Type: application/json
 
-{"query":"GetCropTypes","data":{"active_only":true}}
+{"query":"GetCropTypes","data":{"id":"99e57e6b-109f-451e-8c6a-43700044795c"}}
 
 ###
 
@@ -198,5 +198,17 @@ Content-Type: application/json
   "query": "GetCategories",
   "data": {
     
+  }
+}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetCropPlans",
+  "data": {
+    "id": "bd917c5d-1b69-45f7-be92-8e288efd9a4e"
   }
 }

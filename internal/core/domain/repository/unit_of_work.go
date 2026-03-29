@@ -20,6 +20,7 @@ type UnitOfWork interface {
 	// Execute выполняет функцию в рамках транзакции
 	Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error
 	Tx() *sql.Tx
+	DB() *sql.DB
 	RegisterAggregate(agg aggregate.Aggregate)
 	Commit() error
 	Rollback() error
@@ -32,20 +33,25 @@ type unitOfWork struct {
 	mu         sync.Mutex
 	aggregates []aggregate.Aggregate
 	tx         *sql.Tx
+	db         *sql.DB
 	ctx        context.Context
 	bus        messaging.EventBus
 }
 
-func NewUnitOfWork(ctx context.Context, tx *sql.Tx, bus messaging.EventBus) UnitOfWork {
+func NewUnitOfWork(ctx context.Context, tx *sql.Tx, db *sql.DB, bus messaging.EventBus) UnitOfWork {
 	return &unitOfWork{
 		tx:  tx,
 		ctx: ctx,
 		bus: bus,
+		db:  db,
 	}
 }
 
 func (uow *unitOfWork) Tx() *sql.Tx {
 	return uow.tx
+}
+func (uow *unitOfWork) DB() *sql.DB {
+	return uow.db
 }
 
 func (uow *unitOfWork) Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error {
@@ -119,5 +125,5 @@ func (uow *unitOfWork) dispatchEvents() error {
 		return nil
 	}
 
-	return uow.bus.Publish(WithUnitOfWork(uow.ctx, uow), allEvents)
+	return uow.bus.Publish(WithFactory(uow.ctx, NewUnitOfWorkFactory(uow.db, uow.bus)), allEvents)
 }

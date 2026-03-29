@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
-	"samurenkoroma/services/internal/modules/farm/domain/valueobject"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 
 	"github.com/google/uuid"
@@ -39,7 +39,7 @@ func NewCreatePhysicalObjectHandler(uowFactory repository.Factory) command.Handl
 }
 
 func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CreatePhysicalObjectCmd)
+	c, ok := cmd.(*CreatePhysicalObjectCmd)
 	if !ok {
 		return command.ErrInvalidCommandType
 	}
@@ -61,7 +61,7 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		case "field":
 			newObj = physicalobject.NewField(c.Name, c.GeoJSON, *c.SoilType, uuid.New().String())
 		case "greenhouse":
-			newObj = physicalobject.NewGreenhouse(c.Name, valueobject.Dimension{
+			newObj = physicalobject.NewGreenhouse(c.Name, types.Dimension{
 				Length: c.Length,
 				Width:  c.Width,
 				Height: c.Height,

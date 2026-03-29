@@ -113,7 +113,7 @@ func seedVarieties(uowFactory repository.Factory, data seedData, dryRun bool) er
 				log.Printf("Skipping. Variety '%s' already exists", v.Name)
 				continue
 			}
-			return fmt.Errorf("failed to create crop type %s: %w", v.Name, err)
+			return fmt.Errorf("failed to create variety %s: %w", v.Name, err)
 		}
 
 		log.Printf("Created crop type: %s", v.Name)

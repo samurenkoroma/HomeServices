@@ -21,11 +21,11 @@ func NewCropTypeProjections(db *sql.DB) croptype.Projections {
 func (p *cropTypeProjections) GetCropTypeWithVarieties(ctx context.Context, id string) (*croptype.CropTypeWithVarietiesDTO, error) {
 	// Основная информация о типе культуры
 	query := `
-        SELECT ct.id, ct.name, ct.category, ct.is_perennial, ct.created_at,
+        SELECT ct.id, ct.name, ct.category, ct.description, ct.is_active, ct.is_perennial, ct.created_at, 
                ct.category as category_name,
 --                COALESCE(cat.name, ct.category) as category_name,
-               (SELECT COUNT(*) FROM varieties WHERE crop_type_id = ct.id AND is_active = true) as varieties_count
-        FROM crop_types ct
+               (SELECT COUNT(*) FROM crop_varieties WHERE crop_type_id = ct.id AND is_active = true) as varieties_count
+        FROM crop_crop_types ct
 --         LEFT JOIN crop_category_translations cat ON cat.code = ct.category AND cat.language = 'ru'
         WHERE ct.id = $1 AND ct.is_active = true
     `
@@ -33,7 +33,7 @@ func (p *cropTypeProjections) GetCropTypeWithVarieties(ctx context.Context, id s
 	var dto croptype.CropTypeWithVarietiesDTO
 
 	err := p.db.QueryRowContext(ctx, query, id).Scan(
-		&dto.ID, &dto.Name, &dto.Category, &dto.IsPerennial, &dto.CreatedAt,
+		&dto.ID, &dto.Name, &dto.Category, &dto.Description, &dto.IsActive, &dto.IsPerennial, &dto.CreatedAt,
 		&dto.CategoryName, &dto.VarietiesCount,
 	)
 	if err != nil {
@@ -45,7 +45,7 @@ func (p *cropTypeProjections) GetCropTypeWithVarieties(ctx context.Context, id s
         SELECT id, name, 
                45 /*vegetation_days_min || '–' || vegetation_days_max*/ as vegetation_days,
                is_active
-        FROM varieties
+        FROM crop_varieties
         WHERE crop_type_id = $1
         ORDER BY name
     `
@@ -74,7 +74,7 @@ func (p *cropTypeProjections) GetAllCropTypesSimple(ctx context.Context) ([]crop
 	query := `
         SELECT ct.id, ct.name, ct.category, ct.category as category_name
 --                COALESCE(cat.name, ct.category) as category_name
-        FROM crop_types ct
+        FROM crop_crop_types ct
 --         LEFT JOIN crop_category_translations cat ON cat.code = ct.category AND cat.language = 'ru'
         WHERE ct.is_active = true
         ORDER BY ct.name
@@ -101,8 +101,8 @@ func (p *cropTypeProjections) GetAllCropTypesSimple(ctx context.Context) ([]crop
 // GetList — получить список типов культур
 func (p *cropTypeProjections) GetList(ctx context.Context, filter croptype.Filter) ([]croptype.CropTypeSimpleDTO, error) {
 	query := `
-        SELECT ct.id, ct.name, ct.category, ct.is_perennial,ct.category as category_name
-        FROM crop_types ct
+        SELECT ct.id, ct.name, ct.category, ct.is_perennial,ct.category as category_name, ct.is_active
+        FROM crop_crop_types ct
         WHERE ($1 = '' OR ct.category = $1)
           AND ($2 = false OR ct.is_active = true)
         ORDER BY ct.name
@@ -117,7 +117,7 @@ func (p *cropTypeProjections) GetList(ctx context.Context, filter croptype.Filte
 	var result []croptype.CropTypeSimpleDTO
 	for rows.Next() {
 		var dto croptype.CropTypeSimpleDTO
-		if err := rows.Scan(&dto.ID, &dto.Name, &dto.Category, &dto.IsPerennial, &dto.CategoryName); err != nil {
+		if err := rows.Scan(&dto.ID, &dto.Name, &dto.Category, &dto.IsPerennial, &dto.CategoryName, &dto.IsActive); err != nil {
 			return nil, err
 		}
 		result = append(result, dto)
@@ -133,15 +133,15 @@ func (p *cropTypeProjections) GetByID(ctx context.Context, id string) (*croptype
                ct.is_perennial, ct.is_active, ct.created_at, ct.updated_at,
                ct.category as category_name,
 --                COALESCE(cat.name, ct.category) as category_name,
-               (SELECT COUNT(*) FROM varieties WHERE crop_type_id = ct.id AND is_active = true) as varieties_count
-        FROM crop_types ct
+               (SELECT COUNT(*) FROM crop_varieties WHERE crop_type_id = ct.id AND is_active = true) as varieties_count
+        FROM crop_crop_types ct
 --         LEFT JOIN crop_category_translations cat ON cat.code = ct.category AND cat.language = 'ru'
         WHERE ct.id = $1
     `
 
 	var dto croptype.CropTypeDetailDTO
 	err := p.db.QueryRowContext(ctx, query, id).Scan(
-		&dto.ID, &dto.Name, &dto.ScientificName, &dto.Category, &dto.Description,
+		&dto.ID, &dto.Name, &dto.Category, &dto.Description,
 		&dto.IsPerennial, &dto.IsActive, &dto.CreatedAt, &dto.UpdatedAt,
 		&dto.CategoryName, &dto.VarietiesCount,
 	)

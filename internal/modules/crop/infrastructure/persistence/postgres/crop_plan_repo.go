@@ -19,7 +19,7 @@ func NewCropPlanRepository(tx *sql.Tx) cropplan.Repository {
 func (r *cropPlanRepository) Save(ctx context.Context, plan *cropplan.CropPlan) error {
 	// Основная информация
 	query := `
-        INSERT INTO crop_plans (
+        INSERT INTO crop_crop_plans (
             id, crop_type_id, variety_id, name, description, duration,
             version, status, environment, nutrients, created_by,
             created_at, updated_at, published_at
@@ -74,30 +74,27 @@ func (r *cropPlanRepository) Save(ctx context.Context, plan *cropplan.CropPlan) 
 
 func (r *cropPlanRepository) saveStages(ctx context.Context, plan *cropplan.CropPlan) error {
 	// Удаляем старые
-	_, err := r.tx.ExecContext(ctx, `DELETE FROM crop_plan_stages WHERE plan_id = $1`, string(plan.GetID()))
+	_, err := r.tx.ExecContext(ctx, `DELETE FROM crop_crop_plan_stages WHERE plan_id = $1`, string(plan.GetID()))
 	if err != nil {
 		return err
 	}
 
 	// Вставляем новые
 	for _, stage := range plan.GetStages() {
-		_, err := r.tx.ExecContext(ctx, `
-            INSERT INTO crop_plan_stages (
-                plan_id, stage_order, name, duration, min_temp, max_temp,
-                optimal_temp, water_per_day, nitrogen_req, phosphorus_req, potassium_req
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		recommendData, err := stage.Recommendations.Marshal()
+		if err != nil {
+			return err
+		}
+		_, err = r.tx.ExecContext(ctx, `
+            INSERT INTO crop_crop_plan_stages (
+                plan_id, stage_order, name, duration, recommendations
+            ) VALUES ($1, $2, $3, $4, $5)
         `,
 			string(plan.GetID()),
 			stage.Order,
 			stage.Name,
 			stage.Duration,
-			stage.MinTemp,
-			stage.MaxTemp,
-			stage.OptimalTemp,
-			stage.WaterPerDay,
-			stage.NitrogenReq,
-			stage.PhosphorusReq,
-			stage.PotassiumReq,
+			recommendData,
 		)
 		if err != nil {
 			return err
@@ -109,7 +106,7 @@ func (r *cropPlanRepository) saveStages(ctx context.Context, plan *cropplan.Crop
 
 func (r *cropPlanRepository) saveRotationRules(ctx context.Context, plan *cropplan.CropPlan) error {
 	// Удаляем старые
-	_, err := r.tx.ExecContext(ctx, `DELETE FROM crop_rotation_rules WHERE plan_id = $1`, string(plan.GetID()))
+	_, err := r.tx.ExecContext(ctx, `DELETE FROM crop_crop_rotation_rules WHERE plan_id = $1`, string(plan.GetID()))
 	if err != nil {
 		return err
 	}
@@ -117,7 +114,7 @@ func (r *cropPlanRepository) saveRotationRules(ctx context.Context, plan *croppl
 	// Вставляем новые
 	for _, rule := range plan.GetRotationRules() {
 		_, err := r.tx.ExecContext(ctx, `
-            INSERT INTO crop_rotation_rules (
+            INSERT INTO crop_crop_rotation_rules (
                 plan_id, predecessor_crop_type_id, min_years, recommended, notes
             ) VALUES ($1, $2, $3, $4, $5)
         `,
@@ -141,7 +138,7 @@ func (r *cropPlanRepository) GetByID(ctx context.Context, id cropplan.PlanID) (*
             id, crop_type_id, variety_id, name, description, duration,
             version, status, environment, nutrients, created_by,
             created_at, updated_at, published_at
-        FROM crop_plans
+        FROM crop_crop_plans
         WHERE id = $1
     `
 
@@ -204,9 +201,8 @@ func (r *cropPlanRepository) GetByID(ctx context.Context, id cropplan.PlanID) (*
 
 func (r *cropPlanRepository) loadStages(ctx context.Context, planID string) ([]cropplan.GrowthStage, error) {
 	rows, err := r.tx.QueryContext(ctx, `
-        SELECT stage_order, name, duration, min_temp, max_temp, optimal_temp,
-               water_per_day, nitrogen_req, phosphorus_req, potassium_req
-        FROM crop_plan_stages
+        SELECT stage_order, name, duration, recommendations
+        FROM crop_crop_plan_stages
         WHERE plan_id = $1
         ORDER BY stage_order
     `, planID)
@@ -218,12 +214,11 @@ func (r *cropPlanRepository) loadStages(ctx context.Context, planID string) ([]c
 	var stages []cropplan.GrowthStage
 	for rows.Next() {
 		var stage cropplan.GrowthStage
-		err := rows.Scan(
-			&stage.Order, &stage.Name, &stage.Duration,
-			&stage.MinTemp, &stage.MaxTemp, &stage.OptimalTemp,
-			&stage.WaterPerDay, &stage.NitrogenReq, &stage.PhosphorusReq, &stage.PotassiumReq,
-		)
-		if err != nil {
+		var attrJSON []byte
+		if err := rows.Scan(&stage.Order, &stage.Name, &stage.Duration, &attrJSON); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(attrJSON, &stage.Recommendations); err != nil {
 			return nil, err
 		}
 		stages = append(stages, stage)
@@ -235,7 +230,7 @@ func (r *cropPlanRepository) loadStages(ctx context.Context, planID string) ([]c
 func (r *cropPlanRepository) loadRotationRules(ctx context.Context, planID string) ([]cropplan.RotationRule, error) {
 	rows, err := r.tx.QueryContext(ctx, `
         SELECT predecessor_crop_type_id, min_years, recommended, notes
-        FROM crop_rotation_rules
+        FROM crop_crop_rotation_rules
         WHERE plan_id = $1
     `, planID)
 	if err != nil {

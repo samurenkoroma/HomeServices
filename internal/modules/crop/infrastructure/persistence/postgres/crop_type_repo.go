@@ -22,7 +22,7 @@ func NewCropTypeRepository(tx *sql.Tx) croptype.Repository {
 // Save сохраняет или обновляет тип культуры
 func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) error {
 	query := `
-        INSERT INTO crop_types (id, name, category, description, is_perennial, is_active, created_at, updated_at)
+        INSERT INTO crop_crop_types (id, name, category, description, is_perennial, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
@@ -57,7 +57,7 @@ func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) er
 func (r *cropTypeRepository) FindByID(ctx context.Context, search croptype.CropTypeID) (*croptype.CropType, error) {
 	query := `
         SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
-        FROM crop_types
+        FROM crop_crop_types
         WHERE id = $1
     `
 
@@ -101,7 +101,7 @@ func (r *cropTypeRepository) FindByID(ctx context.Context, search croptype.CropT
 func (r *cropTypeRepository) FindByName(ctx context.Context, search string) (*croptype.CropType, error) {
 	query := `
         SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
-        FROM crop_types
+        FROM crop_crop_types
         WHERE name = $1
     `
 
@@ -145,7 +145,7 @@ func (r *cropTypeRepository) FindByName(ctx context.Context, search string) (*cr
 func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType, error) {
 	query := `
         SELECT id, name,  category, description, is_perennial, is_active, created_at, updated_at 
-        FROM crop_types
+        FROM crop_crop_types
         ORDER BY name
     `
 
@@ -202,7 +202,7 @@ func (r *cropTypeRepository) FindAll(ctx context.Context) ([]*croptype.CropType,
 func (r *cropTypeRepository) FindByCategory(ctx context.Context, search croptype.CropCategory) ([]*croptype.CropType, error) {
 	query := `
 	SELECT  id, name, category,  description, is_perennial,is_active, created_at, updated_at 
-        FROM crop_types
+        FROM crop_crop_types
         WHERE category = $1
         ORDER BY name
     `
@@ -254,7 +254,7 @@ func (r *cropTypeRepository) FindByCategory(ctx context.Context, search croptype
 func (r *cropTypeRepository) FindActive(ctx context.Context) ([]*croptype.CropType, error) {
 	query := `
         SELECT id, name, category,  description, is_perennial,is_active, created_at, updated_at 
-        FROM crop_types
+        FROM crop_crop_types
         WHERE is_active = true
         ORDER BY name
     `
@@ -305,7 +305,7 @@ func (r *cropTypeRepository) FindActive(ctx context.Context) ([]*croptype.CropTy
 
 // Exists проверяет существование типа культуры по имени
 func (r *cropTypeRepository) Exists(ctx context.Context, name string) (bool, error) {
-	query := `SELECT EXISTS(SELECT 1 FROM crop_types WHERE name = $1)`
+	query := `SELECT EXISTS(SELECT 1 FROM crop_crop_types WHERE name = $1)`
 
 	var exists bool
 	err := r.tx.QueryRowContext(ctx, query, name).Scan(&exists)
@@ -322,14 +322,14 @@ func (r *cropTypeRepository) Delete(ctx context.Context, id croptype.CropTypeID)
 	var plansCount, varietiesCount int
 
 	err := r.tx.QueryRowContext(ctx, `
-        SELECT COUNT(*) FROM crop_plans WHERE crop_type_id = $1
+        SELECT COUNT(*) FROM crop_crop_plans WHERE crop_type_id = $1
     `, string(id)).Scan(&plansCount)
 	if err != nil {
 		return fmt.Errorf("failed to check plans: %w", err)
 	}
 
 	err = r.tx.QueryRowContext(ctx, `
-        SELECT COUNT(*) FROM varieties WHERE crop_type_id = $1
+        SELECT COUNT(*) FROM crop_varieties WHERE crop_type_id = $1
     `, string(id)).Scan(&varietiesCount)
 	if err != nil {
 		return fmt.Errorf("failed to check varieties: %w", err)
@@ -340,7 +340,7 @@ func (r *cropTypeRepository) Delete(ctx context.Context, id croptype.CropTypeID)
 	}
 
 	// Мягкое удаление (архивация)
-	query := `UPDATE crop_types SET is_active = false, updated_at = $1 WHERE id = $2`
+	query := `UPDATE crop_crop_types SET is_active = false, updated_at = $1 WHERE id = $2`
 
 	_, err = r.tx.ExecContext(ctx, query, time.Now(), string(id))
 	if err != nil {

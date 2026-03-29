@@ -42,7 +42,7 @@ func NewConfigureAreaHandler(uowFactory repository.Factory) command.Handler {
 
 // Handle обрабатывает команду
 func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
-	cmd, ok := command.(ConfigureAreaCmd)
+	cmd, ok := command.(*ConfigureAreaCmd)
 	if !ok {
 		return errors.New("invalid command type")
 	} // Валидация

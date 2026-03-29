@@ -7,9 +7,11 @@ import (
 )
 
 type Filter struct {
-	Search string
-	Limit  int
-	Offset int
+	Search     string
+	Limit      int
+	Offset     int
+	CropTypeId string
+	IsActive   bool
 }
 
 type VarietyDTO struct {
@@ -32,6 +34,6 @@ type VarietyDTO struct {
 }
 
 type Projections interface {
-	GetVarieties(context.Context, Filter) ([]*VarietyDTO, error)
-	GetVariety(context.Context, string) (any, error)
+	GetList(context.Context, Filter) ([]*VarietyDTO, error)
+	GetByID(context.Context, string) (*VarietyDTO, error)
 }

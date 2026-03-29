@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 
 	"samurenkoroma/services/internal/core/spatial"
@@ -22,7 +23,7 @@ func NewCultivationAreaRepository(tx *sql.Tx) cultivationarea.Repository {
 // Save сохраняет место выращивания
 func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationarea.CultivationArea) error {
 	query := `
-        INSERT INTO cultivation_areas (
+        INSERT INTO public.growing_cultivation_areas (
             id, farm_ref_id, type, name, geometry, area, parent_id, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326), $6, $7, $8, $9)
         ON CONFLICT (id) DO UPDATE SET
@@ -63,7 +64,7 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 	)
 
 	if err != nil {
-		return fmt.Errorf("failed to save cultivation area: %w", err)
+		return fmt.Errorf("failed to save cultivation area: %v", err)
 	}
 
 	return nil
@@ -73,7 +74,7 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 func (r *cultivationAreaRepository) FindByID(ctx context.Context, id string) (cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, ST_AsGeoJSON(geometry), area, parent_id, created_at, updated_at
-        FROM cultivation_areas
+        FROM public.growing_cultivation_areas
         WHERE id = $1
     `
 
@@ -113,7 +114,7 @@ func (r *cultivationAreaRepository) FindByID(ctx context.Context, id string) (cu
 func (r *cultivationAreaRepository) FindByFarmRefID(ctx context.Context, farmRefID string) (cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, ST_AsGeoJSON(geometry), area, parent_id, created_at, updated_at
-        FROM cultivation_areas
+        FROM public.growing_cultivation_areas
         WHERE farm_ref_id = $1
         LIMIT 1
     `
@@ -154,7 +155,7 @@ func (r *cultivationAreaRepository) FindByFarmRefID(ctx context.Context, farmRef
 func (r *cultivationAreaRepository) FindByType(ctx context.Context, areaType cultivationarea.AreaType) ([]cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, ST_AsGeoJSON(geometry), area, parent_id, created_at, updated_at
-        FROM cultivation_areas
+        FROM public.growing_cultivation_areas
         WHERE type = $1
         ORDER BY name
     `
@@ -208,7 +209,7 @@ func (r *cultivationAreaRepository) FindByType(ctx context.Context, areaType cul
 func (r *cultivationAreaRepository) FindByParentID(ctx context.Context, parentID string) ([]cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, ST_AsGeoJSON(geometry), area, parent_id, created_at, updated_at
-        FROM cultivation_areas
+        FROM public.growing_cultivation_areas
         WHERE parent_id = $1
         ORDER BY name
     `
@@ -262,7 +263,7 @@ func (r *cultivationAreaRepository) FindByParentID(ctx context.Context, parentID
 func (r *cultivationAreaRepository) FindAll(ctx context.Context) ([]cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, ST_AsGeoJSON(geometry), area, parent_id, created_at, updated_at
-        FROM cultivation_areas
+        FROM growing_cultivation_areas
         ORDER BY type, name
     `
 
@@ -314,7 +315,7 @@ func (r *cultivationAreaRepository) FindAll(ctx context.Context) ([]cultivationa
 // Delete удаляет место выращивания
 func (r *cultivationAreaRepository) Delete(ctx context.Context, id string) error {
 	var childCount int
-	err := r.tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM cultivation_areas WHERE parent_id = $1`, id).Scan(&childCount)
+	err := r.tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM growing_cultivation_areas WHERE parent_id = $1`, id).Scan(&childCount)
 	if err != nil {
 		return fmt.Errorf("failed to check children: %w", err)
 	}
@@ -323,12 +324,12 @@ func (r *cultivationAreaRepository) Delete(ctx context.Context, id string) error
 		return fmt.Errorf("cannot delete area with children")
 	}
 
-	_, err = r.tx.ExecContext(ctx, `DELETE FROM area_season_configs WHERE area_id = $1`, id)
+	_, err = r.tx.ExecContext(ctx, `DELETE FROM public.growing_area_season_configs WHERE area_id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete season configs: %w", err)
 	}
 
-	_, err = r.tx.ExecContext(ctx, `DELETE FROM cultivation_areas WHERE id = $1`, id)
+	_, err = r.tx.ExecContext(ctx, `DELETE FROM growing_cultivation_areas WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete cultivation area: %w", err)
 	}
@@ -339,7 +340,7 @@ func (r *cultivationAreaRepository) Delete(ctx context.Context, id string) error
 // SaveSeasonConfig сохраняет конфигурацию места на сезон
 func (r *cultivationAreaRepository) SaveSeasonConfig(ctx context.Context, areaID string, config cultivationarea.SeasonConfig) error {
 	query := `
-        INSERT INTO area_season_configs (
+        INSERT INTO public.growing_area_season_configs (
             area_id, season_id, name, geometry, area, crop_plan_id, block_ids, metadata, valid_from, valid_until
         ) VALUES ($1, $2, $3, ST_SetSRID(ST_GeomFromGeoJSON($4), 4326), $5, $6, $7, $8, $9, $10)
         ON CONFLICT (area_id, season_id) DO UPDATE SET
@@ -391,7 +392,7 @@ func (r *cultivationAreaRepository) SaveSeasonConfig(ctx context.Context, areaID
 func (r *cultivationAreaRepository) GetSeasonConfig(ctx context.Context, areaID, seasonID string) (*cultivationarea.SeasonConfig, error) {
 	query := `
         SELECT name, ST_AsGeoJSON(geometry), area, crop_plan_id, block_ids, metadata, valid_from, valid_until
-        FROM area_season_configs
+        FROM public.growing_area_season_configs
         WHERE area_id = $1 AND season_id = $2
     `
 
@@ -466,7 +467,7 @@ func (r *cultivationAreaRepository) GetSeasonConfig(ctx context.Context, areaID,
 func (r *cultivationAreaRepository) GetSeasonConfigs(ctx context.Context, areaID string) ([]cultivationarea.SeasonConfig, error) {
 	query := `
         SELECT season_id, name, ST_AsGeoJSON(geometry), area, crop_plan_id, block_ids, metadata, valid_from, valid_until
-        FROM area_season_configs
+        FROM public.growing_area_season_configs
         WHERE area_id = $1
         ORDER BY season_id DESC
     `
@@ -547,7 +548,7 @@ func (r *cultivationAreaRepository) GetSeasonConfigs(ctx context.Context, areaID
 
 // DeleteSeasonConfig удаляет конфигурацию места на сезон
 func (r *cultivationAreaRepository) DeleteSeasonConfig(ctx context.Context, areaID, seasonID string) error {
-	_, err := r.tx.ExecContext(ctx, `DELETE FROM area_season_configs WHERE area_id = $1 AND season_id = $2`, areaID, seasonID)
+	_, err := r.tx.ExecContext(ctx, `DELETE FROM public.growing_area_season_configs WHERE area_id = $1 AND season_id = $2`, areaID, seasonID)
 	if err != nil {
 		return fmt.Errorf("failed to delete season config: %w", err)
 	}
@@ -557,7 +558,7 @@ func (r *cultivationAreaRepository) DeleteSeasonConfig(ctx context.Context, area
 // Exists проверяет существование места
 func (r *cultivationAreaRepository) Exists(ctx context.Context, id string) (bool, error) {
 	var exists bool
-	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM cultivation_areas WHERE id = $1)`, id).Scan(&exists)
+	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM growing_cultivation_areas WHERE id = $1)`, id).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check existence: %w", err)
 	}
@@ -567,7 +568,7 @@ func (r *cultivationAreaRepository) Exists(ctx context.Context, id string) (bool
 // ExistsByFarmRefID проверяет существование места по ссылке на farm
 func (r *cultivationAreaRepository) ExistsByFarmRefID(ctx context.Context, farmRefID string) (bool, error) {
 	var exists bool
-	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM cultivation_areas WHERE farm_ref_id = $1)`, farmRefID).Scan(&exists)
+	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM growing_cultivation_areas WHERE farm_ref_id = $1)`, farmRefID).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check existence: %w", err)
 	}
@@ -577,7 +578,7 @@ func (r *cultivationAreaRepository) ExistsByFarmRefID(ctx context.Context, farmR
 // ExistsByName проверяет существование места по имени
 func (r *cultivationAreaRepository) ExistsByName(ctx context.Context, name string) (bool, error) {
 	var exists bool
-	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM cultivation_areas WHERE name = $1)`, name).Scan(&exists)
+	err := r.tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM growing_cultivation_areas WHERE name = $1)`, name).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check existence: %w", err)
 	}
@@ -617,7 +618,8 @@ func (r *cultivationAreaRepository) hydrateArea(
 		return bed, nil
 
 	case cultivationarea.AreaTypeGreenhouse:
-		greenhouse := cultivationarea.NewGreenhouseArea(farmRefID, name, geom)
+		//TODO сделать атрибуты для хранения размеров
+		greenhouse := cultivationarea.NewGreenhouseArea(farmRefID, name, *types.NewDimension(12, 4, 2), geom)
 		greenhouse.Rehydrate(id, createdAt, updatedAt)
 		return greenhouse, nil
 

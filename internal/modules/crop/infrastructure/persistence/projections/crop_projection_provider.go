@@ -3,6 +3,7 @@ package projections
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
 	"samurenkoroma/services/internal/modules/crop/domain/variety"
 )
@@ -12,6 +13,7 @@ type CropProjectionsProvider struct {
 
 	// Кеш репозиториев
 	cropTypes croptype.Projections
+	cropPlans cropplan.Projections
 	varieties variety.Projections
 }
 
@@ -40,4 +42,11 @@ func (provider *CropProjectionsProvider) CropTypes() croptype.Projections {
 		provider.cropTypes = NewCropTypeProjections(provider.db)
 	}
 	return provider.cropTypes
+}
+
+func (provider *CropProjectionsProvider) CropPlans() cropplan.Projections {
+	if provider.cropPlans == nil {
+		provider.cropPlans = NewCropPlanProjections(provider.db)
+	}
+	return provider.cropPlans
 }

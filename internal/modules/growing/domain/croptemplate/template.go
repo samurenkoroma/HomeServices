@@ -38,17 +38,19 @@ type CropTemplate struct {
 	publishedAt *time.Time
 	updatedAt   time.Time
 }
+type Attributes map[string]interface{}
 
 // GrowthStage — этап роста (копия из crop, но с добавленными полями для growing)
 type GrowthStage struct {
-	Order       int     `json:"order"`
-	Name        string  `json:"name"`
-	Duration    int     `json:"duration"` // дней
-	MinTemp     float64 `json:"min_temp"`
-	MaxTemp     float64 `json:"max_temp"`
-	OptimalTemp float64 `json:"optimal_temp"`
-	WaterPerDay float64 `json:"water_per_day"` // л/м² в день
-	Description string  `json:"description"`
+	Order           int     `json:"order"`
+	Name            string  `json:"name"`
+	Duration        int     `json:"duration"` // дней
+	MinTemp         float64 `json:"min_temp"`
+	MaxTemp         float64 `json:"max_temp"`
+	OptimalTemp     float64 `json:"optimal_temp"`
+	Recommendations Attributes
+	WaterPerDay     float64 `json:"water_per_day"` // л/м² в день
+	Description     string  `json:"description"`
 }
 
 // Requirements — требования к условиям

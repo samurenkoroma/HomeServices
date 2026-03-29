@@ -105,7 +105,7 @@ func NewField(
 
 func NewGreenhouse(
 	name string,
-	dim valueobject.Dimension,
+	dim types.Dimension,
 	geom spatial.GeoJSON,
 	ghType string,
 	ownerID string,
@@ -134,6 +134,7 @@ func NewGreenhouse(
 	obj.AddEvent(GreenhouseCreated{
 		ID:       string(obj.Id),
 		Name:     obj.Name,
+		Dim:      dim,
 		Geometry: obj.Geometry,
 	})
 	return obj

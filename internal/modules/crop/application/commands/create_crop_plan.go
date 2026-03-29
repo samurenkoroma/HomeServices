@@ -31,7 +31,7 @@ func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
 }
 
 func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CreateCropPlanCmd)
+	c, ok := cmd.(*CreateCropPlanCmd)
 	if !ok {
 		return command.ErrInvalidCommandType
 	}

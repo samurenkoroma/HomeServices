@@ -2,6 +2,7 @@ package cultivationarea
 
 import (
 	"fmt"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 )
 
@@ -33,7 +34,7 @@ func CreateArea(config CreateAreaConfig) (CultivationArea, error) {
 		return NewBed(config.ParentID, config.Name, config.Geometry), nil
 
 	case AreaTypeGreenhouse:
-		return NewGreenhouseArea(config.FarmRefID, config.Name, config.Geometry), nil
+		return NewGreenhouseArea(config.FarmRefID, config.Name, types.Dimension{}, config.Geometry), nil
 
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownAreaType, config.Type)

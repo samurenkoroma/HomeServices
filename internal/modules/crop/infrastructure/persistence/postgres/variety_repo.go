@@ -17,8 +17,8 @@ func NewVarietyRepository(tx *sql.Tx) variety.Repository {
 	return &varietyRepo{tx: tx}
 }
 func (repo *varietyRepo) Save(ctx context.Context, obj *variety.Variety) error {
-	query := `INSERT INTO varieties ( 
-                     id,crop_type_id, name, description, attributes, is_active, created_at, updated_at 
+	query := `INSERT INTO crop_varieties ( 
+                     id, crop_type_id, name, description, attributes, is_active, created_at, updated_at 
                      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                        ON CONFLICT (id) DO UPDATE SET
 						crop_type_id = EXCLUDED.crop_type_id,
@@ -36,11 +36,11 @@ func (repo *varietyRepo) Save(ctx context.Context, obj *variety.Variety) error {
 
 	_, err = repo.tx.ExecContext(ctx, query,
 		obj.Id,
-		obj.CropTypeID,
-		obj.Name,
-		obj.Description,
+		obj.CropTypeID(),
+		obj.Name(),
+		obj.Description(),
 		attrData,
-		obj.IsActive,
+		obj.IsActive(),
 		obj.CreatedAt,
 		obj.UpdatedAt,
 	)

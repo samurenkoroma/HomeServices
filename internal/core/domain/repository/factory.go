@@ -33,5 +33,5 @@ func (f *UoWFactory) Begin(ctx context.Context) (UnitOfWork, error) {
 		return nil, err
 	}
 
-	return NewUnitOfWork(ctx, tx, f.bus), nil
+	return NewUnitOfWork(ctx, tx, f.db, f.bus), nil
 }

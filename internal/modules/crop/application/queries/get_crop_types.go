@@ -11,11 +11,9 @@ import (
 // GetCropTypesQuery — параметры запроса списка типов культур
 type GetCropTypesQuery struct {
 	ID         string `json:"id"`
-	Category   string `json:"category"`
+	Category   string `json:"category,omitempty"`
 	ActiveOnly bool   `json:"active_only"`
 	Search     string `json:"search"`
-	Limit      int    `json:"limit"`
-	Offset     int    `json:"offset"`
 }
 
 // GetCropTypesHandler — обработчик запроса
@@ -38,13 +36,19 @@ func (h *getCropTypesHandler) Handle(ctx context.Context, payload any) (any, err
 	}
 
 	if q.ID != "" {
-		return h.projector.GetByID(ctx, q.ID)
+		return h.projector.GetCropTypeWithVarieties(ctx, q.ID)
 	}
 
 	filter := croptype.Filter{
 		Search: q.Search,
-		Limit:  q.Limit,
-		Offset: q.Offset,
 	}
+
+	if q.Category != "" {
+		filter.Category = q.Category
+	}
+	if q.ActiveOnly {
+		filter.IsActive = true
+	}
+
 	return h.projector.GetList(ctx, filter)
 }

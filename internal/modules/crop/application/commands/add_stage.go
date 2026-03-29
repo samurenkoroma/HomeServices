@@ -34,7 +34,7 @@ func NewAddStageHandler(uowFactory repository.Factory) command.Handler {
 	}
 }
 func (h *addStageHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(AddStageCmd)
+	c, ok := cmd.(*AddStageCmd)
 	if !ok {
 		return command.ErrInvalidCommandType
 	}

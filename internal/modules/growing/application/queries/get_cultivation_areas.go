@@ -32,9 +32,9 @@ func (h *getCultivationAreasHandler) Handle(ctx context.Context, payload any) (a
 		return nil, query.ErrInvalidPayloadType
 	}
 
-	//if q.Id != "" {
-	//	return h.projector.GetList(ctx, )
-	//}
+	if q.Id != "" {
+		return h.projector.GetByID(ctx, q.Id)
+	}
 
 	filter := cultivationarea.Filter{
 		Limit:  q.Limit,

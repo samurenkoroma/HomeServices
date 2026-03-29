@@ -9,8 +9,6 @@ type Filter struct {
 	Category string
 	IsActive bool
 	Search   string
-	Limit    int
-	Offset   int
 }
 
 type VarietySimpleDTO struct {
@@ -30,6 +28,8 @@ type CropTypeWithVarietiesDTO struct {
 	VarietiesCount int                `json:"varieties_count"`
 	Varieties      []VarietySimpleDTO `json:"varieties,omitempty"`
 	CreatedAt      time.Time          `json:"created_at"`
+	Description    string             `json:"description"`
+	IsActive       bool               `json:"is_active"`
 }
 
 // CropTypeSimpleDTO — упрощённый DTO для списка
@@ -39,6 +39,7 @@ type CropTypeSimpleDTO struct {
 	Category     string `json:"category"`
 	CategoryName string `json:"category_name"`
 	IsPerennial  bool   `json:"is_perennial"`
+	IsActive     bool   `json:"is_active"`
 }
 
 // CropTypeDetailDTO — детальный DTO

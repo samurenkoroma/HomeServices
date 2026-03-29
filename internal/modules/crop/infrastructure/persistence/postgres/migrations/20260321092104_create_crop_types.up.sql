@@ -1,5 +1,5 @@
 -- Типы культур
-CREATE TABLE crop_types
+CREATE TABLE crop_crop_types
 (
     id           TEXT PRIMARY KEY,
     name         TEXT                     NOT NULL UNIQUE,
@@ -11,5 +11,5 @@ CREATE TABLE crop_types
     updated_at   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX idx_crop_types_category ON crop_types (category);
-CREATE INDEX idx_crop_types_name ON crop_types (name);
+CREATE INDEX idx_crop_types_category ON crop_crop_types (category);
+CREATE INDEX idx_crop_types_name ON crop_crop_types (name);

@@ -2,6 +2,7 @@ package physicalobject
 
 import (
 	"samurenkoroma/services/internal/core/domain/event"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 )
 
@@ -10,6 +11,8 @@ type GreenhouseCreated struct {
 	ID       string          `json:"id"`
 	Name     string          `json:"name"`
 	Geometry spatial.GeoJSON `json:"geometry"`
+	Dim      types.Dimension `json:"dim"`
+	Width    float64         `json:"width"`
 }
 
 func (e GreenhouseCreated) EventName() string {

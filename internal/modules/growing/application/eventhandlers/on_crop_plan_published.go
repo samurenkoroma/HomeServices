@@ -43,14 +43,11 @@ func OnCropPlanPublished(ctx context.Context, e event.DomainEvent) error {
 	// Добавляем этапы из события
 	for _, stage := range event.Stages {
 		growthStage := croptemplate.GrowthStage{
-			Order:       stage.Order,
-			Name:        stage.Name,
-			Duration:    int(stage.Duration),
-			MinTemp:     stage.MinTemp,
-			MaxTemp:     stage.MaxTemp,
-			OptimalTemp: stage.OptimalTemp,
-			WaterPerDay: stage.WaterPerDay,
-			Description: stage.Description,
+			Order:           stage.Order,
+			Name:            stage.Name,
+			Duration:        int(stage.Duration),
+			Recommendations: stage.Recommendations.ToMap(),
+			Description:     stage.Description,
 		}
 		if err := template.AddStage(growthStage); err != nil {
 			return err

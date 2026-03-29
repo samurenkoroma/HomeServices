@@ -84,4 +84,6 @@ type BedInterface interface {
 type GreenhouseAreaInterface interface {
 	CultivationArea
 	AddBed(seasonID string, bedID string) error
+	GetLength() float64
+	GetWidth() float64
 }

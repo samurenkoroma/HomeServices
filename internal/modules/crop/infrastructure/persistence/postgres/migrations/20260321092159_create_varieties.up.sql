@@ -1,8 +1,8 @@
 -- Сорта культур
-CREATE TABLE varieties
+CREATE TABLE crop_varieties
 (
     id                  TEXT PRIMARY KEY,
-    crop_type_id        TEXT                     NOT NULL REFERENCES crop_types(id),
+    crop_type_id        TEXT                     NOT NULL REFERENCES crop_crop_types(id),
     name                TEXT                     NOT NULL,
     description         TEXT,
 
@@ -14,5 +14,5 @@ CREATE TABLE varieties
     UNIQUE (crop_type_id, name)
 );
 
-CREATE INDEX idx_varieties_name_per_crop ON varieties (crop_type_id, name);
-CREATE INDEX idx_varieties_active ON varieties (is_active);
+CREATE INDEX idx_varieties_name_per_crop ON crop_varieties (crop_type_id, name);
+CREATE INDEX idx_varieties_active ON crop_varieties (is_active);
