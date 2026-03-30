@@ -48,13 +48,13 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 
 	// ---------- Register Bounded Contexts ----------
 
-	if err := registerGrowing(commandRouter, queryRouter, uowFactory); err != nil {
+	if err := registerGrowing(commandRouter, queryRouter, uowFactory, db); err != nil {
 		return nil, err
 	}
-	if err := registerFarm(commandRouter, queryRouter, uowFactory); err != nil {
+	if err := registerFarm(commandRouter, queryRouter, uowFactory, db); err != nil {
 		return nil, err
 	}
-	if err := registerCrop(commandRouter, queryRouter, uowFactory); err != nil {
+	if err := registerCrop(commandRouter, queryRouter, uowFactory, db); err != nil {
 		return nil, err
 	}
 	// можно добавить:
@@ -76,7 +76,7 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 	}, nil
 }
 
-func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
+func registerGrowing(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 	// ---- Command Registration ----
 	commandRouter.Register(growingCommands.NewCreateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.CreateSeasonCmd])
 	commandRouter.Register(growingCommands.NewActivateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.ActivateSeasonCmd])
@@ -84,19 +84,19 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
 	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), utils.DecodeJSON[growingCommands.StartCropCycleCmd])
 
-	growingProvider := projections.NewGrowingProjectionsProvider(uowFactory.DB())
+	growingProvider := projections.NewGrowingProjectionsProvider(db)
 	queryRouter.Register(growingQueries.NewGetSeasons(growingProvider.Seasons()), utils.DecodeJSON[growingQueries.GetSeasonsQuery])
 	queryRouter.Register(growingQueries.NewGetCultivationAreasHandler(growingProvider.Areas()), utils.DecodeJSON[growingQueries.GetCultivationAreasQuery])
 	return nil
 }
-func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
+func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 	// ---- Command Registration ----
 	commandRouter.Register(cropCommands.NewCreateCropPlanHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateCropPlanCmd])
 	commandRouter.Register(cropCommands.NewCreateCropTypeHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateCropTypeCmd])
 	commandRouter.Register(cropCommands.NewCreateVarietyHandler(uowFactory), utils.DecodeJSON[cropCommands.CreateVarietyCmd])
 	commandRouter.Register(cropCommands.NewAddStageHandler(uowFactory), utils.DecodeJSON[cropCommands.AddStageCmd])
 
-	cropProvider := cropProjections.NewCropProjectionsProvider(uowFactory.DB())
+	cropProvider := cropProjections.NewCropProjectionsProvider(db)
 	queryRouter.Register(cropQueries.NewGetCropTypesHandler(cropProvider.CropTypes()), utils.DecodeJSON[cropQueries.GetCropTypesQuery])
 	queryRouter.Register(cropQueries.NewGetCropPlanHandler(cropProvider.CropPlans()), utils.DecodeJSON[cropQueries.GetCropPlanQuery])
 	queryRouter.Register(cropQueries.NewGetVarietyHandler(cropProvider.Varieties()), utils.DecodeJSON[cropQueries.GetVarietyQuery])
@@ -104,13 +104,13 @@ func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFac
 
 	return nil
 }
-func registerFarm(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory) error {
+func registerFarm(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
 	commandRouter.Register(farmCommands.NewCreatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.CreatePhysicalObjectCmd])
 	commandRouter.Register(farmCommands.NewUpdatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.UpdatePhysicalObjectCommand])
 
-	farmProvider := farmProjections.NewFarmProjectionsProvider(uowFactory.DB())
+	farmProvider := farmProjections.NewFarmProjectionsProvider(db)
 	queryRouter.Register(farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()), utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery])
 
 	return nil

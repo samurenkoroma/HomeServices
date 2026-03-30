@@ -6,7 +6,7 @@ Content-Type: application/json
   "command": "CreatePhysicalObject",
   "data": {
     "type": "greenhouse",
-    "name": "Теплица 1",
+    "name": "Теплица 3",
     "length": 12,
     "width": 4,
     "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
