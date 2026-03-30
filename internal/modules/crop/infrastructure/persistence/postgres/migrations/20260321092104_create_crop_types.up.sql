@@ -1,7 +1,7 @@
 -- Типы культур
 CREATE TABLE crop_crop_types
 (
-    id           TEXT PRIMARY KEY,
+    id           UUID PRIMARY KEY,
     name         TEXT                     NOT NULL UNIQUE,
     category     TEXT                     NOT NULL,
     description  TEXT,

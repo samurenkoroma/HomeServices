@@ -1,9 +1,9 @@
 -- Планы выращивания
 CREATE TABLE crop_crop_plans
 (
-    id           TEXT PRIMARY KEY,
-    crop_type_id TEXT                     NOT NULL REFERENCES crop_crop_types (id),
-    variety_id   TEXT REFERENCES crop_varieties (id),
+    id           UUID PRIMARY KEY,
+    crop_type_id UUID                     NOT NULL REFERENCES crop_crop_types (id),
+    variety_id   UUID REFERENCES crop_varieties (id),
     name         TEXT                     NOT NULL,
     description  TEXT,
     duration     INTEGER                  NOT NULL,

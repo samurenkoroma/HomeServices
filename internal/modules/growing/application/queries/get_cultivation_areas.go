@@ -7,9 +7,9 @@ import (
 )
 
 type GetCultivationAreasQuery struct {
-	Id     string `json:"id,omitempty"`
-	Limit  int    `json:"limit,omitempty"`
-	Offset int    `json:"offset,omitempty"`
+	Id       string `json:"id,omitempty"`
+	Type     string `json:"type"`      // field, block, greenhouse, bed
+	SeasonID string `json:"season_id"` // фильтр по сезону
 }
 
 type getCultivationAreasHandler struct {
@@ -36,12 +36,10 @@ func (h *getCultivationAreasHandler) Handle(ctx context.Context, payload any) (a
 		return h.projector.GetByID(ctx, q.Id)
 	}
 
-	filter := cultivationarea.Filter{
-		Limit:  q.Limit,
-		Offset: q.Offset,
+	filter := cultivationarea.AreaFilter{
+		Type:     q.Type,
+		SeasonID: q.SeasonID,
 	}
-	if q.Limit == 0 {
-		filter.Limit = 10
-	}
+
 	return h.projector.GetList(ctx, filter)
 }

@@ -37,8 +37,9 @@ func OnFarmObjectCreated(ctx context.Context, event event.DomainEvent) error {
 				e.ID,
 				e.Name,
 				e.Geometry,
+				e.Area,
 			)
-			log.Printf("Created FieldArea from farm field: id=%s, name=%s", e.ID, e.Name)
+			log.Printf("Created FieldArea with geometry: %+v", e.Geometry)
 
 		case physicalobject.GreenhouseCreated:
 			// Создана теплица → создаём GreenhouseArea

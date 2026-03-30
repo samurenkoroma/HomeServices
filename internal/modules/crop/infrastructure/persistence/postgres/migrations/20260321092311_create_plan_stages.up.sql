@@ -1,7 +1,7 @@
 -- Этапы роста в плане
 CREATE TABLE crop_crop_plan_stages
 (
-    plan_id         TEXT    NOT NULL REFERENCES crop_crop_plans (id) ON DELETE CASCADE,
+    plan_id         UUID    NOT NULL REFERENCES crop_crop_plans (id) ON DELETE CASCADE,
     stage_order     INTEGER NOT NULL,
     name            TEXT    NOT NULL,
     duration        INTEGER NOT NULL,

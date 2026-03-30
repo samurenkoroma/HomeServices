@@ -19,7 +19,7 @@ type CreateAreaConfig struct {
 func CreateArea(config CreateAreaConfig) (CultivationArea, error) {
 	switch config.Type {
 	case AreaTypeField:
-		return NewFieldArea(config.FarmRefID, config.Name, config.Geometry), nil
+		return NewFieldArea(config.FarmRefID, config.Name, config.Geometry, 0), nil
 
 	case AreaTypeBlock:
 		if config.ParentID == "" {

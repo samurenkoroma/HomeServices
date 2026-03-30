@@ -212,3 +212,17 @@ Content-Type: application/json
     "id": "bd917c5d-1b69-45f7-be92-8e288efd9a4e"
   }
 }
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{"query":"GetCultivationAreas","data":{}}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{"query":"GetCultivationAreas","data":{"id":"015c2bd7-105d-4124-99bb-404a2a74c846"}}

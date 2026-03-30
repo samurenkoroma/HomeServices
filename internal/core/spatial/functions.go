@@ -11,7 +11,7 @@ func CalculateAreaFromGeometry(tx *sql.Tx, geom GeoJSON) float64 {
 	if err != nil {
 		return 0
 	}
-	err = tx.QueryRow("SELECT st_area(ST_GeomFromGeoJSON($1))", data).Scan(&area)
+	err = tx.QueryRow("SELECT ST_Area(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326)::geography) / 10000", data).Scan(&area)
 	if err != nil {
 		return 0
 	}

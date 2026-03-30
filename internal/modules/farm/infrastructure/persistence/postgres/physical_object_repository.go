@@ -51,9 +51,6 @@ func (r *physicalObjectRepository) FindAll(ctx context.Context) ([]*physicalobje
 	return fields, nil
 }
 func (r *physicalObjectRepository) Save(ctx context.Context, obj *physicalobject.PhysicalObject) error {
-	if obj.Type == "field" {
-		obj.Area = spatial.CalculateAreaFromGeometry(r.tx, obj.Geometry)
-	}
 	query := `
         INSERT INTO farm_physical_objects (
             id, type, name, geometry, status, owner_id, description, attributes, created_at, updated_at, area

@@ -82,6 +82,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(growingCommands.NewActivateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.ActivateSeasonCmd])
 	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), utils.DecodeJSON[growingCommands.RecordOperationCmd])
 	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
+	commandRouter.Register(growingCommands.NewCreateBedsBatchHandler(uowFactory), utils.DecodeJSON[growingCommands.CreateBedsBatchCommand])
 	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), utils.DecodeJSON[growingCommands.StartCropCycleCmd])
 
 	growingProvider := projections.NewGrowingProjectionsProvider(db)

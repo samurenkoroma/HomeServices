@@ -1,8 +1,8 @@
 -- Сорта культур
 CREATE TABLE crop_varieties
 (
-    id                  TEXT PRIMARY KEY,
-    crop_type_id        TEXT                     NOT NULL REFERENCES crop_crop_types(id),
+    id                  UUID PRIMARY KEY,
+    crop_type_id        UUID                     NOT NULL REFERENCES crop_crop_types(id),
     name                TEXT                     NOT NULL,
     description         TEXT,
 

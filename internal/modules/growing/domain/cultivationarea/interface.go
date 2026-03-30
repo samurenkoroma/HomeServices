@@ -33,6 +33,7 @@ type SeasonConfig struct {
 type AreaConfig struct {
 	Name       string                 `json:"name"`
 	Geometry   spatial.GeoJSON        `json:"geometry"`
+	Area       float64                `json:"area"`
 	CropPlanID *string                `json:"crop_plan_id,omitempty"`
 	Metadata   map[string]interface{} `json:"metadata"`
 }

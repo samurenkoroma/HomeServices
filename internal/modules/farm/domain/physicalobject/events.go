@@ -24,6 +24,7 @@ type FieldCreated struct {
 	ID       string          `json:"id"`
 	Name     string          `json:"name"`
 	Geometry spatial.GeoJSON `json:"geometry"`
+	Area     float64         `json:"area"`
 }
 
 func (e FieldCreated) EventName() string {

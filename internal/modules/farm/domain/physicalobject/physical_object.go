@@ -79,6 +79,7 @@ func (a *Attributes) Unmarshal(data []byte) error {
 func NewField(
 	name string,
 	geom spatial.GeoJSON,
+	area float64,
 	soilType string,
 	ownerID string,
 ) *PhysicalObject {
@@ -90,7 +91,7 @@ func NewField(
 		Geometry: geom,
 		Status:   valueobject.Active,
 		OwnerID:  ownerID,
-		Area:     0,
+		Area:     area,
 		Attributes: Attributes{
 			SoilType: &soilType,
 		},
@@ -99,6 +100,7 @@ func NewField(
 		ID:       string(obj.Id),
 		Name:     obj.Name,
 		Geometry: obj.Geometry,
+		Area:     obj.Area,
 	})
 	return obj
 }
@@ -117,7 +119,7 @@ func NewGreenhouse(
 		Name:     name,
 		Geometry: geom,
 		Status:   valueobject.Active,
-		Area:     dim.Area(),
+		Area:     dim.AreaInHectares(),
 		OwnerID:  ownerID,
 		Attributes: Attributes{
 			GreenhouseType: &ghType,

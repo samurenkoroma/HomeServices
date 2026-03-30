@@ -10,7 +10,7 @@ CREATE TABLE growing_cultivation_areas
     parent_id   UUID REFERENCES growing_cultivation_areas (id),
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-
+    attributes  JSONB,
     UNIQUE (farm_ref_id, type)
 );
 

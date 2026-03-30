@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 
@@ -21,15 +22,17 @@ func NewCultivationAreaRepository(tx *sql.Tx) cultivationarea.Repository {
 }
 
 // Save сохраняет место выращивания
+// Save сохраняет место выращивания
 func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationarea.CultivationArea) error {
 	query := `
         INSERT INTO public.growing_cultivation_areas (
-            id, farm_ref_id, type, name, geometry, area, parent_id, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326), $6, $7, $8, $9)
+            id, farm_ref_id, type, name, geometry, area, parent_id, attributes, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326), $6, $7, $8, $9, $10)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             geometry = EXCLUDED.geometry,
             area = EXCLUDED.area,
+            attributes = EXCLUDED.attributes,
             updated_at = EXCLUDED.updated_at
     `
 
@@ -38,17 +41,22 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 		return fmt.Errorf("failed to marshal geometry: %w", err)
 	}
 
-	var parentID interface{}
+	var parentID *string
+	var attributesJSON []byte
 
 	switch a := area.(type) {
-	case *cultivationarea.Block:
-		pid := a.GetParentFieldID()
-		parentID = &pid
 	case *cultivationarea.Bed:
 		pid := a.GetParentID()
 		parentID = &pid
-	default:
-		parentID = nil
+		// Сохраняем атрибуты грядки
+		attrs := a.GetAttributes()
+		attributesJSON, err = json.Marshal(attrs)
+		if err != nil {
+			return fmt.Errorf("failed to marshal bed attributes: %w", err)
+		}
+	case *cultivationarea.Block:
+		pid := a.GetParentFieldID()
+		parentID = &pid
 	}
 
 	_, err = r.tx.ExecContext(ctx, query,
@@ -59,12 +67,13 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 		string(geomData),
 		area.GetArea(),
 		parentID,
+		attributesJSON,
 		time.Now(),
 		time.Now(),
 	)
 
 	if err != nil {
-		return fmt.Errorf("failed to save cultivation area: %v", err)
+		return fmt.Errorf("failed to save cultivation area: %w", err)
 	}
 
 	return nil
@@ -339,6 +348,8 @@ func (r *cultivationAreaRepository) Delete(ctx context.Context, id string) error
 
 // SaveSeasonConfig сохраняет конфигурацию места на сезон
 func (r *cultivationAreaRepository) SaveSeasonConfig(ctx context.Context, areaID string, config cultivationarea.SeasonConfig) error {
+	log.Printf("SaveSeasonConfig: areaID=%s, seasonID=%s, cropPlanID=%v", areaID, config.SeasonID, config.CropPlanID)
+
 	query := `
         INSERT INTO public.growing_area_season_configs (
             area_id, season_id, name, geometry, area, crop_plan_id, block_ids, metadata, valid_from, valid_until
@@ -355,17 +366,17 @@ func (r *cultivationAreaRepository) SaveSeasonConfig(ctx context.Context, areaID
 
 	geomData, err := json.Marshal(config.Geometry)
 	if err != nil {
-		return fmt.Errorf("failed to marshal geometry: %w", err)
+		return err
 	}
 
 	metadata, err := json.Marshal(config.Metadata)
 	if err != nil {
-		return fmt.Errorf("failed to marshal metadata: %w", err)
+		return err
 	}
 
 	blockIDsJSON, err := json.Marshal(config.BlockIDs)
 	if err != nil {
-		return fmt.Errorf("failed to marshal block_ids: %w", err)
+		return err
 	}
 
 	_, err = r.tx.ExecContext(ctx, query,
@@ -382,9 +393,11 @@ func (r *cultivationAreaRepository) SaveSeasonConfig(ctx context.Context, areaID
 	)
 
 	if err != nil {
+		log.Printf("SQL error: %v", err)
 		return fmt.Errorf("failed to save season config: %w", err)
 	}
 
+	log.Printf("Season config saved successfully")
 	return nil
 }
 
@@ -597,7 +610,7 @@ func (r *cultivationAreaRepository) hydrateArea(
 ) (cultivationarea.CultivationArea, error) {
 	switch areaType {
 	case cultivationarea.AreaTypeField:
-		field := cultivationarea.NewFieldArea(farmRefID, name, geom)
+		field := cultivationarea.NewFieldArea(farmRefID, name, geom, areaValue)
 		field.Rehydrate(id, createdAt, updatedAt)
 		return field, nil
 
@@ -614,7 +627,7 @@ func (r *cultivationAreaRepository) hydrateArea(
 			return nil, fmt.Errorf("bed requires parent_id")
 		}
 		bed := cultivationarea.NewBed(parentID.String, name, geom)
-		bed.Rehydrate(id, farmRefID, createdAt, updatedAt)
+		//bed.Rehydrate(id, farmRefID, createdAt, updatedAt)
 		return bed, nil
 
 	case cultivationarea.AreaTypeGreenhouse:

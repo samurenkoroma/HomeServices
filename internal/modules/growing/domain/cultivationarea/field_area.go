@@ -1,6 +1,7 @@
 package cultivationarea
 
 import (
+	"log"
 	"samurenkoroma/services/internal/core/domain/aggregate"
 	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
@@ -32,13 +33,13 @@ type FieldArea struct {
 }
 
 // NewFieldArea создаёт новое поле как место выращивания
-func NewFieldArea(farmRefID, name string, geom spatial.GeoJSON) *FieldArea {
+func NewFieldArea(farmRefID, name string, geom spatial.GeoJSON, area float64) *FieldArea {
 	return &FieldArea{
 		Entity:      aggregate.NewEntity(types.NewUUID()),
 		farmRefID:   farmRefID,
 		name:        name,
 		geometry:    geom,
-		totalArea:   0,
+		totalArea:   area,
 		fieldType:   FieldUsageMonoculture,
 		seasons:     make(map[string]SeasonConfig),
 		childBlocks: []string{},
@@ -50,22 +51,21 @@ func (f *FieldArea) ConfigureAsMonoculture(
 	seasonID string,
 	name string,
 	geom spatial.GeoJSON,
+	area float64,
 	cropPlanID string,
 	metadata map[string]interface{},
 ) error {
+	log.Printf("ConfigureAsMonoculture: seasonID=%s, name=%s, cropPlanID=%s", seasonID, name, cropPlanID)
+
 	if _, exists := f.seasons[seasonID]; exists {
 		return ErrSeasonAlreadyConfigured
-	}
-
-	if len(f.childBlocks) > 0 && f.currentSeasonID == seasonID {
-		return ErrFieldHasBlocks
 	}
 
 	config := SeasonConfig{
 		SeasonID:   seasonID,
 		Name:       name,
 		Geometry:   geom,
-		Area:       0,
+		Area:       area,
 		CropPlanID: &cropPlanID,
 		BlockIDs:   []string{},
 		Metadata:   metadata,
@@ -76,6 +76,8 @@ func (f *FieldArea) ConfigureAsMonoculture(
 	f.fieldType = FieldUsageMonoculture
 	f.currentSeasonID = seasonID
 	f.Update()
+
+	log.Printf("Monoculture configured, seasons count: %d", len(f.seasons))
 
 	f.AddEvent(FieldConfiguredAsMonoculture{
 		FieldID:    f.Id,
@@ -92,6 +94,7 @@ func (f *FieldArea) ConfigureAsPolyculture(
 	seasonID string,
 	name string,
 	geom spatial.GeoJSON,
+	area float64,
 	metadata map[string]interface{},
 ) error {
 	if _, exists := f.seasons[seasonID]; exists {
@@ -102,7 +105,7 @@ func (f *FieldArea) ConfigureAsPolyculture(
 		SeasonID:   seasonID,
 		Name:       name,
 		Geometry:   geom,
-		Area:       0,
+		Area:       area,
 		CropPlanID: nil,
 		BlockIDs:   []string{},
 		Metadata:   metadata,
@@ -165,10 +168,12 @@ func (f *FieldArea) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
 
 // ConfigureForSeason — общий метод для настройки
 func (f *FieldArea) ConfigureForSeason(seasonID string, config AreaConfig) error {
+	log.Printf("FieldArea.ConfigureForSeason: seasonID=%s, config=%+v", seasonID, config)
+
 	if config.CropPlanID != nil {
-		return f.ConfigureAsMonoculture(seasonID, config.Name, config.Geometry, *config.CropPlanID, config.Metadata)
+		return f.ConfigureAsMonoculture(seasonID, config.Name, config.Geometry, config.Area, *config.CropPlanID, config.Metadata)
 	}
-	return f.ConfigureAsPolyculture(seasonID, config.Name, config.Geometry, config.Metadata)
+	return f.ConfigureAsPolyculture(seasonID, config.Name, config.Geometry, config.Area, config.Metadata)
 }
 
 // Rehydrate восстанавливает поле из БД

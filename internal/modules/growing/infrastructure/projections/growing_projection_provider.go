@@ -36,7 +36,7 @@ func (provider *GrowingProjectionsProvider) Seasons() season.Projections {
 
 func (provider *GrowingProjectionsProvider) Areas() cultivationarea.Projections {
 	if provider.areas == nil {
-		provider.areas = NewCultivationAreaProjections(provider.db)
+		provider.areas = NewAreaProjection(provider.db)
 	}
 	return provider.areas
 }

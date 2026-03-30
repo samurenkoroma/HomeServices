@@ -14,6 +14,6 @@ func NewDimension(length, width, height float64) *Dimension {
 	}
 }
 
-func (d *Dimension) Area() float64 {
-	return *d.Length * *d.Width
+func (d *Dimension) AreaInHectares() float64 {
+	return (*d.Length * *d.Width) / 10000
 }

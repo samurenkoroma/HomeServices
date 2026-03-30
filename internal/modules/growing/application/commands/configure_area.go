@@ -42,19 +42,16 @@ func NewConfigureAreaHandler(uowFactory repository.Factory) command.Handler {
 
 // Handle обрабатывает команду
 func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
+	log.Printf("=== CONFIGURE AREA COMMAND ===")
+	log.Printf("Command: %+v", command)
+
 	cmd, ok := command.(*ConfigureAreaCmd)
 	if !ok {
-		return errors.New("invalid command type")
-	} // Валидация
-	if cmd.FarmRefID == "" {
-		return fmt.Errorf("farm_ref_id is required")
+		return errors.New("invalid command")
 	}
-	if cmd.SeasonID == "" {
-		return fmt.Errorf("season_id is required")
-	}
-
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
+		log.Printf("Failed to begin transaction: %v", err)
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
@@ -66,7 +63,7 @@ func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
 			return fmt.Errorf("invalid provider type")
 		}
 
-		// Получаем operational объект по ссылке на farm
+		// Получаем operational объект
 		area, err = growingProvider.CultivationAreas().FindByFarmRefID(ctx, cmd.FarmRefID)
 		if err != nil {
 			return fmt.Errorf("failed to find cultivation area: %w", err)
@@ -76,105 +73,48 @@ func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
 			return cultivationarea.ErrAreaNotFound
 		}
 
-		// Создаём конфигурацию
+		// Получаем геометрию из farm объекта, если не передана
+		geometry := cmd.Geometry
+		if geometry.Type == "" {
+			// Берём геометрию из существующего operational объекта
+			geometry = area.GetGeometry()
+			log.Printf("Using geometry from existing area: type=%s", geometry.Type)
+		}
+
 		config := cultivationarea.AreaConfig{
 			Name:       cmd.Name,
-			Geometry:   cmd.Geometry,
+			Geometry:   geometry,
 			CropPlanID: cmd.CropPlanID,
 			Metadata:   cmd.Metadata,
 		}
 
-		// Если имя не указано, используем текущее имя места
+		// Если имя не указано, используем имя из operational объекта
 		if config.Name == "" {
 			config.Name = area.GetName()
 		}
 
-		// Если геометрия не указана, используем текущую геометрию места
-		if config.Geometry.Type == "" {
-			config.Geometry = area.GetGeometry()
+		// Конфигурируем
+		if err := area.ConfigureForSeason(cmd.SeasonID, config); err != nil {
+			log.Printf("ConfigureForSeason error: %v", err)
+			return err
 		}
 
-		// Конфигурируем в зависимости от типа места
-		switch area.GetType() {
-		case cultivationarea.AreaTypeField:
-			fieldArea, ok := area.(*cultivationarea.FieldArea)
-			if !ok {
-				return fmt.Errorf("failed to cast to FieldArea")
-			}
-
-			if cmd.UsageType == "polyculture" {
-				// Поликультура — поле с участками
-				err = fieldArea.ConfigureAsPolyculture(
-					cmd.SeasonID,
-					config.Name,
-					config.Geometry,
-					config.Metadata,
-				)
-			} else {
-				// Монокультура — одна культура на всём поле
-				if config.CropPlanID == nil {
-					return fmt.Errorf("crop_plan_id required for monoculture field")
-				}
-				err = fieldArea.ConfigureAsMonoculture(
-					cmd.SeasonID,
-					config.Name,
-					config.Geometry,
-					*config.CropPlanID,
-					config.Metadata,
-				)
-			}
-
-		case cultivationarea.AreaTypeBlock:
-			blockArea, ok := area.(*cultivationarea.Block)
-			if !ok {
-				return fmt.Errorf("failed to cast to Block")
-			}
-			if config.CropPlanID == nil {
-				return cultivationarea.ErrCropPlanRequiredForBlock
-			}
-			err = blockArea.ConfigureForSeason(
-				cmd.SeasonID,
-				config,
-			)
-
-		case cultivationarea.AreaTypeBed:
-			bedArea, ok := area.(*cultivationarea.Bed)
-			if !ok {
-				return fmt.Errorf("failed to cast to Bed")
-			}
-			if config.CropPlanID == nil {
-				return cultivationarea.ErrCropPlanRequiredForBed
-			}
-			err = bedArea.ConfigureForSeason(
-				cmd.SeasonID,
-				config,
-			)
-
-		case cultivationarea.AreaTypeGreenhouse:
-			greenhouseArea, ok := area.(*cultivationarea.GreenhouseArea)
-			if !ok {
-				return fmt.Errorf("failed to cast to GreenhouseArea")
-			}
-			err = greenhouseArea.ConfigureForSeason(
-				cmd.SeasonID,
-				config,
-			)
-
-		default:
-			return fmt.Errorf("unsupported area type: %s", area.GetType())
-		}
-
-		if err != nil {
-			return fmt.Errorf("failed to configure area: %w", err)
-		}
-
-		// Сохраняем конфигурацию в БД
+		// Сохраняем конфигурацию
 		seasonConfig, err := area.GetSeasonConfig(cmd.SeasonID)
 		if err != nil {
-			return fmt.Errorf("failed to get season config: %w", err)
+			log.Printf("GetSeasonConfig error: %v", err)
+			return err
 		}
 
+		// Убеждаемся, что геометрия не пустая
+		if seasonConfig.Geometry.Type == "" {
+			return fmt.Errorf("geometry is empty for area %s", area.GetID())
+		}
+
+		log.Printf("Saving season config with geometry type: %s", seasonConfig.Geometry.Type)
+
 		if err := growingProvider.CultivationAreas().SaveSeasonConfig(ctx, area.GetID(), *seasonConfig); err != nil {
+			log.Printf("SaveSeasonConfig error: %v", err)
 			return fmt.Errorf("failed to save season config: %w", err)
 		}
 
@@ -183,11 +123,10 @@ func (h *ConfigureAreaHandler) Handle(ctx context.Context, command any) error {
 	})
 
 	if err != nil {
+		log.Printf("Execute error: %v", err)
 		return err
 	}
 
-	log.Printf("Area configured: farm_ref_id=%s, season_id=%s, type=%s, name=%s",
-		cmd.FarmRefID, cmd.SeasonID, area.GetType(), cmd.Name)
-
+	log.Printf("Area configured successfully: farm_ref_id=%s, season_id=%s", cmd.FarmRefID, cmd.SeasonID)
 	return nil
 }

@@ -1,8 +1,8 @@
 -- История изменений планов
 CREATE TABLE crop_crop_plan_history
 (
-    id         SERIAL PRIMARY KEY,
-    plan_id    TEXT                     NOT NULL REFERENCES crop_crop_plans (id),
+    id         UUID PRIMARY KEY,
+    plan_id    UUID                     NOT NULL REFERENCES crop_crop_plans (id),
     version    INTEGER                  NOT NULL,
     snapshot   JSONB                    NOT NULL,
     changed_by TEXT                     NOT NULL,

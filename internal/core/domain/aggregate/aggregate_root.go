@@ -61,6 +61,7 @@ func NewEntity[T any](id T) Entity[T] {
 			events: make([]event.DomainEvent, 0),
 		},
 		Id:        id,
+		IsActive:  true,
 		CreatedAt: now,
 		UpdatedAt: now,
 		DeletedAt: nil,

@@ -7,68 +7,105 @@ import (
 	"time"
 )
 
-// Bed — грядка (в теплице или участке)
+// Bed — грядка
 type Bed struct {
 	aggregate.Entity[string]
 
 	farmRefID string
-	parentID  string // ID блока или теплицы (из growing)
+	parentID  string // ID теплицы
 	name      string
-	geometry  spatial.GeoJSON
+	geometry  spatial.GeoJSON // Точка (центр грядки)
 	area      float64
 
-	// Конфигурации по сезонам
+	// Атрибуты грядки (хранятся в JSONB)
+	attributes BedAttributes
+
 	seasons         map[string]SeasonConfig
 	currentSeasonID string
 }
 
+// BedAttributes — атрибуты грядки
+type BedAttributes struct {
+	Width     float64 `json:"width"`      // ширина (м)
+	Length    float64 `json:"length"`     // длина (м)
+	PositionX float64 `json:"position_x"` // позиция в % (0-100)
+	PositionY float64 `json:"position_y"` // позиция в % (0-100)
+}
+
 // NewBed создаёт новую грядку
-func NewBed(parentID, name string, geom spatial.GeoJSON) *Bed {
+func NewBed(parentID, name string, centerPoint spatial.GeoJSON) *Bed {
 	return &Bed{
 		Entity:   aggregate.NewEntity(types.NewUUID()),
 		parentID: parentID,
 		name:     name,
-		geometry: geom,
-		area:     0,
+		geometry: centerPoint,
 		seasons:  make(map[string]SeasonConfig),
 	}
 }
 
-// GetCropPlanForSeason — получить план культуры для сезона
-func (b *Bed) GetCropPlanForSeason(seasonID string) (string, error) {
-	config, exists := b.seasons[seasonID]
-	if !exists {
-		return "", ErrSeasonConfigNotFound
+// SetAttributes устанавливает атрибуты грядки
+func (b *Bed) SetAttributes(width, length, posX, posY float64) {
+	b.attributes = BedAttributes{
+		Width:     width,
+		Length:    length,
+		PositionX: posX,
+		PositionY: posY,
 	}
-	if config.CropPlanID == nil {
-		return "", ErrNoCropPlanConfigured
-	}
-	return *config.CropPlanID, nil
+	b.Update()
 }
 
-// GetSeasonConfig — получить конфигурацию на сезон
-func (b *Bed) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
-	if config, exists := b.seasons[seasonID]; exists {
-		return &config, nil
-	}
-	return nil, ErrSeasonConfigNotFound
+// GetAttributes возвращает атрибуты грядки
+func (b *Bed) GetAttributes() BedAttributes {
+	return b.attributes
 }
 
-// ConfigureForSeason — реализация интерфейса
+// GetWidth возвращает ширину
+func (b *Bed) GetWidth() float64 {
+	return b.attributes.Width
+}
+
+// GetLength возвращает длину
+func (b *Bed) GetLength() float64 {
+	return b.attributes.Length
+}
+
+// GetPositionX возвращает позицию X
+func (b *Bed) GetPositionX() float64 {
+	return b.attributes.PositionX
+}
+
+// GetPositionY возвращает позицию Y
+func (b *Bed) GetPositionY() float64 {
+	return b.attributes.PositionY
+}
+
+// ConfigureForSeason — реализация интерфейса CultivationArea
 func (b *Bed) ConfigureForSeason(seasonID string, config AreaConfig) error {
-	if config.CropPlanID == nil {
-		return ErrCropPlanRequiredForBlock
-	}
+	//if config.CropPlanID == nil {
+	//	return ErrCropPlanRequiredForBed
+	//}
 
 	if _, exists := b.seasons[seasonID]; exists {
 		return ErrSeasonAlreadyConfigured
 	}
 
+	// Если имя не указано, используем текущее
+	name := config.Name
+	if name == "" {
+		name = b.name
+	}
+
+	// Если геометрия не указана, используем текущую
+	geom := config.Geometry
+	if geom.Type == "" {
+		geom = b.geometry
+	}
+
 	seasonConfig := SeasonConfig{
 		SeasonID:   seasonID,
-		Name:       config.Name,
-		Geometry:   config.Geometry,
-		Area:       0,
+		Name:       name,
+		Geometry:   geom,
+		Area:       b.attributes.Width * b.attributes.Length, // для точки площадь 0
 		CropPlanID: config.CropPlanID,
 		BlockIDs:   []string{},
 		Metadata:   config.Metadata,
@@ -77,39 +114,23 @@ func (b *Bed) ConfigureForSeason(seasonID string, config AreaConfig) error {
 
 	b.seasons[seasonID] = seasonConfig
 	b.currentSeasonID = seasonID
-	b.name = config.Name
-	b.geometry = config.Geometry
+	b.name = name
+	b.geometry = geom
 	b.area = seasonConfig.Area
 	b.Update()
 
-	b.AddEvent(BlockConfigured{
-		BlockID:    b.Id,
-		SeasonID:   seasonID,
-		CropPlanID: *config.CropPlanID,
-		Area:       seasonConfig.Area,
+	//TODO вынести засев грядки в отдельное событие
+	b.AddEvent(BedConfigured{
+		BedID:    b.Id,
+		SeasonID: seasonID,
+		//CropPlanID: *config.CropPlanID,
+		Area: seasonConfig.Area,
 	})
 
 	return nil
 }
 
-// Rehydrate восстанавливает грядку из БД
-func (b *Bed) Rehydrate(id, farmRefID string, createdAt, updatedAt time.Time) {
-	b.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
-	b.farmRefID = farmRefID
-}
-
-// GetParentID возвращает ID родителя (блока или теплицы)
-func (b *Bed) GetParentID() string {
-	return b.parentID
-}
-
-// SetFarmRefID устанавливает ссылку на farm модуль
-func (b *Bed) SetFarmRefID(farmRefID string) {
-	b.farmRefID = farmRefID
-	b.Update()
-}
-
-// Геттеры
+// Getters
 func (b *Bed) GetID() string                        { return b.Id }
 func (b *Bed) GetFarmRefID() string                 { return b.farmRefID }
 func (b *Bed) GetType() AreaType                    { return AreaTypeBed }
@@ -121,3 +142,40 @@ func (b *Bed) IsConfiguredForSeason(id string) bool { _, ok := b.seasons[id]; re
 func (b *Bed) HasBlocks() bool                      { return false }
 func (b *Bed) GetBlocks() []string                  { return []string{} }
 func (b *Bed) GetHistory() []AreaSnapshot           { return []AreaSnapshot{} }
+
+func (b *Bed) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
+	if config, exists := b.seasons[seasonID]; exists {
+		return &config, nil
+	}
+	return nil, ErrSeasonConfigNotFound
+}
+
+func (b *Bed) GetCropPlanForSeason(seasonID string) (string, error) {
+	config, err := b.GetSeasonConfig(seasonID)
+	if err != nil {
+		return "", err
+	}
+	if config.CropPlanID == nil {
+		return "", ErrNoCropPlanConfigured
+	}
+	return *config.CropPlanID, nil
+}
+
+// Rehydrate восстанавливает грядку из БД
+func (b *Bed) Rehydrate(id, farmRefID string, attrs BedAttributes, createdAt, updatedAt time.Time) {
+	b.Id = id
+	b.farmRefID = farmRefID
+	b.attributes = attrs
+	b.CreatedAt = createdAt
+	b.UpdatedAt = updatedAt
+}
+
+// SetFarmRefID устанавливает ссылку на farm модуль
+func (b *Bed) SetFarmRefID(farmRefID string) {
+	b.farmRefID = farmRefID
+	b.Update()
+}
+
+func (b *Bed) GetParentID() string {
+	return b.parentID
+}

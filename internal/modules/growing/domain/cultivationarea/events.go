@@ -44,10 +44,10 @@ func (e BlockConfigured) EventName() string {
 // BedConfigured — грядка настроена на сезон
 type BedConfigured struct {
 	event.BaseEvent
-	BedID      string  `json:"bed_id"`
-	SeasonID   string  `json:"season_id"`
-	CropPlanID string  `json:"crop_plan_id"`
-	Area       float64 `json:"area"`
+	BedID    string `json:"bed_id"`
+	SeasonID string `json:"season_id"`
+	//CropPlanID string  `json:"crop_plan_id"`
+	Area float64 `json:"area"`
 }
 
 func (e BedConfigured) EventName() string {

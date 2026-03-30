@@ -57,7 +57,7 @@ func (p *varietyProjections) GetList(ctx context.Context, filter variety.Filter)
 SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name, v.is_active
 FROM crop_varieties v
 LEFT OUTER JOIN crop_crop_types ct on v.crop_type_id = ct.id
-WHERE ($1 = '' OR v.crop_type_id = $1)
+WHERE ($1::text = '' OR v.crop_type_id::text = $1)
           AND ($2 = false OR v.is_active = true)
                ORDER BY v.name
 	`

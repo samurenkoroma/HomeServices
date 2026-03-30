@@ -40,7 +40,7 @@ func NewGreenhouseArea(farmRefID, name string, dim types.Dimension, geom spatial
 		geometry:  geom,
 		length:    *dim.Length,
 		width:     *dim.Width,
-		area:      dim.Area(),
+		area:      dim.AreaInHectares(),
 		seasons:   make(map[string]SeasonConfig),
 		childBeds: []string{},
 	}

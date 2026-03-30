@@ -59,7 +59,8 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		// 1. Создаем поле
 		switch c.Type {
 		case "field":
-			newObj = physicalobject.NewField(c.Name, c.GeoJSON, *c.SoilType, uuid.New().String())
+			area := spatial.CalculateAreaFromGeometry(uow.Tx(), c.GeoJSON)
+			newObj = physicalobject.NewField(c.Name, c.GeoJSON, area, *c.SoilType, uuid.New().String())
 		case "greenhouse":
 			newObj = physicalobject.NewGreenhouse(c.Name, types.Dimension{
 				Length: c.Length,
