@@ -115,8 +115,11 @@ func (r *cultivationAreaRepository) FindByID(ctx context.Context, id string) (cu
 	if err := json.Unmarshal([]byte(geomJSON), &geom); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
 	}
-
-	return r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(areaType), name, geom, areaValue, parentID, createdAt, updatedAt)
+	seasons, err := r.GetSeasonConfigs(ctx, areaID)
+	if err != nil {
+		return nil, err
+	}
+	return r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(areaType), name, geom, areaValue, parentID, createdAt, updatedAt, seasons)
 }
 
 // FindByFarmRefID находит место по ссылке на farm модуль
@@ -156,8 +159,11 @@ func (r *cultivationAreaRepository) FindByFarmRefID(ctx context.Context, farmRef
 	if err := json.Unmarshal([]byte(geomJSON), &geom); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
 	}
-
-	return r.hydrateArea(areaID, refID, cultivationarea.AreaType(areaType), name, geom, areaValue, parentID, createdAt, updatedAt)
+	seasons, err := r.GetSeasonConfigs(ctx, areaID)
+	if err != nil {
+		return nil, err
+	}
+	return r.hydrateArea(areaID, refID, cultivationarea.AreaType(areaType), name, geom, areaValue, parentID, createdAt, updatedAt, seasons)
 }
 
 // FindByType возвращает все места указанного типа
@@ -202,8 +208,11 @@ func (r *cultivationAreaRepository) FindByType(ctx context.Context, areaType cul
 		if err := json.Unmarshal([]byte(geomJSON), &geom); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
 		}
-
-		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, parentID, createdAt, updatedAt)
+		seasons, err := r.GetSeasonConfigs(ctx, areaID)
+		if err != nil {
+			return nil, err
+		}
+		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, parentID, createdAt, updatedAt, seasons)
 		if err != nil {
 			return nil, err
 		}
@@ -256,8 +265,11 @@ func (r *cultivationAreaRepository) FindByParentID(ctx context.Context, parentID
 		if err := json.Unmarshal([]byte(geomJSON), &geom); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
 		}
-
-		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, pid, createdAt, updatedAt)
+		seasons, err := r.GetSeasonConfigs(ctx, areaID)
+		if err != nil {
+			return nil, err
+		}
+		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, pid, createdAt, updatedAt, seasons)
 		if err != nil {
 			return nil, err
 		}
@@ -309,8 +321,11 @@ func (r *cultivationAreaRepository) FindAll(ctx context.Context) ([]cultivationa
 		if err := json.Unmarshal([]byte(geomJSON), &geom); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
 		}
-
-		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, parentID, createdAt, updatedAt)
+		seasons, err := r.GetSeasonConfigs(ctx, areaID)
+		if err != nil {
+			return nil, err
+		}
+		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, geom, areaValue, parentID, createdAt, updatedAt, seasons)
 		if err != nil {
 			return nil, err
 		}
@@ -607,11 +622,12 @@ func (r *cultivationAreaRepository) hydrateArea(
 	areaValue float64,
 	parentID sql.NullString,
 	createdAt, updatedAt time.Time,
+	seasons []cultivationarea.SeasonConfig,
 ) (cultivationarea.CultivationArea, error) {
 	switch areaType {
 	case cultivationarea.AreaTypeField:
 		field := cultivationarea.NewFieldArea(farmRefID, name, geom, areaValue)
-		field.Rehydrate(id, createdAt, updatedAt)
+		field.Rehydrate(id, createdAt, updatedAt, seasons)
 		return field, nil
 
 	case cultivationarea.AreaTypeBlock:
@@ -619,7 +635,7 @@ func (r *cultivationAreaRepository) hydrateArea(
 			return nil, fmt.Errorf("block requires parent_id")
 		}
 		block := cultivationarea.NewBlock(parentID.String, name, geom)
-		block.Rehydrate(id, farmRefID, createdAt, updatedAt)
+		block.Rehydrate(id, farmRefID, createdAt, updatedAt, seasons)
 		return block, nil
 
 	case cultivationarea.AreaTypeBed:
@@ -627,13 +643,13 @@ func (r *cultivationAreaRepository) hydrateArea(
 			return nil, fmt.Errorf("bed requires parent_id")
 		}
 		bed := cultivationarea.NewBed(parentID.String, name, geom)
-		//bed.Rehydrate(id, farmRefID, createdAt, updatedAt)
+		//bed.Rehydrate(id, farmRefID, createdAt, updatedAt, seasons)
 		return bed, nil
 
 	case cultivationarea.AreaTypeGreenhouse:
 		//TODO сделать атрибуты для хранения размеров
 		greenhouse := cultivationarea.NewGreenhouseArea(farmRefID, name, *types.NewDimension(12, 4, 2), geom)
-		greenhouse.Rehydrate(id, createdAt, updatedAt)
+		greenhouse.Rehydrate(id, createdAt, updatedAt, seasons)
 		return greenhouse, nil
 
 	default:

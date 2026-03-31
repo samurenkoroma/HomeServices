@@ -110,8 +110,11 @@ func (b *Block) ConfigureForSeason(seasonID string, config AreaConfig) error {
 }
 
 // Rehydrate восстанавливает блок из БД
-func (b *Block) Rehydrate(id, farmRefID string, createdAt, updatedAt time.Time) {
+func (b *Block) Rehydrate(id, farmRefID string, createdAt, updatedAt time.Time, seasons []SeasonConfig) {
 	b.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	for _, season := range seasons {
+		b.seasons[season.SeasonID] = season
+	}
 	b.farmRefID = farmRefID
 }
 

@@ -1,11 +1,10 @@
-## Facility
-- [x] CreateFacilityHandler
-- [x] AddBedHandler
-- [x] AddBlockHandler
-- [x] Fix Get в репозитории
+реализуй домены
 
-## Cropplan
-- [ ] CropPlanRepository (Save)
-- [ ] CropPlanRepository (FindByID)
-- [ ] CreateCropPlanHandler
-- [ ] AddStageHandler
+farm(геометрия)
+Unit(структура)
+SeasonLayout(сезон)
+CropCycle(выполнение) 
+
+
+и что в какой модуль farm, growing
+

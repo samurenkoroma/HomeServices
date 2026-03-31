@@ -177,8 +177,11 @@ func (f *FieldArea) ConfigureForSeason(seasonID string, config AreaConfig) error
 }
 
 // Rehydrate восстанавливает поле из БД
-func (f *FieldArea) Rehydrate(id string, createdAt, updatedAt time.Time) {
+func (f *FieldArea) Rehydrate(id string, createdAt, updatedAt time.Time, seasons []SeasonConfig) {
 	f.Entity = aggregate.Entity[string]{Id: id, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	for _, season := range seasons {
+		f.seasons[season.SeasonID] = season
+	}
 }
 
 // SetFarmRefID устанавливает ссылку на farm модуль
