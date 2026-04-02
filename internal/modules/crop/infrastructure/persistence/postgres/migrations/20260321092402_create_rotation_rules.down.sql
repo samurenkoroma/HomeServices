@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS  crop_crop_rotation_rules;

@@ -12,6 +12,7 @@ import (
 type CreateVarietyCmd struct {
 	Name        string `json:"name" validate:"required"`
 	Crop        string `json:"crop" validate:"required"`
+	CropRu      string `json:"cropRu"`
 	Description string `json:"description"`
 
 	VegetationDays     string   `json:"vegetation_days,omitempty"`

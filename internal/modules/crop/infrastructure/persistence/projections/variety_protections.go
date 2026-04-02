@@ -20,7 +20,7 @@ func NewVarietyProjections(db *sql.DB) variety.Projections {
 
 func (p *varietyProjections) GetByID(ctx context.Context, s string) (*variety.VarietyDTO, error) {
 	query := `
-SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name, v.is_active
+SELECT  v.id, v.name, v.description, attributes, crop_type_id,  ct.name as crop_type_name, '' as image
 FROM crop_varieties v
 LEFT OUTER JOIN crop_crop_types ct on v.crop_type_id = ct.id
 WHERE  v.id = $1 
@@ -30,7 +30,7 @@ WHERE  v.id = $1
 
 	var dto variety.VarietyDTO
 	var attrJSON []byte
-	if err := row.Scan(&dto.ID, &dto.Name, &attrJSON, &dto.CropTypeID, &dto.CropTypeName, &dto.IsActive); err != nil {
+	if err := row.Scan(&dto.ID, &dto.Name, &dto.Description, &attrJSON, &dto.CropTypeID, &dto.CropTypeName, &dto.Image); err != nil {
 		return nil, err
 	}
 
@@ -41,7 +41,6 @@ WHERE  v.id = $1
 		Min: attrs.VD().Min,
 		Max: attrs.VD().Max,
 	}
-	//dto.VegetationDaysMin = attrs.VegetDays().Min
 	dto.YieldPotential = valueobject.MinMax{
 		Min: attrs.YP().Min,
 		Max: attrs.YP().Max,
@@ -54,7 +53,7 @@ WHERE  v.id = $1
 func (p *varietyProjections) GetList(ctx context.Context, filter variety.Filter) ([]*variety.VarietyDTO, error) {
 	// Основная информация о типе культуры
 	query := `
-SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name, v.is_active
+SELECT  v.id, v.name, attributes, crop_type_id,  ct.name as crop_type_name
 FROM crop_varieties v
 LEFT OUTER JOIN crop_crop_types ct on v.crop_type_id = ct.id
 WHERE ($1::text = '' OR v.crop_type_id::text = $1)
@@ -73,7 +72,7 @@ WHERE ($1::text = '' OR v.crop_type_id::text = $1)
 	for rows.Next() {
 		var dto variety.VarietyDTO
 		var attrJSON []byte
-		if err := rows.Scan(&dto.ID, &dto.Name, &attrJSON, &dto.CropTypeID, &dto.CropTypeName, &dto.IsActive); err != nil {
+		if err := rows.Scan(&dto.ID, &dto.Name, &attrJSON, &dto.CropTypeID, &dto.CropTypeName); err != nil {
 			return nil, err
 		}
 

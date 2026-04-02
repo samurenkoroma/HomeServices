@@ -22,8 +22,8 @@ func NewCropTypeRepository(tx *sql.Tx) croptype.Repository {
 // Save сохраняет или обновляет тип культуры
 func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) error {
 	query := `
-        INSERT INTO crop_crop_types (id, name, category, description, is_perennial, is_active, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO crop_crop_types (id, name, category, family, description,icon, imageurl, is_perennial, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             category = EXCLUDED.category,
@@ -36,7 +36,10 @@ func (r *cropTypeRepository) Save(ctx context.Context, ct *croptype.CropType) er
 		ct.GetID(),
 		ct.GetName(),
 		string(ct.GetCategory()),
+		string(ct.GetFamily()),
 		ct.GetDescription(),
+		ct.GetIcon(),
+		ct.GetImageURL(),
 		ct.IsPerennial(),
 		ct.IsActive(),
 		ct.GetCreatedAt(),

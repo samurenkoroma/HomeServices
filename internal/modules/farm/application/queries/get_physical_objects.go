@@ -13,8 +13,6 @@ type GetPhysicalObjectsQuery struct {
 	Status  string `json:"status,omitempty"`
 	OwnerId string `json:"owner_id,omitempty"`
 	Search  string `json:"search,omitempty"`
-	Limit   int    `json:"limit,omitempty"`
-	Offset  int    `json:"offset,omitempty"`
 }
 type getPhysicalObjectsHandler struct {
 	projector physicalobject.ObjectProjections
@@ -40,8 +38,6 @@ func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (an
 	filter := physicalobject.POFilter{
 		OwnerId: q.OwnerId,
 		Search:  q.Search,
-		Limit:   q.Limit,
-		Offset:  q.Offset,
 	}
 
 	if q.TypeObj != "" {
@@ -49,9 +45,6 @@ func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (an
 	}
 	if q.Status != "" {
 		filter.Status = valueobject.Status(q.Status)
-	}
-	if q.Limit == 0 {
-		filter.Limit = 10
 	}
 
 	return h.projector.GetList(ctx, filter)

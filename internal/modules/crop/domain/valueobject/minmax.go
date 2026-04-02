@@ -7,9 +7,8 @@ import (
 )
 
 type MinMax struct {
-	Min     int `json:"min"`
-	Max     int `json:"max"`
-	Optimal int `json:"optimal"`
+	Min int `json:"min"`
+	Max int `json:"max"`
 }
 
 func (m *MinMax) String() string {

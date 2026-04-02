@@ -10,10 +10,15 @@ import (
 )
 
 type CreateCropTypeCmd struct {
-	Name        string `json:"name" validate:"required"`
-	Category    string `json:"category" validate:"required"`
-	Description string `json:"description"`
-	IsPerennial bool   `json:"is_perennial"`
+	Name        string  `json:"name" validate:"required"`
+	Category    string  `json:"category" validate:"required"`
+	CategoryRu  *string `json:"categoryRu,omitempty"`
+	Family      string  `json:"family" validate:"required"`
+	FamilyRu    *string `json:"familyRu,omitempty"`
+	Icon        string  `json:"icon"`
+	ImageURL    string  `json:"imageURL"`
+	Description string  `json:"description"`
+	IsPerennial bool    `json:"is_perennial"`
 }
 
 type createCropTypeHandler struct {
@@ -45,18 +50,27 @@ func (h *createCropTypeHandler) Handle(ctx context.Context, cmd any) error {
 		cropType, err := croptype.NewCropType(
 			c.Name,
 			croptype.CropCategory(c.Category),
+			croptype.CropFamily(c.Family),
 			c.Description,
 			c.IsPerennial,
 		)
 		if err != nil {
 			return err
 		}
+		cropType.AddUI(c.Icon, c.ImageURL)
 
 		// Сохраняем
 		if err := cropProvider.CropTypes().Save(ctx, cropType); err != nil {
+
 			return err
 		}
 
+		if c.CategoryRu != nil {
+			cropProvider.Translations().Save(ctx, "crop_category", c.Category, *c.CategoryRu)
+		}
+		if c.FamilyRu != nil {
+			cropProvider.Translations().Save(ctx, "crop_family", c.Family, *c.FamilyRu)
+		}
 		uow.RegisterAggregate(cropType)
 		return nil
 	})

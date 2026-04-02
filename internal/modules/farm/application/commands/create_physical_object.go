@@ -17,14 +17,14 @@ type CreatePhysicalObjectCmd struct {
 	Type    string          `json:"type" validate:"required,oneof=field greenhouse"`
 	Name    string          `json:"name" validate:"required"`
 	GeoJSON spatial.GeoJSON `json:"geometry" validate:"required"`
-	OwnerID string          `json:"owner_id" validate:"required"`
+	OwnerID string          `json:"ownerId" validate:"required"`
 
 	// Специфические поля
-	SoilType       *string  `json:"soil_type,omitempty"`       // для field
-	GreenhouseType *string  `json:"greenhouse_type,omitempty"` // для greenhouse
-	Width          *float64 `json:"width,omitempty"`           // для greenhouse
-	Height         *float64 `json:"height,omitempty"`          // для greenhouse
-	Length         *float64 `json:"length,omitempty"`          // для greenhouse
+	SoilType       *string  `json:"soilType,omitempty"`       // для field
+	GreenhouseType *string  `json:"greenhouseType,omitempty"` // для greenhouse
+	Width          *float64 `json:"width,omitempty"`          // для greenhouse
+	Height         *float64 `json:"height,omitempty"`         // для greenhouse
+	Length         *float64 `json:"length,omitempty"`         // для greenhouse
 }
 type createPhysicalHandler struct {
 	uowFactory repository.Factory

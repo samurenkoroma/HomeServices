@@ -8,10 +8,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"samurenkoroma/services/internal/core/domain/repository"
 	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
 	"samurenkoroma/services/internal/modules/crop/application/commands"
 	"samurenkoroma/services/pkg/db"
+	"strings"
 
 	"samurenkoroma/services/internal/infrastructure/configs"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
@@ -31,6 +33,9 @@ type seedData struct {
 		Category    string `json:"category"`
 		Description string `json:"description"`
 		IsPerennial bool   `json:"is_perennial"`
+		Family      string `json:"family"`
+		Icon        string `json:"lucideIcon"`
+		ImageUrl    string `json:"imageUrl"`
 	} `json:"crop_types"`
 	Varieties []struct {
 		Name               string   `json:"name"`
@@ -130,10 +135,20 @@ func seedCropTypes(uowFactory repository.Factory, data seedData, dryRun bool) er
 			continue
 		}
 
+		re := regexp.MustCompile(`([а-яА-Я]*)\s\((\w+)\)`)
+		family := re.FindStringSubmatch(ct.Family)
+		category := re.FindStringSubmatch(ct.Category)
 		// Создаём команду
+		ruCat := category[1]
+		ruFam := family[1]
 		cmd := commands.CreateCropTypeCmd{
 			Name:        ct.Name,
-			Category:    ct.Category,
+			Category:    strings.ToLower(category[2]),
+			CategoryRu:  &ruCat,
+			Family:      strings.ToLower(family[2]),
+			FamilyRu:    &ruFam,
+			Icon:        ct.Icon,
+			ImageURL:    ct.ImageUrl,
 			Description: ct.Description,
 			IsPerennial: ct.IsPerennial,
 		}

@@ -3,702 +3,512 @@
     {
       "name": "Пшеница",
       "scientific_name": "Triticum aestivum",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Озимая мягкая пшеница",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop"
     },
     {
       "name": "Ячмень",
       "scientific_name": "Hordeum vulgare",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Ячмень яровой",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": "https://images.unsplash.com/photo-1628135412095-3f48dcf2f5d5?w=400&h=300&fit=crop"
     },
     {
       "name": "Овес",
       "scientific_name": "Avena sativa",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Овес посевной",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Кукуруза",
       "scientific_name": "Zea mays",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Кукуруза на зерно",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Corn",
+      "imageUrl": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop"
     },
     {
       "name": "Рожь",
       "scientific_name": "Secale cereale",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Рожь озимая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": "https://images.unsplash.com/photo-1628135412095-3f48dcf2f5d5?w=400&h=300&fit=crop"
     },
     {
       "name": "Рис",
       "scientific_name": "Oryza sativa",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Рис посевной",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop"
     },
     {
       "name": "Гречиха",
       "scientific_name": "Fagopyrum esculentum",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Гречиха посевная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Гречишные (Polygonaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Просо",
       "scientific_name": "Panicum miliaceum",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Просо посевное",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": ""
     },
     {
       "name": "Сорго",
       "scientific_name": "Sorghum bicolor",
-      "category": "cereal",
+      "category": "Зерновые (Cereal)",
       "description": "Сорго зерновое",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Злаковые (Poaceae)",
+      "lucideIcon": "Wheat",
+      "imageUrl": ""
     },
     {
       "name": "Горох",
       "scientific_name": "Pisum sativum",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Горох посевной",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Фасоль",
       "scientific_name": "Phaseolus vulgaris",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Фасоль обыкновенная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Соя",
       "scientific_name": "Glycine max",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Соя культурная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Чечевица",
       "scientific_name": "Lens culinaris",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Чечевица пищевая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": ""
     },
     {
       "name": "Нут",
       "scientific_name": "Cicer arietinum",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Нут бараний",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": ""
     },
     {
       "name": "Бобы",
       "scientific_name": "Vicia faba",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Бобы кормовые",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Bean",
+      "imageUrl": ""
     },
     {
       "name": "Люпин",
       "scientific_name": "Lupinus",
-      "category": "grain",
+      "category": "Зернобобовые (Grain)",
       "description": "Люпин узколистный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Бобовые (Fabaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Подсолнечник",
       "scientific_name": "Helianthus annuus",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Подсолнечник масличный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Астровые (Asteraceae)",
+      "lucideIcon": "Sunflower",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Рапс",
       "scientific_name": "Brassica napus",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Рапс яровой",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Горчица",
       "scientific_name": "Sinapis alba",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Горчица белая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Лен масличный",
       "scientific_name": "Linum usitatissimum",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Лен масличный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Льновые (Linaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Рыжик",
       "scientific_name": "Camelina sativa",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Рыжик посевной",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": ""
     },
     {
       "name": "Сафлор",
       "scientific_name": "Carthamus tinctorius",
-      "category": "oilseed",
+      "category": "Масличные (Oilseed)",
       "description": "Сафлор красильный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Астровые (Asteraceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": ""
     },
     {
       "name": "Лен-долгунец",
       "scientific_name": "Linum usitatissimum",
-      "category": "industrial",
+      "category": "Технические (Industrial)",
       "description": "Лен-долгунец",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Льновые (Linaceae)",
+      "lucideIcon": "Flower2",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Конопля",
       "scientific_name": "Cannabis sativa",
-      "category": "industrial",
+      "category": "Технические (Industrial)",
       "description": "Конопля техническая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Коноплевые (Cannabaceae)",
+      "lucideIcon": "Leaf",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Хлопчатник",
       "scientific_name": "Gossypium",
-      "category": "industrial",
+      "category": "Технические (Industrial)",
       "description": "Хлопчатник обыкновенный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Мальвовые (Malvaceae)",
+      "lucideIcon": "Cloud",
+      "imageUrl": ""
     },
     {
       "name": "Сахарная свекла",
       "scientific_name": "Beta vulgaris",
-      "category": "sugar",
+      "category": "Сахарные (Sugar)",
       "description": "Свекла для производства сахара",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амарантовые (Amaranthaceae)",
+      "lucideIcon": "Beet",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Томат",
       "scientific_name": "Solanum lycopersicum",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Томат для открытого грунта",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Пасленовые (Solanaceae)",
+      "lucideIcon": "Tomato",
+      "imageUrl": "https://images.unsplash.com/photo-1546470427-1c0e5e7e5d5b?w=400&h=300&fit=crop"
     },
     {
       "name": "Огурец",
       "scientific_name": "Cucumis sativus",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Огурец для открытого грунта",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Тыквенные (Cucurbitaceae)",
+      "lucideIcon": "Cucumber",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Перец сладкий",
       "scientific_name": "Capsicum annuum",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Перец сладкий",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Пасленовые (Solanaceae)",
+      "lucideIcon": "Eggplant",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Баклажан",
       "scientific_name": "Solanum melongena",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Баклажан",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Пасленовые (Solanaceae)",
+      "lucideIcon": "Eggplant",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Капуста белокочанная",
       "scientific_name": "Brassica oleracea",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Капуста белокочанная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Cabbage",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Капуста цветная",
       "scientific_name": "Brassica oleracea var. botrytis",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Капуста цветная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Cabbage",
+      "imageUrl": ""
     },
     {
       "name": "Капуста брокколи",
       "scientific_name": "Brassica oleracea var. italica",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Брокколи",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Cabbage",
+      "imageUrl": ""
     },
     {
       "name": "Капуста пекинская",
       "scientific_name": "Brassica rapa subsp. pekinensis",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Пекинская капуста",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Cabbage",
+      "imageUrl": ""
     },
     {
       "name": "Лук репчатый",
       "scientific_name": "Allium cepa",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Лук репчатый",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амариллисовые (Amaryllidaceae)",
+      "lucideIcon": "Circle",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Лук-порей",
       "scientific_name": "Allium ampeloprasum",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Лук-порей",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амариллисовые (Amaryllidaceae)",
+      "lucideIcon": "Circle",
+      "imageUrl": ""
     },
     {
       "name": "Чеснок",
       "scientific_name": "Allium sativum",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Чеснок озимый",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амариллисовые (Amaryllidaceae)",
+      "lucideIcon": "Circle",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Салат",
       "scientific_name": "Lactuca sativa",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Салат листовой",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Астровые (Asteraceae)",
+      "lucideIcon": "Salad",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Шпинат",
       "scientific_name": "Spinacia oleracea",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Шпинат огородный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амарантовые (Amaranthaceae)",
+      "lucideIcon": "Leaf",
+      "imageUrl": ""
     },
     {
       "name": "Укроп",
       "scientific_name": "Anethum graveolens",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Укроп пахучий",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Зонтичные (Apiaceae)",
+      "lucideIcon": "Sprout",
+      "imageUrl": ""
     },
     {
       "name": "Петрушка",
       "scientific_name": "Petroselinum crispum",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Петрушка листовая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Зонтичные (Apiaceae)",
+      "lucideIcon": "Sprout",
+      "imageUrl": ""
     },
     {
       "name": "Сельдерей",
       "scientific_name": "Apium graveolens",
-      "category": "vegetable",
+      "category": "Овощные (Vegetable)",
       "description": "Сельдерей черешковый",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Зонтичные (Apiaceae)",
+      "lucideIcon": "Sprout",
+      "imageUrl": ""
     },
     {
       "name": "Редис",
       "scientific_name": "Raphanus sativus",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Редис",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Radish",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Морковь",
       "scientific_name": "Daucus carota",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Морковь столовая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Зонтичные (Apiaceae)",
+      "lucideIcon": "Carrot",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Свекла столовая",
       "scientific_name": "Beta vulgaris",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Свекла столовая",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Амарантовые (Amaranthaceae)",
+      "lucideIcon": "Beet",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Картофель",
       "scientific_name": "Solanum tuberosum",
-      "category": "root",
+      "category": "Клубнеплоды (Root)",
       "description": "Картофель продовольственный",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Пасленовые (Solanaceae)",
+      "lucideIcon": "Potato",
+      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
     {
       "name": "Редька",
       "scientific_name": "Raphanus sativus var. niger",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Редька черная",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Radish",
+      "imageUrl": ""
     },
     {
       "name": "Дайкон",
       "scientific_name": "Raphanus sativus var. longipinnatus",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Дайкон",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Radish",
+      "imageUrl": ""
     },
     {
       "name": "Пастернак",
       "scientific_name": "Pastinaca sativa",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Пастернак посевной",
-      "is_perennial": false
+      "is_perennial": false,
+      "family": "Зонтичные (Apiaceae)",
+      "lucideIcon": "Carrot",
+      "imageUrl": ""
     },
     {
       "name": "Хрен",
       "scientific_name": "Armoracia rusticana",
-      "category": "root",
+      "category": "Корнеплоды (Root)",
       "description": "Хрен обыкновенный",
-      "is_perennial": true
+      "is_perennial": true,
+      "family": "Капустные (Brassicaceae)",
+      "lucideIcon": "Leaf",
+      "imageUrl": ""
     },
     {
       "name": "Топинамбур",
       "scientific_name": "Helianthus tuberosus",
-      "category": "root",
+      "category": "Клубнеплоды (Root)",
       "description": "Топинамбур",
-      "is_perennial": true
-    },
-    {
-      "name": "Арбуз",
-      "scientific_name": "Citrullus lanatus",
-      "category": "melon",
-      "description": "Арбуз столовый",
-      "is_perennial": false
-    },
-    {
-      "name": "Дыня",
-      "scientific_name": "Cucumis melo",
-      "category": "melon",
-      "description": "Дыня",
-      "is_perennial": false
-    },
-    {
-      "name": "Тыква",
-      "scientific_name": "Cucurbita pepo",
-      "category": "melon",
-      "description": "Тыква обыкновенная",
-      "is_perennial": false
-    },
-    {
-      "name": "Кабачок",
-      "scientific_name": "Cucurbita pepo",
-      "category": "melon",
-      "description": "Кабачок",
-      "is_perennial": false
-    },
-    {
-      "name": "Патиссон",
-      "scientific_name": "Cucurbita pepo var. patisson",
-      "category": "melon",
-      "description": "Патиссон",
-      "is_perennial": false
-    },
-    {
-      "name": "Яблоня",
-      "scientific_name": "Malus domestica",
-      "category": "fruit",
-      "description": "Яблоня домашняя",
-      "is_perennial": true
-    },
-    {
-      "name": "Груша",
-      "scientific_name": "Pyrus communis",
-      "category": "fruit",
-      "description": "Груша обыкновенная",
-      "is_perennial": true
-    },
-    {
-      "name": "Слива",
-      "scientific_name": "Prunus domestica",
-      "category": "fruit",
-      "description": "Слива домашняя",
-      "is_perennial": true
-    },
-    {
-      "name": "Вишня",
-      "scientific_name": "Prunus cerasus",
-      "category": "fruit",
-      "description": "Вишня обыкновенная",
-      "is_perennial": true
-    },
-    {
-      "name": "Черешня",
-      "scientific_name": "Prunus avium",
-      "category": "fruit",
-      "description": "Черешня",
-      "is_perennial": true
-    },
-    {
-      "name": "Абрикос",
-      "scientific_name": "Prunus armeniaca",
-      "category": "fruit",
-      "description": "Абрикос",
-      "is_perennial": true
-    },
-    {
-      "name": "Персик",
-      "scientific_name": "Prunus persica",
-      "category": "fruit",
-      "description": "Персик",
-      "is_perennial": true
-    },
-    {
-      "name": "Клубника",
-      "scientific_name": "Fragaria × ananassa",
-      "category": "berry",
-      "description": "Клубника садовая",
-      "is_perennial": true
-    },
-    {
-      "name": "Малина",
-      "scientific_name": "Rubus idaeus",
-      "category": "berry",
-      "description": "Малина",
-      "is_perennial": true
-    },
-    {
-      "name": "Смородина черная",
-      "scientific_name": "Ribes nigrum",
-      "category": "berry",
-      "description": "Смородина черная",
-      "is_perennial": true
-    },
-    {
-      "name": "Смородина красная",
-      "scientific_name": "Ribes rubrum",
-      "category": "berry",
-      "description": "Смородина красная",
-      "is_perennial": true
-    },
-    {
-      "name": "Крыжовник",
-      "scientific_name": "Ribes uva-crispa",
-      "category": "berry",
-      "description": "Крыжовник",
-      "is_perennial": true
-    },
-    {
-      "name": "Ежевика",
-      "scientific_name": "Rubus fruticosus",
-      "category": "berry",
-      "description": "Ежевика",
-      "is_perennial": true
-    },
-    {
-      "name": "Голубика",
-      "scientific_name": "Vaccinium corymbosum",
-      "category": "berry",
-      "description": "Голубика садовая",
-      "is_perennial": true
-    },
-    {
-      "name": "Клюква",
-      "scientific_name": "Vaccinium macrocarpon",
-      "category": "berry",
-      "description": "Клюква крупноплодная",
-      "is_perennial": true
-    },
-    {
-      "name": "Виноград",
-      "scientific_name": "Vitis vinifera",
-      "category": "berry",
-      "description": "Виноград культурный",
-      "is_perennial": true
-    },
-    {
-      "name": "Грецкий орех",
-      "scientific_name": "Juglans regia",
-      "category": "nut",
-      "description": "Орех грецкий",
-      "is_perennial": true
-    },
-    {
-      "name": "Фундук",
-      "scientific_name": "Corylus avellana",
-      "category": "nut",
-      "description": "Фундук",
-      "is_perennial": true
-    },
-    {
-      "name": "Миндаль",
-      "scientific_name": "Prunus dulcis",
-      "category": "nut",
-      "description": "Миндаль",
-      "is_perennial": true
-    },
-    {
-      "name": "Люцерна",
-      "scientific_name": "Medicago sativa",
-      "category": "forage",
-      "description": "Люцерна посевная",
-      "is_perennial": true
-    },
-    {
-      "name": "Клевер",
-      "scientific_name": "Trifolium pratense",
-      "category": "forage",
-      "description": "Клевер луговой",
-      "is_perennial": true
-    },
-    {
-      "name": "Эспарцет",
-      "scientific_name": "Onobrychis viciifolia",
-      "category": "forage",
-      "description": "Эспарцет посевной",
-      "is_perennial": true
-    },
-    {
-      "name": "Кукуруза на силос",
-      "scientific_name": "Zea mays",
-      "category": "silage",
-      "description": "Кукуруза на силос",
-      "is_perennial": false
-    },
-    {
-      "name": "Подсолнечник на силос",
-      "scientific_name": "Helianthus annuus",
-      "category": "silage",
-      "description": "Подсолнечник на силос",
-      "is_perennial": false
-    },
-    {
-      "name": "Горчица белая",
-      "scientific_name": "Sinapis alba",
-      "category": "green_manure",
-      "description": "Сидеральная культура",
-      "is_perennial": false
-    },
-    {
-      "name": "Редька масличная",
-      "scientific_name": "Raphanus sativus var. oleifera",
-      "category": "green_manure",
-      "description": "Редька масличная",
-      "is_perennial": false
-    },
-    {
-      "name": "Фацелия",
-      "scientific_name": "Phacelia tanacetifolia",
-      "category": "green_manure",
-      "description": "Фацелия пижмолистная",
-      "is_perennial": false
-    },
-    {
-      "name": "Вика",
-      "scientific_name": "Vicia sativa",
-      "category": "green_manure",
-      "description": "Вика яровая",
-      "is_perennial": false
-    },
-    {
-      "name": "Овес на зеленое удобрение",
-      "scientific_name": "Avena sativa",
-      "category": "green_manure",
-      "description": "Овес как сидерат",
-      "is_perennial": false
-    },
-    {
-      "name": "Покровная культура",
-      "scientific_name": "",
-      "category": "cover",
-      "description": "Покровные культуры для защиты почвы",
-      "is_perennial": false
-    },
-    {
-      "name": "Ромашка аптечная",
-      "scientific_name": "Matricaria chamomilla",
-      "category": "medicinal",
-      "description": "Лекарственное растение",
-      "is_perennial": false
-    },
-    {
-      "name": "Календула",
-      "scientific_name": "Calendula officinalis",
-      "category": "medicinal",
-      "description": "Календула лекарственная",
-      "is_perennial": false
-    },
-    {
-      "name": "Зверобой",
-      "scientific_name": "Hypericum perforatum",
-      "category": "medicinal",
-      "description": "Зверобой продырявленный",
-      "is_perennial": true
-    },
-    {
-      "name": "Мелисса",
-      "scientific_name": "Melissa officinalis",
-      "category": "medicinal",
-      "description": "Мелисса лекарственная",
-      "is_perennial": true
-    },
-    {
-      "name": "Мята",
-      "scientific_name": "Mentha piperita",
-      "category": "medicinal",
-      "description": "Мята перечная",
-      "is_perennial": true
-    },
-    {
-      "name": "Базилик",
-      "scientific_name": "Ocimum basilicum",
-      "category": "spice",
-      "description": "Базилик душистый",
-      "is_perennial": false
-    },
-    {
-      "name": "Кинза",
-      "scientific_name": "Coriandrum sativum",
-      "category": "spice",
-      "description": "Кориандр посевной",
-      "is_perennial": false
-    },
-    {
-      "name": "Розмарин",
-      "scientific_name": "Rosmarinus officinalis",
-      "category": "spice",
-      "description": "Розмарин лекарственный",
-      "is_perennial": true
-    },
-    {
-      "name": "Тимьян",
-      "scientific_name": "Thymus vulgaris",
-      "category": "spice",
-      "description": "Тимьян обыкновенный",
-      "is_perennial": true
-    },
-    {
-      "name": "Роза",
-      "scientific_name": "Rosa",
-      "category": "ornamental",
-      "description": "Роза садовая",
-      "is_perennial": true
-    },
-    {
-      "name": "Пион",
-      "scientific_name": "Paeonia",
-      "category": "ornamental",
-      "description": "Пион",
-      "is_perennial": true
-    },
-    {
-      "name": "Лилия",
-      "scientific_name": "Lilium",
-      "category": "floral",
-      "description": "Лилия садовая",
-      "is_perennial": true
-    },
-    {
-      "name": "Тюльпан",
-      "scientific_name": "Tulipa",
-      "category": "floral",
-      "description": "Тюльпан",
-      "is_perennial": true
-    },
-    {
-      "name": "Нарцисс",
-      "scientific_name": "Narcissus",
-      "category": "floral",
-      "description": "Нарцисс",
-      "is_perennial": true
+      "is_perennial": true,
+      "family": "Астровые (Asteraceae)",
+      "lucideIcon": "Sunflower",
+      "imageUrl": ""
     }
   ],
   "varieties": [
@@ -2193,47 +2003,6 @@
       "yield_potential": "18000..28000",
       "recommended_regions": [
         "Центральный"
-      ]
-    },
-    {
-      "crop": "Тыква",
-      "name": "Волжская серая",
-      "description": "Среднеспелый сорт",
-      "vegetation_days": "110..130",
-      "yield_potential": "30000..50000",
-      "recommended_regions": [
-        "Нижневолжский",
-        "Поволжский"
-      ]
-    },
-    {
-      "crop": "Тыква",
-      "name": "Атлант",
-      "description": "Крупноплодный сорт",
-      "vegetation_days": "120..140",
-      "yield_potential": "35000..60000",
-      "recommended_regions": [
-        "Центральный"
-      ]
-    },
-    {
-      "crop": "Кабачок",
-      "name": "Цукеша",
-      "description": "Скороспелый сорт",
-      "vegetation_days": "40..50",
-      "yield_potential": "40000..60000",
-      "recommended_regions": [
-        "Все регионы"
-      ]
-    },
-    {
-      "crop": "Кабачок",
-      "name": "Грибовский",
-      "description": "Среднеспелый сорт",
-      "vegetation_days": "45..55",
-      "yield_potential": "35000..55000",
-      "recommended_regions": [
-        "Все регионы"
       ]
     }
   ]

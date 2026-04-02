@@ -6,40 +6,48 @@ import (
 )
 
 type Filter struct {
-	Category string
-	IsActive bool
-	Search   string
+	Category      string
+	IsActive      bool
+	Search        string
+	Family        string
+	ActiveOnly    bool
+	WithVarieties bool
 }
 
 type VarietySimpleDTO struct {
 	ID             string `json:"id"`
 	Name           string `json:"name"`
-	VegetationDays string `json:"vegetation_days"`
-	IsActive       bool   `json:"is_active"`
+	Image          string `json:"image"`
+	VegetationDays string `json:"growingTime"`
+	YieldPotential string `json:"yieldEstimate"`
+	PlantingTime   string `json:"plantingTime"`
 }
 
 // CropTypeWithVarietiesDTO — денормализованный объект
 type CropTypeWithVarietiesDTO struct {
-	ID             string             `json:"id"`
-	Name           string             `json:"name"`
-	Category       string             `json:"category"`
-	CategoryName   string             `json:"category_name"`
-	IsPerennial    bool               `json:"is_perennial"`
-	VarietiesCount int                `json:"varieties_count"`
-	Varieties      []VarietySimpleDTO `json:"varieties,omitempty"`
-	CreatedAt      time.Time          `json:"created_at"`
-	Description    string             `json:"description"`
-	IsActive       bool               `json:"is_active"`
+	ID          string             `json:"id"`
+	Name        string             `json:"name"`
+	Category    string             `json:"category"`
+	Family      string             `json:"family"`
+	Description string             `json:"description"`
+	IsPerennial bool               `json:"isPerennial"`
+	ImageUrl    string             `json:"imageURL"`
+	Varieties   []VarietySimpleDTO `json:"varieties,omitempty"`
 }
 
 // CropTypeSimpleDTO — упрощённый DTO для списка
 type CropTypeSimpleDTO struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Category     string `json:"category"`
-	CategoryName string `json:"category_name"`
-	IsPerennial  bool   `json:"is_perennial"`
-	IsActive     bool   `json:"is_active"`
+	ID               string `json:"id"`
+	Name             string `json:"name"`
+	Category         string `json:"category"`
+	Family           string `json:"family"`
+	Icon             string `json:"icon"`
+	ImageUrl         string `json:"imageURL"`
+	CountVarieties   int    `json:"countVarieties"`
+	YieldEstimateMin *int   `json:"yieldEstimateMin"`
+	YieldEstimateMax *int   `json:"yieldEstimateMax"`
+	GrowingDaysMin   *int   `json:"growingDaysMin"`
+	GrowingDaysMax   *int   `json:"growingDaysMax"`
 }
 
 // CropTypeDetailDTO — детальный DTO

@@ -8,12 +8,16 @@ import (
 )
 
 type CropTypeID string
+type CropFamily string
 
 // CropType - тип сельскохозяйственной культуры
 type CropType struct {
 	aggregate.Entity[CropTypeID]
 	name        string
 	category    CropCategory
+	family      CropFamily
+	icon        string
+	imageURL    string
 	description string
 	isPerennial bool
 }
@@ -22,6 +26,7 @@ type CropType struct {
 func NewCropType(
 	name string,
 	category CropCategory,
+	family CropFamily,
 	description string,
 	isPerennial bool,
 ) (*CropType, error) {
@@ -37,9 +42,15 @@ func NewCropType(
 		Entity:      aggregate.NewEntity(CropTypeID(types.NewUUID())),
 		name:        name,
 		category:    category,
+		family:      family,
 		description: description,
 		isPerennial: isPerennial,
 	}, nil
+}
+
+func (c *CropType) AddUI(icon string, imageURL string) {
+	c.icon = icon
+	c.imageURL = imageURL
 }
 
 // Getters
@@ -51,6 +62,9 @@ func (c *CropType) IsPerennial() bool         { return c.isPerennial }
 func (c *CropType) IsActive() bool            { return c.Entity.IsActive }
 func (c *CropType) GetCreatedAt() time.Time   { return c.Entity.CreatedAt }
 func (c *CropType) GetUpdatedAt() time.Time   { return c.Entity.UpdatedAt }
+func (c *CropType) GetFamily() CropFamily     { return c.family }
+func (c *CropType) GetIcon() string           { return c.icon }
+func (c *CropType) GetImageURL() string       { return c.imageURL }
 
 // Rehydrate восстанавливает тип культуры из БД
 func Rehydrate(id, name, category, description string, isPerennial, isActive bool, createdAt, updatedAt time.Time) *CropType {

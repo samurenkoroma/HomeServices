@@ -21,7 +21,7 @@ func NewPoProjection(db *sql.DB) physicalobject.ObjectProjections {
 func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilter) ([]*physicalobject.POListItem, error) {
 	query := `
 	SELECT
-		po.id, po.type, po.name,  po.area, po.status, po.owner_id, po.created_at
+		po.id, po.type, po.name, ST_AsGeoJSON(geometry),  po.area, attributes, po.status, po.owner_id, po.created_at
 	FROM farm_physical_objects po
 	WHERE ($1 = '' OR po.status = $1)
 	  AND ($2 = '' OR po.type = $2)
@@ -29,11 +29,11 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	  AND ($4 = '' OR po.name ILIKE '%' || $4 || '%')
 	GROUP BY po.id
 	ORDER BY po.name 
-	LIMIT $5 OFFSET $6
 		`
-
+	var attrJSON []byte
+	var geomJSON string
 	rows, err := f.db.QueryContext(ctx, query,
-		filter.Status, filter.Type, filter.OwnerId, filter.Search, filter.Limit, filter.Offset)
+		filter.Status, filter.Type, filter.OwnerId, filter.Search)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query objects: %w", err)
 	}
@@ -42,8 +42,17 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	var items []*physicalobject.POListItem
 	for rows.Next() {
 		var item physicalobject.POListItem
-		if err := rows.Scan(&item.Id, &item.TypeObj, &item.Name, &item.Area, &item.Status, &item.OwnerId, &item.CreatedAt); err != nil {
+		if err := rows.Scan(&item.Id, &item.TypeObj, &item.Name, &geomJSON, &item.Area, &attrJSON, &item.Status, &item.OwnerId, &item.CreatedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan item: %w", err)
+		}
+
+		var attrs physicalobject.Attributes
+		if err := json.Unmarshal(attrJSON, &attrs); err != nil {
+			return []*physicalobject.POListItem{}, err
+		}
+		item.Attributes = attrs
+		if err := json.Unmarshal([]byte(geomJSON), &item.Geometry); err != nil {
+			return []*physicalobject.POListItem{}, err
 		}
 		items = append(items, &item)
 	}

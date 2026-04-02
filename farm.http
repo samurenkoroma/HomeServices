@@ -24,56 +24,47 @@ Content-Type: application/json
 {
   "command": "CreatePhysicalObject",
   "data": {
+    "name": " 11 га Лён ",
     "type": "field",
-    "name": "Участок sewfgu",
-    "soil_type": "Чернозём",
-    "geometry" : {
+    "geometry": {
       "type": "Polygon",
       "coordinates": [
         [
           [
-            30.05152512341738,
-            45.90452692673153
+            30.064366534352303,
+            45.892456102848186
           ],
           [
-            30.052362643182278,
-            45.89954309793805
+            30.055965185165405,
+            45.89184797731053
           ],
           [
-            30.054328702390194,
-            45.89973605726784
+            30.058585368096832,
+            45.890300797515195
           ],
           [
-            30.056433230638508,
-            45.89984875267262
+            30.064643472433094,
+            45.89072481774336
           ],
           [
-            30.056634396314617,
-            45.90127154164979
-          ],
-          [
-            30.056862048804764,
-            45.90266559683004
-          ],
-          [
-            30.057584568858147,
-            45.90515847685902
-          ],
-          [
-            30.053597800433632,
-            45.904893212682424
-          ],
-          [
-            30.053620599210262,
-            45.90472780104589
-          ],
-          [
-            30.05152512341738,
-            45.90452692673153
+            30.064366534352303,
+            45.892456102848186
           ]
         ]
       ]
-    }
+    },
+    "area": 10.842303797609887,
+    "description": "",
+    "attributes": {
+      "soilType": "Чернозем",
+      "soilPH": 7,
+      "organicMatter": "3.5%",
+      "activeCrops": []
+    },
+    "status": "active",
+    "ownerId": "current-user-id",
+    "createdAt": "2026-04-01T20:18:04.014Z",
+    "updatedAt": "2026-04-01T20:18:04.014Z"
   }
 }
 
@@ -168,6 +159,15 @@ Content-Type: application/json
 
 {
   "query": "GetPhysicalObjects",
+  "data": {"type":  "plot"}
+}
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetPhysicalObjects",
   "data": {
     "id": "620ee537-cb02-40d7-8d90-ee29fdbd5fff"
   }
@@ -177,7 +177,7 @@ Content-Type: application/json
 POST http://localhost:8080/queries/
 Content-Type: application/json
 
-{"query":"GetCropTypes","data":{"id":"99e57e6b-109f-451e-8c6a-43700044795c"}}
+{"query":"GetCropTypes","data":{}}
 
 ###
 

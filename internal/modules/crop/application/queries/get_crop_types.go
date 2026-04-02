@@ -10,10 +10,12 @@ import (
 
 // GetCropTypesQuery — параметры запроса списка типов культур
 type GetCropTypesQuery struct {
-	ID         string `json:"id"`
-	Category   string `json:"category,omitempty"`
-	ActiveOnly bool   `json:"active_only"`
-	Search     string `json:"search"`
+	ID            string `json:"id"`
+	Category      string `json:"category,omitempty"`
+	Family        string `json:"family,omitempty"`
+	ActiveOnly    bool   `json:"active_only"`
+	Search        string `json:"search"`
+	WithVarieties bool   `json:"with_varieties"`
 }
 
 // GetCropTypesHandler — обработчик запроса

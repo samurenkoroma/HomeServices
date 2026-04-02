@@ -332,6 +332,7 @@ func getModules(moduleFlag string) []module {
 		{Name: "farm", Path: "farm/infrastructure/persistence/postgres/migrations"},
 		{Name: "crop", Path: "crop/infrastructure/persistence/postgres/migrations"},
 		{Name: "growing", Path: "growing/infrastructure/persistence/postgres/migrations"},
+		{Name: "shared", Path: "shared/infrastructure/persistence/postgres/migrations"},
 	}
 
 	if moduleFlag == "all" {

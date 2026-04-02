@@ -6,6 +6,8 @@ import (
 	"samurenkoroma/services/internal/modules/crop/domain/cropplan"
 	"samurenkoroma/services/internal/modules/crop/domain/croptype"
 	"samurenkoroma/services/internal/modules/crop/domain/variety"
+	"samurenkoroma/services/internal/modules/shared/domain/translation"
+	"samurenkoroma/services/internal/modules/shared/infrastructure/persistence/postgres"
 )
 
 // CropProvider — провайдер репозиториев для контекста культур
@@ -13,9 +15,10 @@ type CropProvider struct {
 	tx *sql.Tx
 
 	// Кеш репозиториев
-	cropPlans cropplan.Repository
-	cropTypes croptype.Repository
-	varieties variety.Repository
+	cropPlans    cropplan.Repository
+	cropTypes    croptype.Repository
+	varieties    variety.Repository
+	translations translation.Repository
 }
 
 func (p *CropProvider) ProviderName() string {
@@ -52,4 +55,11 @@ func (p *CropProvider) CropTypes() croptype.Repository {
 		p.cropTypes = NewCropTypeRepository(p.tx)
 	}
 	return p.cropTypes
+}
+
+func (p *CropProvider) Translations() translation.Repository {
+	if p.translations == nil {
+		return postgres.NewTranslationsRepository(p.tx)
+	}
+	return p.translations
 }
