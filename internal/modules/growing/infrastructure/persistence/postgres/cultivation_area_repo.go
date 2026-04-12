@@ -26,8 +26,8 @@ func NewCultivationAreaRepository(tx *sql.Tx) cultivationarea.Repository {
 func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationarea.CultivationArea) error {
 	query := `
         INSERT INTO public.growing_cultivation_areas (
-            id, farm_ref_id, type, name, geometry, area, parent_id, attributes, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326), $6, $7, $8, $9, $10)
+            id, farm_ref_id, type, name, geometry, area, attributes, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326), $6, $7, $8, $9)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             geometry = EXCLUDED.geometry,
@@ -41,13 +41,10 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 		return fmt.Errorf("failed to marshal geometry: %w", err)
 	}
 
-	var parentID *string
 	var attributesJSON []byte
 
 	switch a := area.(type) {
 	case *cultivationarea.Bed:
-		pid := a.GetParentID()
-		parentID = &pid
 		// Сохраняем атрибуты грядки
 		attrs := a.GetAttributes()
 		attributesJSON, err = json.Marshal(attrs)
@@ -55,8 +52,6 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 			return fmt.Errorf("failed to marshal bed attributes: %w", err)
 		}
 	case *cultivationarea.Block:
-		pid := a.GetParentFieldID()
-		parentID = &pid
 	}
 
 	_, err = r.tx.ExecContext(ctx, query,
@@ -66,7 +61,6 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 		area.GetName(),
 		string(geomData),
 		area.GetArea(),
-		parentID,
 		attributesJSON,
 		time.Now(),
 		time.Now(),
@@ -642,13 +636,13 @@ func (r *cultivationAreaRepository) hydrateArea(
 		if !parentID.Valid {
 			return nil, fmt.Errorf("bed requires parent_id")
 		}
-		bed := cultivationarea.NewBed(parentID.String, name, geom)
+		bed := cultivationarea.NewBed(id, parentID.String, name, geom, areaValue)
 		//bed.Rehydrate(id, farmRefID, createdAt, updatedAt, seasons)
 		return bed, nil
 
 	case cultivationarea.AreaTypeGreenhouse:
 		//TODO сделать атрибуты для хранения размеров
-		greenhouse := cultivationarea.NewGreenhouseArea(farmRefID, name, *types.NewDimension(12, 4, 2), geom)
+		greenhouse := cultivationarea.NewGreenhouseArea(farmRefID, name, *types.NewDimension(12, 4), geom)
 		greenhouse.Rehydrate(id, createdAt, updatedAt, seasons)
 		return greenhouse, nil
 

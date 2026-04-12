@@ -26,6 +26,7 @@ const (
 )
 const (
 	ObjectTypeField      ObjectType = "field"
+	ObjectTypePlot       ObjectType = "plot"
 	ObjectTypeGreenhouse ObjectType = "greenhouse"
 	ObjectTypeBuilding   ObjectType = "building"
 	ObjectTypeStorage    ObjectType = "storage"
@@ -56,8 +57,8 @@ type Attributes struct {
 	// Для теплицы
 	GreenhouseType *string  `json:"greenhouse_type,omitempty"` // film, glass, polycarbonate
 	Height         *float64 `json:"height,omitempty"`
-	Width          *float64 `json:"width,omitempty"`
-	Length         *float64 `json:"length,omitempty"`
+	Width          float64  `json:"width,omitempty"`
+	Length         float64  `json:"length,omitempty"`
 	HasHeating     *bool    `json:"has_heating,omitempty"`
 	HasVentilation *bool    `json:"has_ventilation,omitempty"`
 	HasLighting    *bool    `json:"has_lighting,omitempty"`
@@ -80,6 +81,7 @@ func NewField(
 	name string,
 	geom spatial.GeoJSON,
 	area float64,
+	dim types.Dimension,
 	soilType string,
 	ownerID string,
 ) *PhysicalObject {
@@ -94,9 +96,41 @@ func NewField(
 		Area:     area,
 		Attributes: Attributes{
 			SoilType: &soilType,
+			Width:    dim.Width,
+			Length:   dim.Length,
 		},
 	}
 	obj.AddEvent(FieldCreated{
+		ID:       string(obj.Id),
+		Name:     obj.Name,
+		Geometry: obj.Geometry,
+		Area:     obj.Area,
+	})
+	return obj
+}
+
+func NewPlot(
+	name string,
+	geom spatial.GeoJSON,
+	area float64,
+	dim types.Dimension,
+	ownerID string,
+) *PhysicalObject {
+
+	obj := &PhysicalObject{
+		Entity:   aggregate.NewEntity(PhysicalObjectID(types.NewUUID())),
+		Type:     ObjectTypePlot,
+		Name:     name,
+		Geometry: geom,
+		Status:   valueobject.Active,
+		OwnerID:  ownerID,
+		Area:     area,
+		Attributes: Attributes{
+			Width:  dim.Width,
+			Length: dim.Length,
+		},
+	}
+	obj.AddEvent(PlotCreated{
 		ID:       string(obj.Id),
 		Name:     obj.Name,
 		Geometry: obj.Geometry,
@@ -124,7 +158,6 @@ func NewGreenhouse(
 		Attributes: Attributes{
 			GreenhouseType: &ghType,
 			Width:          dim.Width,
-			Height:         dim.Height,
 			Length:         dim.Length,
 
 			HasHeating:     new(bool),
@@ -258,6 +291,28 @@ func (p *PhysicalObject) IsField() bool {
 
 func (p *PhysicalObject) IsGreenhouse() bool {
 	return p.Type == ObjectTypeGreenhouse
+}
+
+func (p *PhysicalObject) SetSchema(schema json.RawMessage) {
+	p.Attributes.Metadata["schema"] = schema
+	p.AddEvent(PhysicalObjectSchemaUpdated{
+		ObjectID: string(p.Id),
+		Name:     p.Name,
+		Schema:   schema,
+		Geometry: p.Geometry,
+	})
+
+}
+
+func (p *PhysicalObject) Delete() error {
+	now := time.Now()
+
+	p.DeletedAt = &now
+	p.AddEvent(PhysicalObjectDeactivated{
+		ObjectID: string(p.Id),
+		Type:     string(p.Type),
+	})
+	return p.Deactivate()
 }
 
 func RehydrateField(

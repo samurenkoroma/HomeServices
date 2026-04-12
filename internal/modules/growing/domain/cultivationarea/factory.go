@@ -31,7 +31,7 @@ func CreateArea(config CreateAreaConfig) (CultivationArea, error) {
 		if config.ParentID == "" {
 			return nil, ErrBedRequiresParent
 		}
-		return NewBed(config.ParentID, config.Name, config.Geometry), nil
+		return NewBed(types.NewUUID(), config.ParentID, config.Name, config.Geometry, 0), nil
 
 	case AreaTypeGreenhouse:
 		return NewGreenhouseArea(config.FarmRefID, config.Name, types.Dimension{}, config.Geometry), nil

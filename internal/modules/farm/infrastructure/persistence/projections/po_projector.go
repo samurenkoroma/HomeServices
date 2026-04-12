@@ -25,15 +25,15 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	FROM farm_physical_objects po
 	WHERE ($1 = '' OR po.status = $1)
 	  AND ($2 = '' OR po.type = $2)
-	  AND ($3 = '' OR po.type = $3)
-	  AND ($4 = '' OR po.name ILIKE '%' || $4 || '%')
+-- 	  AND ($3 = '' OR po.owner_id = $3)
+	  AND ($3 = '' OR po.name ILIKE '%' || $3 || '%')
 	GROUP BY po.id
 	ORDER BY po.name 
 		`
 	var attrJSON []byte
 	var geomJSON string
 	rows, err := f.db.QueryContext(ctx, query,
-		filter.Status, filter.Type, filter.OwnerId, filter.Search)
+		filter.Status, filter.Type, filter.Search)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query objects: %w", err)
 	}

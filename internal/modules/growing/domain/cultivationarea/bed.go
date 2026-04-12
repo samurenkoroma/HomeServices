@@ -2,7 +2,6 @@ package cultivationarea
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
-	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/core/spatial"
 	"time"
 )
@@ -33,13 +32,15 @@ type BedAttributes struct {
 }
 
 // NewBed создаёт новую грядку
-func NewBed(parentID, name string, centerPoint spatial.GeoJSON) *Bed {
+func NewBed(id string, farmRefID, name string, centerPoint spatial.GeoJSON, area float64) *Bed {
 	return &Bed{
-		Entity:   aggregate.NewEntity(types.NewUUID()),
-		parentID: parentID,
-		name:     name,
-		geometry: centerPoint,
-		seasons:  make(map[string]SeasonConfig),
+		Entity:    aggregate.NewEntity(id),
+		farmRefID: farmRefID,
+		parentID:  farmRefID,
+		name:      name,
+		geometry:  centerPoint,
+		seasons:   make(map[string]SeasonConfig),
+		area:      area,
 	}
 }
 

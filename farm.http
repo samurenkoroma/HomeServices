@@ -10,12 +10,23 @@ Content-Type: application/json
     "length": 12,
     "width": 4,
     "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
-    "geometry" : {
+    "geometry": {
       "type": "Point",
-      "coordinates": [30.0162001, 45.9007626]
+      "coordinates": [
+        30.0162001,
+        45.9007626
+      ]
     }
   }
 }
+
+###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{"command":"DeleteObject","data":{"id":"58066c8c-2ebb-4ddb-a8cd-f182cd158ba4"}}
+
 ###
 
 POST http://localhost:8080/commands/
@@ -24,47 +35,36 @@ Content-Type: application/json
 {
   "command": "CreatePhysicalObject",
   "data": {
-    "name": " 11 га Лён ",
+    "name": "Новое объект",
     "type": "field",
     "geometry": {
-      "type": "Polygon",
       "coordinates": [
         [
           [
-            30.064366534352303,
-            45.892456102848186
+            30.028455288736637,
+            45.90258173424232
           ],
           [
-            30.055965185165405,
-            45.89184797731053
+            30.040468233823503,
+            45.90186519474889
           ],
           [
-            30.058585368096832,
-            45.890300797515195
+            30.025537859215177,
+            45.893265999496606
           ],
           [
-            30.064643472433094,
-            45.89072481774336
-          ],
-          [
-            30.064366534352303,
-            45.892456102848186
+            30.028455288736637,
+            45.90258173424232
           ]
         ]
-      ]
+      ],
+      "type": "Polygon"
     },
-    "area": 10.842303797609887,
-    "description": "",
+    "area": 49.047392534980986,
     "attributes": {
-      "soilType": "Чернозем",
-      "soilPH": 7,
-      "organicMatter": "3.5%",
-      "activeCrops": []
-    },
-    "status": "active",
-    "ownerId": "current-user-id",
-    "createdAt": "2026-04-01T20:18:04.014Z",
-    "updatedAt": "2026-04-01T20:18:04.014Z"
+      "width": 1155.483543964361,
+      "length": 1035.8638724837822
+    }
   }
 }
 
@@ -95,7 +95,10 @@ Content-Type: application/json
     "description": "Озимая мягкая пшеница, устойчива к засухе",
     "vegetation_days": "110..130",
     "yield_potential": "10..130",
-    "recommended_regions": ["Центральный", "Центрально-Черноземный"],
+    "recommended_regions": [
+      "Центральный",
+      "Центрально-Черноземный"
+    ],
     "is_active": true
   }
 }
@@ -149,9 +152,9 @@ Content-Type: application/json
     "end_date": "2023-01-14",
     "start_date": "2023-01-06",
     "name": "Всходы"
-
   }
 }
+
 ### queries
 
 POST http://localhost:8080/queries/
@@ -159,25 +162,10 @@ Content-Type: application/json
 
 {
   "query": "GetPhysicalObjects",
-  "data": {"type":  "plot"}
-}
-###
-
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{
-  "query": "GetPhysicalObjects",
   "data": {
-    "id": "620ee537-cb02-40d7-8d90-ee29fdbd5fff"
+    "type": "plot"
   }
 }
-###
-
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{"query":"GetCropTypes","data":{}}
 
 ###
 
@@ -185,9 +173,36 @@ POST http://localhost:8080/queries/
 Content-Type: application/json
 
 {
-  "query": "GetVarieties",
-  "data": {  }
+  "query": "GetCurrentFarm",
+  "data": {
+  }
 }
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{"command":"GetObjects","data":{"farmId":"41ff5034-51fb-4dd9-a39a-2a2d8c76a77a"}}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetCropTypes",
+  "data": {
+    "id": "0603a466-b3a9-465a-a12e-a767ca86c625"
+  }
+}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{"query":"GetVarieties","data":{"cropTypeId":"0603a466-b3a9-465a-a12e-a767ca86c625"}}
 
 ###
 
@@ -197,7 +212,6 @@ Content-Type: application/json
 {
   "query": "GetCategories",
   "data": {
-    
   }
 }
 
@@ -218,11 +232,19 @@ Content-Type: application/json
 POST http://localhost:8080/queries/
 Content-Type: application/json
 
-{"query":"GetCultivationAreas","data":{}}
+{
+  "query": "GetCultivationAreas",
+  "data": {}
+}
 
 ###
 
 POST http://localhost:8080/queries/
 Content-Type: application/json
 
-{"query":"GetCultivationAreas","data":{"id":"015c2bd7-105d-4124-99bb-404a2a74c846"}}
+{
+  "query": "GetCultivationAreas",
+  "data": {
+    "id": "015c2bd7-105d-4124-99bb-404a2a74c846"
+  }
+}

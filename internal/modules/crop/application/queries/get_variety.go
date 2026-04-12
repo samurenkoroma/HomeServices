@@ -10,8 +10,8 @@ import (
 // GetVarietyQuery — параметры запроса сорта
 type GetVarietyQuery struct {
 	ID         string `json:"id" validate:"required"`
-	CropTypeId string `json:"crop_type_id,omitempty"`
-	IsActive   bool   `json:"is_active,omitempty"`
+	CropTypeId string `json:"cropTypeId,omitempty"`
+	IsActive   bool   `json:"isActive,omitempty"`
 	Search     string `json:"search,omitempty"`
 	Limit      int    `json:"limit"`
 	Offset     int    `json:"offset"`

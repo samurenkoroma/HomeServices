@@ -9,6 +9,7 @@ import (
 
 type GetPhysicalObjectsQuery struct {
 	Id      string `json:"id,omitempty"`
+	FarmId  string `json:"farmId,omitempty"`
 	TypeObj string `json:"type,omitempty"`
 	Status  string `json:"status,omitempty"`
 	OwnerId string `json:"owner_id,omitempty"`
@@ -19,7 +20,7 @@ type getPhysicalObjectsHandler struct {
 }
 
 func (h *getPhysicalObjectsHandler) Name() string {
-	return "GetPhysicalObjects"
+	return "GetObjects"
 }
 
 func NewGetPhysicalObjectsHandler(projector physicalobject.ObjectProjections) query.Handler {
@@ -45,6 +46,8 @@ func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (an
 	}
 	if q.Status != "" {
 		filter.Status = valueobject.Status(q.Status)
+	} else {
+		filter.Status = valueobject.Active
 	}
 
 	return h.projector.GetList(ctx, filter)

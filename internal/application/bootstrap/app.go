@@ -14,6 +14,7 @@ import (
 	cropProjections "samurenkoroma/services/internal/modules/crop/infrastructure/persistence/projections"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	farmQueries "samurenkoroma/services/internal/modules/farm/application/queries"
+	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	farmProjections "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/commands"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
@@ -35,7 +36,7 @@ func Build(ctx context.Context, db *sql.DB) (*App, error) {
 
 	bus := inmemory.NewInMemoryEventBus()
 	bus.Register("farm.field.created", growingEventHandlers.OnFarmObjectCreated)
-	bus.Register("farm.greenhouse.created", growingEventHandlers.OnFarmObjectCreated)
+	bus.Register(physicalobject.FarmObjectSchemaUpdatedEvent, growingEventHandlers.OnFarmObjectSchemaUpdated)
 	bus.Register("crop.plan.published", growingEventHandlers.OnCropPlanPublished)
 
 	// ---------- Unit Of Work Factory ----------
@@ -82,7 +83,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(growingCommands.NewActivateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.ActivateSeasonCmd])
 	commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), utils.DecodeJSON[growingCommands.RecordOperationCmd])
 	commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
-	commandRouter.Register(growingCommands.NewCreateBedsBatchHandler(uowFactory), utils.DecodeJSON[growingCommands.CreateBedsBatchCommand])
+	//commandRouter.Register(growingCommands.NewCreateBedsBatchHandler(uowFactory), utils.DecodeJSON[growingCommands.CreateBedsBatchCommand])
 	commandRouter.Register(growingCommands.NewStartCropCycleHandler(uowFactory), utils.DecodeJSON[growingCommands.StartCropCycleCmd])
 
 	growingProvider := projections.NewGrowingProjectionsProvider(db)
@@ -108,10 +109,12 @@ func registerCrop(commandRouter command.Router, queryRouter query.Router, uowFac
 func registerFarm(commandRouter command.Router, queryRouter query.Router, uowFactory repository.Factory, db *sql.DB) error {
 
 	// ---- Command Registration ----
-	commandRouter.Register(farmCommands.NewCreatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.CreatePhysicalObjectCmd])
-	commandRouter.Register(farmCommands.NewUpdatePhysicalObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.UpdatePhysicalObjectCommand])
+	commandRouter.Register(farmCommands.NewCreateFarmObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.CreateFarmObjectCmd])
+	commandRouter.Register(farmCommands.NewUpdateFarmObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.UpdateFarmObjectCommand])
+	commandRouter.Register(farmCommands.NewDeleteFarmObjectHandler(uowFactory), utils.DecodeJSON[farmCommands.DeleteFarmObjectCommand])
 
 	farmProvider := farmProjections.NewFarmProjectionsProvider(db)
+	queryRouter.Register(farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()), utils.DecodeJSON[farmQueries.GetCurrentFarmQuery])
 	queryRouter.Register(farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()), utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery])
 
 	return nil

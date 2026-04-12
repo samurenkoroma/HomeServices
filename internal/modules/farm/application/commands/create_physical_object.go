@@ -13,33 +13,27 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreatePhysicalObjectCmd struct {
-	Type    string          `json:"type" validate:"required,oneof=field greenhouse"`
+type CreateFarmObjectCmd struct {
+	Type    string          `json:"type" validate:"required,oneof=field greenhouse plot"`
 	Name    string          `json:"name" validate:"required"`
 	GeoJSON spatial.GeoJSON `json:"geometry" validate:"required"`
-	OwnerID string          `json:"ownerId" validate:"required"`
 
-	// Специфические поля
-	SoilType       *string  `json:"soilType,omitempty"`       // для field
-	GreenhouseType *string  `json:"greenhouseType,omitempty"` // для greenhouse
-	Width          *float64 `json:"width,omitempty"`          // для greenhouse
-	Height         *float64 `json:"height,omitempty"`         // для greenhouse
-	Length         *float64 `json:"length,omitempty"`         // для greenhouse
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 }
 type createPhysicalHandler struct {
 	uowFactory repository.Factory
 }
 
 func (h *createPhysicalHandler) Name() string {
-	return "CreatePhysicalObject"
+	return "CreateObject"
 }
 
-func NewCreatePhysicalObjectHandler(uowFactory repository.Factory) command.Handler {
+func NewCreateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &createPhysicalHandler{uowFactory: uowFactory}
 }
 
 func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(*CreatePhysicalObjectCmd)
+	c, ok := cmd.(*CreateFarmObjectCmd)
 	if !ok {
 		return command.ErrInvalidCommandType
 	}
@@ -56,17 +50,21 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		var newObj *physicalobject.PhysicalObject
+		length := c.Attributes["length"].(float64)
+		width := c.Attributes["width"].(float64)
+		dim := types.Dimension{
+			Length: length,
+			Width:  width,
+		}
+		area := spatial.CalculateAreaFromGeometry(uow.Tx(), c.GeoJSON)
 		// 1. Создаем поле
 		switch c.Type {
 		case "field":
-			area := spatial.CalculateAreaFromGeometry(uow.Tx(), c.GeoJSON)
-			newObj = physicalobject.NewField(c.Name, c.GeoJSON, area, *c.SoilType, uuid.New().String())
+			newObj = physicalobject.NewField(c.Name, c.GeoJSON, area, dim, "Чернозём", uuid.New().String())
+		case "plot":
+			newObj = physicalobject.NewPlot(c.Name, c.GeoJSON, area, dim, uuid.New().String())
 		case "greenhouse":
-			newObj = physicalobject.NewGreenhouse(c.Name, types.Dimension{
-				Length: c.Length,
-				Width:  c.Width,
-				Height: c.Height,
-			}, c.GeoJSON, "cntrkj", uuid.New().String())
+			newObj = physicalobject.NewGreenhouse(c.Name, dim, c.GeoJSON, "film", uuid.New().String())
 
 		}
 

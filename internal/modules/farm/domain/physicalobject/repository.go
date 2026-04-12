@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	FindByID(context.Context, PhysicalObjectID) (*PhysicalObject, error)
 	Save(context.Context, *PhysicalObject) error
+	Delete(context.Context, *PhysicalObject) error
 	FindAll(ctx context.Context) ([]*PhysicalObject, error)
 
 	FindInBounds(ctx context.Context, bounds spatial.BoundingBox) ([]*PhysicalObject, error)

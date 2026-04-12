@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
@@ -11,29 +12,30 @@ import (
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 )
 
-type UpdatePhysicalObjectCommand struct {
+type UpdateFarmObjectCommand struct {
 	ID          string                 `json:"id" validate:"required"`
 	Name        *string                `json:"name,omitempty"`
 	Description *string                `json:"description,omitempty"`
 	Status      *string                `json:"status,omitempty"` // active, inactive
 	Geometry    *spatial.GeoJSON       `json:"geometry,omitempty"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty"`
+	Schema      json.RawMessage        `json:"schema,omitempty"`
 }
 type updatePhysicalObjectHandler struct {
 	uowFactory repository.Factory
 }
 
 func (h *updatePhysicalObjectHandler) Name() string {
-	return "UpdatePhysicalObject"
+	return "UpdateObject"
 }
 
-func NewUpdatePhysicalObjectHandler(uowFactory repository.Factory) command.Handler {
+func NewUpdateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &updatePhysicalObjectHandler{uowFactory: uowFactory}
 }
 
 // Handle обрабатывает команду
 func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(UpdatePhysicalObjectCommand)
+	c, ok := cmd.(*UpdateFarmObjectCommand)
 	if !ok {
 		return command.ErrInvalidCommandType
 	}
@@ -93,6 +95,9 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error
 
 		if c.Attributes != nil {
 			obj.SetAttributes(c.Attributes)
+		}
+		if c.Schema != nil {
+			obj.SetSchema(c.Schema)
 		}
 
 		// Сохраняем

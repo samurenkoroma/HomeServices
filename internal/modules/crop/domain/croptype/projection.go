@@ -42,7 +42,7 @@ type CropTypeSimpleDTO struct {
 	Category         string `json:"category"`
 	Family           string `json:"family"`
 	Icon             string `json:"icon"`
-	ImageUrl         string `json:"imageURL"`
+	ImageUrl         string `json:"imageUrl"`
 	CountVarieties   int    `json:"countVarieties"`
 	YieldEstimateMin *int   `json:"yieldEstimateMin"`
 	YieldEstimateMax *int   `json:"yieldEstimateMax"`

@@ -22,6 +22,7 @@ func (r *physicalObjectRepository) FindAll(ctx context.Context) ([]*physicalobje
 	query := `
         SELECT id, name, area
         FROM public.farm_physical_objects
+        WHERE status = 'active'
         ORDER BY name
     `
 
@@ -49,6 +50,14 @@ func (r *physicalObjectRepository) FindAll(ctx context.Context) ([]*physicalobje
 	}
 
 	return fields, nil
+}
+
+func (r *physicalObjectRepository) Delete(ctx context.Context, obj *physicalobject.PhysicalObject) error {
+	query := `UPDATE farm_physical_objects  set delete_at = $2, status = $3 WHERE id = $1`
+	_, err := r.tx.ExecContext(ctx, query, obj.Id.String(), obj.DeletedAt, obj.Status)
+
+	return err
+
 }
 func (r *physicalObjectRepository) Save(ctx context.Context, obj *physicalobject.PhysicalObject) error {
 	query := `
@@ -134,6 +143,11 @@ func (r *physicalObjectRepository) FindByID(ctx context.Context, id physicalobje
 	var attrs physicalobject.Attributes
 	if err := json.Unmarshal(attrJSON, &attrs); err != nil {
 		return nil, err
+	}
+
+	// Инициализируем Metadata если nil
+	if attrs.Metadata == nil {
+		attrs.Metadata = make(map[string]interface{})
 	}
 
 	obj := &physicalobject.PhysicalObject{

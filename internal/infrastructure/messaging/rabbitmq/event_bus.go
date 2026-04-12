@@ -1,4 +1,4 @@
-package inmemory
+package rabbitmq
 
 import (
 	"context"

@@ -50,16 +50,7 @@
       "lucideIcon": "Wheat",
       "imageUrl": "https://images.unsplash.com/photo-1628135412095-3f48dcf2f5d5?w=400&h=300&fit=crop"
     },
-    {
-      "name": "Рис",
-      "scientific_name": "Oryza sativa",
-      "category": "Зерновые (Cereal)",
-      "description": "Рис посевной",
-      "is_perennial": false,
-      "family": "Злаковые (Poaceae)",
-      "lucideIcon": "Wheat",
-      "imageUrl": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop"
-    },
+
     {
       "name": "Гречиха",
       "scientific_name": "Fagopyrum esculentum",
@@ -110,26 +101,7 @@
       "lucideIcon": "Bean",
       "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
-    {
-      "name": "Соя",
-      "scientific_name": "Glycine max",
-      "category": "Зернобобовые (Grain)",
-      "description": "Соя культурная",
-      "is_perennial": false,
-      "family": "Бобовые (Fabaceae)",
-      "lucideIcon": "Bean",
-      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
-    },
-    {
-      "name": "Чечевица",
-      "scientific_name": "Lens culinaris",
-      "category": "Зернобобовые (Grain)",
-      "description": "Чечевица пищевая",
-      "is_perennial": false,
-      "family": "Бобовые (Fabaceae)",
-      "lucideIcon": "Bean",
-      "imageUrl": ""
-    },
+
     {
       "name": "Нут",
       "scientific_name": "Cicer arietinum",
@@ -150,16 +122,7 @@
       "lucideIcon": "Bean",
       "imageUrl": ""
     },
-    {
-      "name": "Люпин",
-      "scientific_name": "Lupinus",
-      "category": "Зернобобовые (Grain)",
-      "description": "Люпин узколистный",
-      "is_perennial": false,
-      "family": "Бобовые (Fabaceae)",
-      "lucideIcon": "Flower2",
-      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
-    },
+
     {
       "name": "Подсолнечник",
       "scientific_name": "Helianthus annuus",
@@ -200,56 +163,7 @@
       "lucideIcon": "Flower2",
       "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
     },
-    {
-      "name": "Рыжик",
-      "scientific_name": "Camelina sativa",
-      "category": "Масличные (Oilseed)",
-      "description": "Рыжик посевной",
-      "is_perennial": false,
-      "family": "Капустные (Brassicaceae)",
-      "lucideIcon": "Flower2",
-      "imageUrl": ""
-    },
-    {
-      "name": "Сафлор",
-      "scientific_name": "Carthamus tinctorius",
-      "category": "Масличные (Oilseed)",
-      "description": "Сафлор красильный",
-      "is_perennial": false,
-      "family": "Астровые (Asteraceae)",
-      "lucideIcon": "Flower2",
-      "imageUrl": ""
-    },
-    {
-      "name": "Лен-долгунец",
-      "scientific_name": "Linum usitatissimum",
-      "category": "Технические (Industrial)",
-      "description": "Лен-долгунец",
-      "is_perennial": false,
-      "family": "Льновые (Linaceae)",
-      "lucideIcon": "Flower2",
-      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
-    },
-    {
-      "name": "Конопля",
-      "scientific_name": "Cannabis sativa",
-      "category": "Технические (Industrial)",
-      "description": "Конопля техническая",
-      "is_perennial": false,
-      "family": "Коноплевые (Cannabaceae)",
-      "lucideIcon": "Leaf",
-      "imageUrl": "https://images.unsplash.com/photo-1597848212624-a19c35a2651d?w=400&h=300&fit=crop"
-    },
-    {
-      "name": "Хлопчатник",
-      "scientific_name": "Gossypium",
-      "category": "Технические (Industrial)",
-      "description": "Хлопчатник обыкновенный",
-      "is_perennial": false,
-      "family": "Мальвовые (Malvaceae)",
-      "lucideIcon": "Cloud",
-      "imageUrl": ""
-    },
+
     {
       "name": "Сахарная свекла",
       "scientific_name": "Beta vulgaris",
