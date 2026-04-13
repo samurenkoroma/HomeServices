@@ -48,6 +48,22 @@ type SeedingRate struct {
 	SafetyFactor    float64 `json:"safety_factor"`    // страховой коэффициент (1.1-1.3)
 }
 
+type WaterRequirement struct {
+	DailyNeedMin   float64  `json:"daily_need_min"`  // л/м² в день (минимально)
+	DailyNeedOpt   float64  `json:"daily_need_opt"`  // л/м² в день (оптимально)
+	CriticalPhases []string `json:"critical_phases"` // критические BBCH коды
+}
+
+// LightRequirement потребность в освещении
+type LightRequirement struct {
+	PPFDMin         int      `json:"ppfd_min"`         // μmol/m²/s (минимальный фотосинтетический поток)
+	PPFDOpt         int      `json:"ppfd_opt"`         // μmol/m²/s (оптимальный)
+	DayLengthMin    float64  `json:"day_length_min"`   // часов (минимальный световой день)
+	DayLengthOpt    float64  `json:"day_length_opt"`   // часов (оптимальный световой день)
+	PhotoperiodType string   `json:"photoperiod_type"` // "short_day", "long_day", "day_neutral"
+	CriticalPhases  []string `json:"critical_phases"`  // критические BBCH коды для света
+}
+
 // CalculateSeedsNeeded рассчитывает количество семян на площадь
 func (r SeedingRate) CalculateSeedsNeeded(areaM2 float64) (seeds int, weightKg float64) {
 	// Количество растений на 1 м²
@@ -82,7 +98,10 @@ type Variety struct {
 
 	// Фенология (GDD требования)
 	PhenophaseGDD []PhenophaseGDD `json:"phenophaseGDD"`
-
+	// Водные требования
+	WaterRequirement WaterRequirement `json:"water_requirement"`
+	// Световые требования
+	LightRequirement LightRequirement `json:"light_requirement"`
 	// Нормы высева (по способам выращивания)
 	SeedingRates map[string]SeedingRate `json:"seedingRates"` // key: "open_ground", "greenhouse"
 

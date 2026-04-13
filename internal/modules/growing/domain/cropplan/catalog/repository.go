@@ -20,9 +20,23 @@ type Repository interface {
 	SaveVariety(ctx context.Context, speciesKey string, variety *Variety) error
 	DeleteVariety(ctx context.Context, speciesKey, varietyID string) error
 
-	// Stage templates
+	// GetStageTemplates возвращает шаблоны этапов для вида
 	GetStageTemplates(ctx context.Context, speciesKey string) ([]StageTemplate, error)
+
+	// GetStageTemplatesByBBCH возвращает шаблоны этапов для вида в определенном BBCH диапазоне
+	GetStageTemplatesByBBCH(ctx context.Context, speciesKey string, bbchCode int) ([]StageTemplate, error)
+
+	// SaveStageTemplate сохраняет шаблон этапа
 	SaveStageTemplate(ctx context.Context, speciesKey string, template *StageTemplate) error
+
+	// SaveStageTemplatesBatch массово сохраняет шаблоны этапов
+	SaveStageTemplatesBatch(ctx context.Context, speciesKey string, templates []StageTemplate) error
+
+	// DeleteStageTemplate удаляет шаблон этапа
+	DeleteStageTemplate(ctx context.Context, speciesKey string, templateType string, displayOrder int) error
+
+	// DeleteAllStageTemplates удаляет все шаблоны этапов для вида
+	DeleteAllStageTemplates(ctx context.Context, speciesKey string) error
 }
 
 // VarietyFilter фильтр для поиска сортов

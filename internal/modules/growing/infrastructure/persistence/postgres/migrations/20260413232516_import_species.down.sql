@@ -1,0 +1,1 @@
+TRUNCATE growing_species CASCADE

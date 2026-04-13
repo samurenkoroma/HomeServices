@@ -24,7 +24,7 @@ func NewGetPlanStatisticsHandler(PlanRepo cropplan.Repository, TaskRepo task.Rep
 
 // GetPlanStatisticsQuery параметры запроса
 type GetPlanStatisticsQuery struct {
-	PlanID string `json:"plan_id"`
+	PlanID string `json:"planId"`
 }
 
 func (h *getPlanStatisticsHandler) Name() string {

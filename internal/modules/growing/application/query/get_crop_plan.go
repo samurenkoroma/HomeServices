@@ -9,7 +9,7 @@ import (
 )
 
 type GetCropPlanQuery struct {
-	PlanID string `json:"plan_id"`
+	PlanID string `json:"planId"`
 }
 type getCropPlanHandler struct {
 	PlanRepo cropplan.Repository

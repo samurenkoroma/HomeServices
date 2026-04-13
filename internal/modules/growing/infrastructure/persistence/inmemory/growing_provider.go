@@ -7,11 +7,13 @@ import (
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/providers/weather"
 	"sync"
 )
 
 type GrowingProvider struct {
+	tx               *sql.Tx
 	tasks            task.Repository
 	cropplans        cropplan.Repository
 	catalogs         catalog.Repository
@@ -30,10 +32,10 @@ func (p *GrowingProvider) ProviderName() string {
 }
 
 func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
-	once.Do(func() {
-		instance = &GrowingProvider{}
-	})
-	return instance
+
+	return &GrowingProvider{
+		tx: tx,
+	}
 }
 
 func (p *GrowingProvider) PhenologyService() phenology.PhenologyService {
@@ -57,7 +59,7 @@ func (p *GrowingProvider) CropPlans() cropplan.Repository {
 
 func (p *GrowingProvider) Catalogs() catalog.Repository {
 	if p.catalogs == nil {
-		p.catalogs = NewInMemoryCatalogRepository()
+		p.catalogs = postgres.NewCatalogRepository(p.tx)
 	}
 	return p.catalogs
 }

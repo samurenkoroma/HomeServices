@@ -8,33 +8,33 @@ import (
 // CropPlanDTO ответ для запросов
 type CropPlanDTO struct {
 	ID          string `json:"id"`
-	BedID       string `json:"bed_id"`
+	BedID       string `json:"bedId"`
 	Name        string `json:"name"`
-	VarietyID   string `json:"variety_id"`
-	VarietyName string `json:"variety_name"`
-	CropName    string `json:"crop_name"`
+	VarietyID   string `json:"varietyId"`
+	VarietyName string `json:"varietyName"`
+	CropName    string `json:"cropName"`
 	Status      string `json:"status"`
-	StatusText  string `json:"status_text"`
+	StatusText  string `json:"statusText"`
 
-	SeasonStart  time.Time `json:"season_start"`
-	SeasonEnd    time.Time `json:"season_end"`
-	PlantingDate time.Time `json:"planting_date"`
+	SeasonStart  time.Time `json:"seasonStart"`
+	SeasonEnd    time.Time `json:"seasonEnd"`
+	PlantingDate time.Time `json:"plantingDate"`
 
-	SeedsPlanted  int     `json:"seeds_planted"`
-	ExpectedYield float64 `json:"expected_yield"`
-	HarvestKg     float64 `json:"harvest_kg"`
+	SeedsPlanted  int     `json:"seedsPlanted"`
+	ExpectedYield float64 `json:"expectedYield"`
+	HarvestKg     float64 `json:"harvestKg"`
 
 	Stages []StageDTO `json:"stages"`
 
 	Progress     float64   `json:"progress"` // % выполнения
-	CurrentStage *StageDTO `json:"current_stage,omitempty"`
+	CurrentStage *StageDTO `json:"currentStage,omitempty"`
 
-	AssignedTo   string `json:"assigned_to"`
-	AssignedName string `json:"assigned_name"`
+	AssignedTo   string `json:"assignedTo"`
+	AssignedName string `json:"assignedName"`
 
-	CreatedAt   time.Time  `json:"created_at"`
-	StartedAt   *time.Time `json:"started_at,omitempty"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	StartedAt   *time.Time `json:"startedAt,omitempty"`
+	CompletedAt *time.Time `json:"completedAt,omitempty"`
 }
 
 // StageDTO этап в ответе
@@ -44,13 +44,13 @@ type StageDTO struct {
 	Type         string     `json:"type"`
 	Description  string     `json:"description"`
 	Status       string     `json:"status"`
-	StatusText   string     `json:"status_text"`
+	StatusText   string     `json:"statusText"`
 	Order        int        `json:"order"`
-	BBCHStart    int        `json:"bbch_start"`
-	BBCHEnd      int        `json:"bbch_end"`
-	StartDate    *time.Time `json:"start_date,omitempty"`
-	EndDate      *time.Time `json:"end_date,omitempty"`
-	IsApplicable bool       `json:"is_applicable"` // можно ли выполнять сейчас
+	BBCHStart    int        `json:"bbchStart"`
+	BBCHEnd      int        `json:"bbchEnd"`
+	StartDate    *time.Time `json:"startDate,omitempty"`
+	EndDate      *time.Time `json:"endDate,omitempty"`
+	IsApplicable bool       `json:"IsApplicable"` // можно ли выполнять сейчас
 }
 
 // ToStageDTO конвертирует доменный Stage в DTO

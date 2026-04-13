@@ -38,13 +38,13 @@ type SearchVarietiesQuery struct {
 type VarietyDTO struct {
 	ID                 string            `json:"id"`
 	Name               string            `json:"name"`
-	SpeciesKey         string            `json:"species_key"`
-	SpeciesName        string            `json:"species_name"`
-	DaysToMaturity     int               `json:"days_to_maturity"`
-	YieldPotential     float64           `json:"yield_potential"`
-	PlantHeight        float64           `json:"plant_height"`
-	RecommendedSeasons []string          `json:"recommended_seasons"`
-	GrowingTypes       []string          `json:"growing_types"`
+	SpeciesKey         string            `json:"speciesKey"`
+	SpeciesName        string            `json:"speciesName"`
+	DaysToMaturity     int               `json:"daysToMaturity"`
+	YieldPotential     float64           `json:"yieldPotential"`
+	PlantHeight        float64           `json:"plantHeight"`
+	RecommendedSeasons []string          `json:"recommendedSeasons"`
+	GrowingTypes       []string          `json:"growingTypes"`
 	Characteristics    map[string]string `json:"characteristics"`
 	Description        string            `json:"description"`
 }

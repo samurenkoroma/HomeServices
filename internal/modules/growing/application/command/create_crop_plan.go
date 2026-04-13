@@ -28,16 +28,17 @@ func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
 
 // CreateCropPlanCmd структура команды
 type CreateCropPlanCmd struct {
-	BedID        string    `json:"bed_id"`
+	BedID        string    `json:"bedId"`
 	Name         string    `json:"name"`
-	VarietyID    string    `json:"variety_id"`
-	SeasonStart  time.Time `json:"season_start"`
-	SeasonEnd    time.Time `json:"season_end"`
-	PlantingDate time.Time `json:"planting_date"`
+	VarietyID    string    `json:"varietyId"`
+	SpeciesKey   string    `json:"speciesKey"`
+	SeasonStart  time.Time `json:"seasonStart"`
+	SeasonEnd    time.Time `json:"seasonEnd"`
+	PlantingDate time.Time `json:"plantingDate"`
 	Latitude     float64   `json:"latitude"`
 	Longitude    float64   `json:"longitude"`
-	AssignedTo   string    `json:"assigned_to"`
-	AssignedName string    `json:"assigned_name"`
+	AssignedTo   string    `json:"assignedTo"`
+	AssignedName string    `json:"assignedName"`
 }
 
 // Handle выполняет команду
@@ -59,7 +60,7 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		// Получаем сорт из каталога
-		variety, err := growingProvider.Catalogs().GetVariety(ctx, "", c.VarietyID)
+		variety, err := growingProvider.Catalogs().GetVariety(ctx, c.SpeciesKey, c.VarietyID)
 		if err != nil {
 			return fmt.Errorf("variety not found: %w", err)
 		}

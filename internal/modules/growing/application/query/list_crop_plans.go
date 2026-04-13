@@ -101,11 +101,11 @@ func (h *listCropPlansHandler) Handle(ctx context.Context, query any) (any, erro
 	for i, plan := range paginated {
 		plansDTO[i] = toCropPlanDTO(plan)
 	}
-
-	return &ListCropPlansResponse{
-		Total: total,
-		Plans: plansDTO,
-	}, nil
+	return plansDTO, nil
+	//return &ListCropPlansResponse{
+	//	Total: total,
+	//	Plans: plansDTO,
+	//}, nil
 }
 
 // getAllPlans временный метод для получения всех планов

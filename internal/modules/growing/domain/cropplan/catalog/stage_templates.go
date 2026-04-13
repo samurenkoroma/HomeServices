@@ -15,13 +15,14 @@ const (
 
 // StageTemplate шаблон этапа для культуры
 type StageTemplate struct {
-	Type        StageType `json:"type"`
-	Name        string    `json:"name"`
-	BBCHStart   int       `json:"bbch_start"`
-	BBCHEnd     int       `json:"bbch_end"`
-	Description string    `json:"description"`
-	Priority    string    `json:"priority"`
-	IsRequired  bool      `json:"is_required"`
+	Type         StageType `json:"type"`
+	Name         string    `json:"name"`
+	BBCHStart    int       `json:"bbch_start"`
+	BBCHEnd      int       `json:"bbch_end"`
+	Description  string    `json:"description"`
+	Priority     string    `json:"priority"`
+	IsRequired   bool      `json:"is_required"`
+	DisplayOrder int       `json:"display_order"`
 }
 
 // StageTemplatesBySpecies шаблоны этапов по видам культур

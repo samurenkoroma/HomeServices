@@ -1,0 +1,908 @@
+{
+  "species": [
+    {"key": "tomato", "name": "Томат", "family": "nightshade", "category": "Овощные", "image_url": "https://images.example.com/crops/tomato.jpg", "description": "Овощная культура семейства пасленовых."},
+    {"key": "cucumber", "name": "Огурец", "family": "cucurbits", "category": "Овощные", "image_url": "https://images.example.com/crops/cucumber.jpg", "description": "Овощная культура семейства тыквенных."},
+    {"key": "cabbage", "name": "Капуста", "family": "brassicaceae", "category": "Овощные", "image_url": "https://images.example.com/crops/cabbage.jpg", "description": "Овощная культура семейства капустных."},
+    {"key": "potato", "name": "Картофель", "family": "nightshade", "category": "Овощные", "image_url": "https://images.example.com/crops/potato.jpg", "description": "Клубнеплодная культура."},
+    {"key": "corn", "name": "Кукуруза", "family": "poaceae", "category": "Зерновые", "image_url": "https://images.example.com/crops/corn.jpg", "description": "Зерновая культура."},
+    {"key": "radish", "name": "Редис", "family": "brassicaceae", "category": "Овощные", "image_url": "https://images.example.com/crops/radish.jpg", "description": "Корнеплодная культура."},
+    {"key": "onion", "name": "Лук", "family": "amaryllidaceae", "category": "Овощные", "image_url": "https://images.example.com/crops/onion.jpg", "description": "Луковичная культура."},
+    {"key": "garlic", "name": "Чеснок", "family": "amaryllidaceae", "category": "Овощные", "image_url": "https://images.example.com/crops/garlic.jpg", "description": "Луковичная культура."},
+    {"key": "dill", "name": "Укроп", "family": "apiaceae", "category": "Зеленные", "image_url": "https://images.example.com/crops/dill.jpg", "description": "Пряная зелень."},
+    {"key": "parsley", "name": "Петрушка", "family": "apiaceae", "category": "Зеленные", "image_url": "https://images.example.com/crops/parsley.jpg", "description": "Пряная зелень."},
+    {"key": "lettuce", "name": "Салат", "family": "asteraceae", "category": "Зеленные", "image_url": "https://images.example.com/crops/lettuce.jpg", "description": "Листовая культура."},
+    {"key": "basil", "name": "Базилик", "family": "lamiaceae", "category": "Зеленные", "image_url": "https://images.example.com/crops/basil.jpg", "description": "Пряная культура."},
+    {"key": "barley", "name": "Ячмень", "family": "poaceae", "category": "Зерновые", "image_url": "https://images.example.com/crops/barley.jpg", "description": "Зерновая культура."},
+    {"key": "eggplant", "name": "Баклажан", "family": "nightshade", "category": "Овощные", "image_url": "https://images.example.com/crops/eggplant.jpg", "description": "Овощная культура."},
+    {"key": "pea", "name": "Горох", "family": "fabaceae", "category": "Бобовые", "image_url": "https://images.example.com/crops/pea.jpg", "description": "Бобовая культура."},
+    {"key": "rapeseed", "name": "Рапс", "family": "brassicaceae", "category": "Масличные", "image_url": "https://images.example.com/crops/rapeseed.jpg", "description": "Масличная культура."},
+    {"key": "soybean", "name": "Соя", "family": "fabaceae", "category": "Бобовые", "image_url": "https://images.example.com/crops/soybean.jpg", "description": "Бобовая культура."},
+    {"key": "sunflower", "name": "Подсолнечник", "family": "asteraceae", "category": "Масличные", "image_url": "https://images.example.com/crops/sunflower.jpg", "description": "Масличная культура."},
+    {"key": "wheat", "name": "Пшеница", "family": "poaceae", "category": "Зерновые", "image_url": "https://images.example.com/crops/wheat.jpg", "description": "Зерновая культура."}
+  ],
+
+  "varieties": {
+    "tomato": [
+      {
+        "id": "incas_f1", "name": "Инкас F1", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 30.0, "days_to_maturity": 95, "yield_potential": 12.0, "plant_height": 1.2,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "180-200g", "fruit_color": "красный", "type": "индетерминантный", "use": "салатный"},
+        "description": "Раннеспелый гибрид для теплиц и открытого грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 100}, {"code": "BBCH-19", "gdd_required": 280},
+          {"code": "BBCH-51", "gdd_required": 480}, {"code": "BBCH-61", "gdd_required": 650, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 780, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 950},
+          {"code": "BBCH-89", "gdd_required": 1100}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 4.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.4, "sowing_depth": 1.5, "germination_rate": 90, "safety_factor": 1.15}}
+      },
+      {
+        "id": "rio_grande", "name": "Рио-Гранде", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 32.0, "days_to_maturity": 110, "yield_potential": 10.0, "plant_height": 0.8,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_weight": "100-120g", "fruit_color": "красный", "type": "детерминантный", "use": "для переработки"},
+        "description": "Засухоустойчивый сорт для открытого грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 110}, {"code": "BBCH-19", "gdd_required": 320},
+          {"code": "BBCH-51", "gdd_required": 550}, {"code": "BBCH-61", "gdd_required": 730, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 880, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1100},
+          {"code": "BBCH-89", "gdd_required": 1300}
+        ],
+        "water_requirement": {"daily_need_min": 1.5, "daily_need_opt": 3.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 35000, "lux_max": 55000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.35, "sowing_depth": 2.0, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "bella_rosa_f1", "name": "Белла Роса F1", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 8.0, "max_temperature": 28.0, "days_to_maturity": 85, "yield_potential": 9.0, "plant_height": 1.0,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "80-100g", "fruit_color": "розовый", "type": "детерминантный", "use": "салатный", "cold_resistant": "да"},
+        "description": "Холодостойкий гибрид для раннего выращивания",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 90}, {"code": "BBCH-19", "gdd_required": 250},
+          {"code": "BBCH-51", "gdd_required": 430}, {"code": "BBCH-61", "gdd_required": 580, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 700, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 880},
+          {"code": "BBCH-89", "gdd_required": 1050}
+        ],
+        "water_requirement": {"daily_need_min": 1.8, "daily_need_opt": 3.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.4, "sowing_depth": 1.5, "germination_rate": 88, "safety_factor": 1.15}}
+      },
+      {
+        "id": "solerossa_f1", "name": "Солероссо F1", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 32.0, "days_to_maturity": 100, "yield_potential": 11.0, "plant_height": 1.1,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_weight": "150-170g", "fruit_color": "красный", "type": "индетерминантный", "salt_resistant": "да"},
+        "description": "Солеустойчивый гибрид для засоленных почв",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 105}, {"code": "BBCH-19", "gdd_required": 300},
+          {"code": "BBCH-51", "gdd_required": 520}, {"code": "BBCH-61", "gdd_required": 690, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 830, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1050},
+          {"code": "BBCH-89", "gdd_required": 1250}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 3.8, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 32000, "lux_max": 52000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.45, "sowing_depth": 1.8, "germination_rate": 87, "safety_factor": 1.18}}
+      },
+      {
+        "id": "macan_f1", "name": "Макан F1", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 30.0, "days_to_maturity": 115, "yield_potential": 14.0, "plant_height": 1.8,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_weight": "250-300g", "fruit_color": "красный", "type": "индетерминантный", "use": "салатный"},
+        "description": "Крупноплодный гибрид для защищенного грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 115}, {"code": "BBCH-19", "gdd_required": 330},
+          {"code": "BBCH-51", "gdd_required": 570}, {"code": "BBCH-61", "gdd_required": 760, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 910, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1150},
+          {"code": "BBCH-89", "gdd_required": 1380}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 35000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.9, "plant_spacing": 0.6, "sowing_depth": 1.2, "germination_rate": 91, "safety_factor": 1.1}}
+      },
+      {
+        "id": "yamamoto", "name": "Ямамото", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 28.0, "days_to_maturity": 108, "yield_potential": 13.0, "plant_height": 1.6,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_weight": "200-250g", "fruit_color": "темно-красный", "type": "индетерминантный", "origin": "Япония"},
+        "description": "Японский сорт с высокими вкусовыми качествами",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 108}, {"code": "BBCH-19", "gdd_required": 310},
+          {"code": "BBCH-51", "gdd_required": 540}, {"code": "BBCH-61", "gdd_required": 720, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 860, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1080},
+          {"code": "BBCH-89", "gdd_required": 1300}
+        ],
+        "water_requirement": {"daily_need_min": 2.2, "daily_need_opt": 4.2, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 48000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.8, "plant_spacing": 0.55, "sowing_depth": 1.2, "germination_rate": 89, "safety_factor": 1.12}}
+      },
+      {
+        "id": "bull_heart", "name": "Бычье сердце", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 30.0, "days_to_maturity": 120, "yield_potential": 8.5, "plant_height": 1.5,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "300-500g", "fruit_color": "малиновый", "fruit_shape": "сердцевидный", "type": "индетерминантный", "use": "салатный"},
+        "description": "Крупноплодный салатный сорт",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 120}, {"code": "BBCH-19", "gdd_required": 350},
+          {"code": "BBCH-51", "gdd_required": 600}, {"code": "BBCH-61", "gdd_required": 800, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 950, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1200},
+          {"code": "BBCH-89", "gdd_required": 1400}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 4.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.5, "sowing_depth": 2.0, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "persimmon", "name": "Хурма", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 30.0, "days_to_maturity": 115, "yield_potential": 7.0, "plant_height": 1.2,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "150-200g", "fruit_color": "оранжевый", "type": "детерминантный", "use": "салатный"},
+        "description": "Сорт с оранжевыми плодами",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 112}, {"code": "BBCH-19", "gdd_required": 325},
+          {"code": "BBCH-51", "gdd_required": 560}, {"code": "BBCH-61", "gdd_required": 745, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 890, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1120},
+          {"code": "BBCH-89", "gdd_required": 1330}
+        ],
+        "water_requirement": {"daily_need_min": 1.8, "daily_need_opt": 3.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 28000, "lux_max": 48000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.5, "sowing_depth": 2.0, "germination_rate": 84, "safety_factor": 1.22}}
+      },
+      {
+        "id": "black_bunch", "name": "Черная гроздь", "species_key": "tomato", "species_name": "Томат",
+        "base_temperature": 10.0, "max_temperature": 30.0, "days_to_maturity": 95, "yield_potential": 6.0, "plant_height": 1.5,
+        "recommended_seasons": ["spring", "summer", "autumn"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_weight": "30-40g", "fruit_color": "черно-коричневый", "type": "индетерминантный", "use": "черри"},
+        "description": "Черри с необычным цветом и вкусом",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 95}, {"code": "BBCH-19", "gdd_required": 270},
+          {"code": "BBCH-51", "gdd_required": 460}, {"code": "BBCH-61", "gdd_required": 620, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 750, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 950},
+          {"code": "BBCH-89", "gdd_required": 1120}
+        ],
+        "water_requirement": {"daily_need_min": 1.5, "daily_need_opt": 3.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.7, "plant_spacing": 0.4, "sowing_depth": 1.2, "germination_rate": 88, "safety_factor": 1.13}}
+      }
+    ],
+    "cucumber": [
+      {
+        "id": "rodnichok_f1", "name": "Родничок F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 48, "yield_potential": 10.0, "plant_height": 1.8,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_length": "8-10cm", "fruit_color": "зеленый с полосками", "type": "пчелоопыляемый", "use": "засолочный"},
+        "description": "Пчелоопыляемый сорт для открытого грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 90}, {"code": "BBCH-19", "gdd_required": 200},
+          {"code": "BBCH-51", "gdd_required": 300}, {"code": "BBCH-61", "gdd_required": 380, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 480, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 650}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.3, "sowing_depth": 2.0, "germination_rate": 85, "safety_factor": 1.15}}
+      },
+      {
+        "id": "bochkovoi_f1", "name": "Бочковой F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 50, "yield_potential": 12.0, "plant_height": 2.0,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_length": "10-12cm", "fruit_color": "темно-зеленый", "type": "партенокарпический", "use": "засолочный"},
+        "description": "Бочкового типа для засолки",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 92}, {"code": "BBCH-19", "gdd_required": 205},
+          {"code": "BBCH-51", "gdd_required": 310}, {"code": "BBCH-61", "gdd_required": 390, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 490, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 660}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.35, "sowing_depth": 2.0, "germination_rate": 86, "safety_factor": 1.14}}
+      },
+      {
+        "id": "nezhinsky", "name": "Нежинский", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 55, "yield_potential": 9.0, "plant_height": 1.5,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_length": "10-14cm", "fruit_color": "зеленый", "type": "пчелоопыляемый", "use": "универсальный"},
+        "description": "Классический сорт для открытого грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 95}, {"code": "BBCH-19", "gdd_required": 210},
+          {"code": "BBCH-51", "gdd_required": 320}, {"code": "BBCH-61", "gdd_required": 400, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 500, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 680}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.3, "sowing_depth": 2.5, "germination_rate": 84, "safety_factor": 1.16}}
+      },
+      {
+        "id": "crispina_f1", "name": "Криспина F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 42, "yield_potential": 14.0, "plant_height": 2.2,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_length": "12-14cm", "fruit_color": "темно-зеленый", "type": "партенокарпический", "use": "салатный"},
+        "description": "Ранний гибрид для теплиц",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 85}, {"code": "BBCH-19", "gdd_required": 190},
+          {"code": "BBCH-51", "gdd_required": 280}, {"code": "BBCH-61", "gdd_required": 360, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 450, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 600}
+        ],
+        "water_requirement": {"daily_need_min": 3.5, "daily_need_opt": 5.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 28000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.9, "plant_spacing": 0.4, "sowing_depth": 1.5, "germination_rate": 92, "safety_factor": 1.08}}
+      },
+      {
+        "id": "ecole_f1", "name": "Эколь F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 45, "yield_potential": 11.0, "plant_height": 1.9,
+        "recommended_seasons": ["spring", "summer", "autumn"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_length": "14-16cm", "fruit_color": "зеленый", "type": "партенокарпический", "use": "салатный"},
+        "description": "Урожайный гибрид для продленного оборота",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 88}, {"code": "BBCH-19", "gdd_required": 195},
+          {"code": "BBCH-51", "gdd_required": 290}, {"code": "BBCH-61", "gdd_required": 370, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 465, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 630}
+        ],
+        "water_requirement": {"daily_need_min": 3.2, "daily_need_opt": 5.2, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 26000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.8, "plant_spacing": 0.45, "sowing_depth": 1.5, "germination_rate": 91, "safety_factor": 1.09}}
+      },
+      {
+        "id": "mertus_f1", "name": "Мертус F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 47, "yield_potential": 13.0, "plant_height": 2.0,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_length": "10-12cm", "fruit_color": "ярко-зеленый", "type": "партенокарпический", "use": "универсальный"},
+        "description": "Гладкоплодный гибрид для теплиц",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 90}, {"code": "BBCH-19", "gdd_required": 200},
+          {"code": "BBCH-51", "gdd_required": 300}, {"code": "BBCH-61", "gdd_required": 380, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 475, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 645}
+        ],
+        "water_requirement": {"daily_need_min": 3.3, "daily_need_opt": 5.3, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 27000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.85, "plant_spacing": 0.4, "sowing_depth": 1.5, "germination_rate": 90, "safety_factor": 1.1}}
+      },
+      {
+        "id": "madrilene_f1", "name": "Мадрилене F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 44, "yield_potential": 12.5, "plant_height": 2.1,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["greenhouse"],
+        "characteristics": {"fruit_length": "16-18cm", "fruit_color": "темно-зеленый", "type": "партенокарпический", "use": "салатный"},
+        "description": "Длинноплодный гибрид для салатов",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 87}, {"code": "BBCH-19", "gdd_required": 193},
+          {"code": "BBCH-51", "gdd_required": 285}, {"code": "BBCH-61", "gdd_required": 365, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 460, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 620}
+        ],
+        "water_requirement": {"daily_need_min": 3.4, "daily_need_opt": 5.4, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 26000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"greenhouse": {"row_spacing": 0.9, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 89, "safety_factor": 1.11}}
+      },
+      {
+        "id": "hector_f1", "name": "Гектор F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 40, "yield_potential": 8.0, "plant_height": 1.2,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_length": "6-8cm", "fruit_color": "зеленый", "type": "партенокарпический", "use": "засолочный"},
+        "description": "Ультраранний гибрид для открытого грунта",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 80}, {"code": "BBCH-19", "gdd_required": 180},
+          {"code": "BBCH-51", "gdd_required": 270}, {"code": "BBCH-61", "gdd_required": 340, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 430, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 580}
+        ],
+        "water_requirement": {"daily_need_min": 2.8, "daily_need_opt": 4.8, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 24000, "lux_max": 42000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.25, "sowing_depth": 2.0, "germination_rate": 87, "safety_factor": 1.17}}
+      },
+      {
+        "id": "ajax_f1", "name": "Аякс F1", "species_key": "cucumber", "species_name": "Огурец",
+        "base_temperature": 12.0, "max_temperature": 35.0, "days_to_maturity": 46, "yield_potential": 10.5, "plant_height": 1.7,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"fruit_length": "10-12cm", "fruit_color": "зеленый", "type": "пчелоопыляемый", "use": "универсальный"},
+        "description": "Устойчивый к стрессам гибрид",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 91}, {"code": "BBCH-19", "gdd_required": 202},
+          {"code": "BBCH-51", "gdd_required": 305}, {"code": "BBCH-61", "gdd_required": 385, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 485, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 655}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 12, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.35, "sowing_depth": 2.0, "germination_rate": 85, "safety_factor": 1.15}}
+      }
+    ],
+    "cabbage": [
+      {
+        "id": "slava_1305", "name": "Слава 1305", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 110, "yield_potential": 7.0, "plant_height": 0.4,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "2-3kg", "head_color": "светло-зеленый", "use": "свежий, квашение"},
+        "description": "Классический среднеспелый сорт для квашения",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 150}, {"code": "BBCH-19", "gdd_required": 400},
+          {"code": "BBCH-51", "gdd_required": 700}, {"code": "BBCH-61", "gdd_required": 900, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1100, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1400}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 80, "safety_factor": 1.25}}
+      },
+      {
+        "id": "megaton_f1", "name": "Мегатон F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 120, "yield_potential": 12.0, "plant_height": 0.45,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "4-6kg", "head_color": "зеленый", "use": "свежий, хранение"},
+        "description": "Крупноплодный гибрид для длительного хранения",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 160}, {"code": "BBCH-19", "gdd_required": 430},
+          {"code": "BBCH-51", "gdd_required": 750}, {"code": "BBCH-61", "gdd_required": 950, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1150, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1500}
+        ],
+        "water_requirement": {"daily_need_min": 3.5, "daily_need_opt": 5.5, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 22000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.6, "sowing_depth": 1.5, "germination_rate": 82, "safety_factor": 1.22}}
+      },
+      {
+        "id": "podarok", "name": "Подарок", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 115, "yield_potential": 8.5, "plant_height": 0.4,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "3-4kg", "head_color": "светло-зеленый", "use": "универсальный"},
+        "description": "Хорошо хранится, устойчив к растрескиванию",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 155}, {"code": "BBCH-19", "gdd_required": 420},
+          {"code": "BBCH-51", "gdd_required": 730}, {"code": "BBCH-61", "gdd_required": 930, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1130, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1450}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 81, "safety_factor": 1.23}}
+      },
+      {
+        "id": "menza_f1", "name": "Менза F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 125, "yield_potential": 11.0, "plant_height": 0.5,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "4-5kg", "head_color": "сине-зеленый", "use": "свежий, квашение"},
+        "description": "Голландский гибрид с высокими вкусовыми качествами",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 165}, {"code": "BBCH-19", "gdd_required": 440},
+          {"code": "BBCH-51", "gdd_required": 770}, {"code": "BBCH-61", "gdd_required": 970, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1170, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1520}
+        ],
+        "water_requirement": {"daily_need_min": 3.2, "daily_need_opt": 5.2, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 21000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.55, "sowing_depth": 1.5, "germination_rate": 83, "safety_factor": 1.2}}
+      },
+      {
+        "id": "krautman_amager", "name": "Краутман Амагер", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 130, "yield_potential": 9.0, "plant_height": 0.4,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "3-4kg", "head_color": "зеленый", "use": "квашение"},
+        "description": "Позднеспелый сорт для квашения",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 170}, {"code": "BBCH-19", "gdd_required": 450},
+          {"code": "BBCH-51", "gdd_required": 800}, {"code": "BBCH-61", "gdd_required": 1000, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1200, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1550}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 80, "safety_factor": 1.25}}
+      },
+      {
+        "id": "agressor_f1", "name": "Агрессор F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 27.0, "days_to_maturity": 105, "yield_potential": 10.0, "plant_height": 0.4,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "3-4kg", "head_color": "зеленый", "use": "универсальный"},
+        "description": "Жаростойкий гибрид для южных регионов",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 145}, {"code": "BBCH-19", "gdd_required": 390},
+          {"code": "BBCH-51", "gdd_required": 680}, {"code": "BBCH-61", "gdd_required": 880, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1080, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1380}
+        ],
+        "water_requirement": {"daily_need_min": 2.8, "daily_need_opt": 4.8, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.65, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 84, "safety_factor": 1.19}}
+      },
+      {
+        "id": "atria_f1", "name": "Атрия F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 108, "yield_potential": 11.5, "plant_height": 0.45,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "3-5kg", "head_color": "темно-зеленый", "use": "свежий"},
+        "description": "Гибрид для промышленного выращивания",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 148}, {"code": "BBCH-19", "gdd_required": 395},
+          {"code": "BBCH-51", "gdd_required": 690}, {"code": "BBCH-61", "gdd_required": 890, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1090, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1420}
+        ],
+        "water_requirement": {"daily_need_min": 3.1, "daily_need_opt": 5.1, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 21000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.65, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 85, "safety_factor": 1.18}}
+      },
+      {
+        "id": "belosnezhka", "name": "Белоснежка", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 100, "yield_potential": 6.5, "plant_height": 0.35,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "1-2kg", "head_color": "белый", "use": "салатный"},
+        "description": "Раннеспелая капуста для салатов",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 140}, {"code": "BBCH-19", "gdd_required": 370},
+          {"code": "BBCH-51", "gdd_required": 650}, {"code": "BBCH-61", "gdd_required": 850, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1050, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1350}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 18000, "lux_max": 30000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.5, "plant_spacing": 0.4, "sowing_depth": 1.2, "germination_rate": 83, "safety_factor": 1.2}}
+      },
+      {
+        "id": "storidor_f1", "name": "Сторидор F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 112, "yield_potential": 9.5, "plant_height": 0.42,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "3-4kg", "head_color": "зеленый", "use": "хранение"},
+        "description": "Гибрид для длительного хранения",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 152}, {"code": "BBCH-19", "gdd_required": 410},
+          {"code": "BBCH-51", "gdd_required": 720}, {"code": "BBCH-61", "gdd_required": 920, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1120, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1440}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.5, "sowing_depth": 1.5, "germination_rate": 82, "safety_factor": 1.22}}
+      },
+      {
+        "id": "rinda_f1", "name": "Ринда F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 100, "yield_potential": 8.0, "plant_height": 0.4,
+        "recommended_seasons": ["spring", "summer", "autumn"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "2-3kg", "head_color": "зеленый", "use": "универсальный"},
+        "description": "Популярный гибрид для свежего потребления",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 142}, {"code": "BBCH-19", "gdd_required": 380},
+          {"code": "BBCH-51", "gdd_required": 660}, {"code": "BBCH-61", "gdd_required": 860, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1060, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1360}
+        ],
+        "water_requirement": {"daily_need_min": 2.8, "daily_need_opt": 4.8, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.6, "plant_spacing": 0.45, "sowing_depth": 1.5, "germination_rate": 84, "safety_factor": 1.19}}
+      },
+      {
+        "id": "jintama_f1", "name": "Джинтама F1", "species_key": "cabbage", "species_name": "Капуста",
+        "base_temperature": 5.0, "max_temperature": 25.0, "days_to_maturity": 118, "yield_potential": 10.5, "plant_height": 0.48,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"head_weight": "4-5kg", "head_color": "темно-зеленый", "use": "свежий, хранение"},
+        "description": "Крупноплодный гибрид японской селекции",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 158}, {"code": "BBCH-19", "gdd_required": 425},
+          {"code": "BBCH-51", "gdd_required": 740}, {"code": "BBCH-61", "gdd_required": 940, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1140, "is_critical": true}, {"code": "BBCH-89", "gdd_required": 1480}
+        ],
+        "water_requirement": {"daily_need_min": 3.3, "daily_need_opt": 5.3, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 22000, "lux_max": 35000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.55, "sowing_depth": 1.5, "germination_rate": 83, "safety_factor": 1.2}}
+      }
+    ],
+    "potato": [
+      {
+        "id": "gala", "name": "Гала", "species_key": "potato", "species_name": "Картофель",
+        "base_temperature": 5.0, "max_temperature": 28.0, "days_to_maturity": 70, "yield_potential": 4.5, "plant_height": 0.6,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"tuber_weight": "80-120g", "tuber_color": "желтый", "use": "столовый"},
+        "description": "Раннеспелый сорт с желтой мякотью",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 80}, {"code": "BBCH-19", "gdd_required": 200},
+          {"code": "BBCH-51", "gdd_required": 350}, {"code": "BBCH-61", "gdd_required": 450},
+          {"code": "BBCH-71", "gdd_required": 600}, {"code": "BBCH-89", "gdd_required": 800}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "short_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.3, "sowing_depth": 8.0, "germination_rate": 95, "safety_factor": 1.1}}
+      },
+      {
+        "id": "nevsky", "name": "Невский", "species_key": "potato", "species_name": "Картофель",
+        "base_temperature": 5.0, "max_temperature": 28.0, "days_to_maturity": 85, "yield_potential": 5.0, "plant_height": 0.65,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"tuber_weight": "90-130g", "tuber_color": "белый", "use": "столовый", "keeping_quality": "отличная"},
+        "description": "Популярный сорт с отличной лежкостью",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 90}, {"code": "BBCH-19", "gdd_required": 220},
+          {"code": "BBCH-51", "gdd_required": 380}, {"code": "BBCH-61", "gdd_required": 480},
+          {"code": "BBCH-71", "gdd_required": 650}, {"code": "BBCH-89", "gdd_required": 900}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "short_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.35, "sowing_depth": 8.0, "germination_rate": 96, "safety_factor": 1.08}}
+      },
+      {
+        "id": "lugovskoy", "name": "Луговской", "species_key": "potato", "species_name": "Картофель",
+        "base_temperature": 5.0, "max_temperature": 28.0, "days_to_maturity": 95, "yield_potential": 5.5, "plant_height": 0.7,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"tuber_weight": "100-150g", "tuber_color": "розовый", "use": "столовый"},
+        "description": "Урожайный сорт с розовыми клубнями",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 95}, {"code": "BBCH-19", "gdd_required": 230},
+          {"code": "BBCH-51", "gdd_required": 400}, {"code": "BBCH-61", "gdd_required": 500},
+          {"code": "BBCH-71", "gdd_required": 680}, {"code": "BBCH-89", "gdd_required": 950}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "short_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.3, "sowing_depth": 8.0, "germination_rate": 94, "safety_factor": 1.12}}
+      }
+    ],
+    "corn": [
+      {
+        "id": "ladozhsky_101", "name": "Ладожский 101", "species_key": "corn", "species_name": "Кукуруза",
+        "base_temperature": 10.0, "max_temperature": 35.0, "days_to_maturity": 95, "yield_potential": 8.0, "plant_height": 2.0,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"cob_weight": "200-250g", "grain_color": "желтый", "use": "свежий, консервирование"},
+        "description": "Сахарный сорт для свежего потребления",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 100}, {"code": "BBCH-19", "gdd_required": 300},
+          {"code": "BBCH-51", "gdd_required": 550}, {"code": "BBCH-61", "gdd_required": 750},
+          {"code": "BBCH-71", "gdd_required": 950}, {"code": "BBCH-89", "gdd_required": 1200}
+        ],
+        "water_requirement": {"daily_need_min": 4.0, "daily_need_opt": 6.0, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 10000, "lux_opt": 40000, "lux_max": 65000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.25, "sowing_depth": 5.0, "germination_rate": 90, "safety_factor": 1.15}}
+      },
+      {
+        "id": "kubanskaya_saharnaya", "name": "Кубанская сахарная", "species_key": "corn", "species_name": "Кукуруза",
+        "base_temperature": 10.0, "max_temperature": 35.0, "days_to_maturity": 105, "yield_potential": 9.0, "plant_height": 2.2,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"cob_weight": "250-300g", "grain_color": "ярко-желтый", "use": "консервирование"},
+        "description": "Высокоурожайный сахарный сорт",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 110}, {"code": "BBCH-19", "gdd_required": 320},
+          {"code": "BBCH-51", "gdd_required": 580}, {"code": "BBCH-61", "gdd_required": 780},
+          {"code": "BBCH-71", "gdd_required": 980}, {"code": "BBCH-89", "gdd_required": 1250}
+        ],
+        "water_requirement": {"daily_need_min": 4.0, "daily_need_opt": 6.0, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 10000, "lux_opt": 40000, "lux_max": 65000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.3, "sowing_depth": 5.0, "germination_rate": 90, "safety_factor": 1.15}}
+      },
+      {
+        "id": "dobrynya", "name": "Добрыня", "species_key": "corn", "species_name": "Кукуруза",
+        "base_temperature": 10.0, "max_temperature": 35.0, "days_to_maturity": 100, "yield_potential": 8.5, "plant_height": 1.9,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground"],
+        "characteristics": {"cob_weight": "220-270g", "grain_color": "золотистый", "use": "свежий"},
+        "description": "Раннеспелый гибрид для всех регионов",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 105}, {"code": "BBCH-19", "gdd_required": 310},
+          {"code": "BBCH-51", "gdd_required": 560}, {"code": "BBCH-61", "gdd_required": 760},
+          {"code": "BBCH-71", "gdd_required": 960}, {"code": "BBCH-89", "gdd_required": 1220}
+        ],
+        "water_requirement": {"daily_need_min": 4.0, "daily_need_opt": 6.0, "critical_phases": ["BBCH-51", "BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 10000, "lux_opt": 38000, "lux_max": 60000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.28, "sowing_depth": 5.0, "germination_rate": 92, "safety_factor": 1.12}}
+      }
+    ],
+    "radish": [
+      {
+        "id": "french_breakfast", "name": "Французский завтрак", "species_key": "radish", "species_name": "Редис",
+        "base_temperature": 4.0, "max_temperature": 25.0, "days_to_maturity": 22, "yield_potential": 2.5, "plant_height": 0.15,
+        "recommended_seasons": ["spring", "autumn"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"root_weight": "15-20g", "root_color": "красный с белым кончиком", "use": "свежий"},
+        "description": "Скороспелый сорт для раннего выращивания",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 30}, {"code": "BBCH-19", "gdd_required": 80},
+          {"code": "BBCH-51", "gdd_required": 150}, {"code": "BBCH-89", "gdd_required": 250}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 3.5, "critical_phases": ["BBCH-51"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 15000, "lux_max": 25000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 1.5, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "red_giant", "name": "Красный великан", "species_key": "radish", "species_name": "Редис",
+        "base_temperature": 4.0, "max_temperature": 25.0, "days_to_maturity": 30, "yield_potential": 3.0, "plant_height": 0.2,
+        "recommended_seasons": ["spring", "summer", "autumn"], "growing_types": ["open_ground"],
+        "characteristics": {"root_weight": "30-40g", "root_color": "ярко-красный", "use": "свежий"},
+        "description": "Крупноплодный сорт для длительного хранения",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 35}, {"code": "BBCH-19", "gdd_required": 100},
+          {"code": "BBCH-51", "gdd_required": 180}, {"code": "BBCH-89", "gdd_required": 300}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 3.5, "critical_phases": ["BBCH-51"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 15000, "lux_max": 25000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.2, "plant_spacing": 0.07, "sowing_depth": 1.5, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "rondar_f1", "name": "Рондар F1", "species_key": "radish", "species_name": "Редис",
+        "base_temperature": 4.0, "max_temperature": 25.0, "days_to_maturity": 20, "yield_potential": 3.5, "plant_height": 0.12,
+        "recommended_seasons": ["spring", "summer", "autumn"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"root_weight": "15-20g", "root_color": "красный", "use": "свежий"},
+        "description": "Ультраранний гибрид с дружным созреванием",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 28}, {"code": "BBCH-19", "gdd_required": 75},
+          {"code": "BBCH-51", "gdd_required": 140}, {"code": "BBCH-89", "gdd_required": 230}
+        ],
+        "water_requirement": {"daily_need_min": 2.0, "daily_need_opt": 3.5, "critical_phases": ["BBCH-51"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 15000, "lux_max": 25000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 1.0, "germination_rate": 88, "safety_factor": 1.18}}
+      }
+    ],
+    "onion": [
+      {
+        "id": "stuttgarter_riesen", "name": "Штутгартер Ризен", "species_key": "onion", "species_name": "Лук",
+        "base_temperature": 5.0, "max_temperature": 30.0, "days_to_maturity": 100, "yield_potential": 5.0, "plant_height": 0.4,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"bulb_weight": "80-120g", "bulb_color": "золотисто-желтый", "use": "универсальный", "keeping_quality": "отличная"},
+        "description": "Популярный сорт с отличной лежкостью",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 100}, {"code": "BBCH-19", "gdd_required": 250},
+          {"code": "BBCH-51", "gdd_required": 450}, {"code": "BBCH-61", "gdd_required": 600},
+          {"code": "BBCH-71", "gdd_required": 800}, {"code": "BBCH-89", "gdd_required": 1100}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 18000, "lux_max": 30000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.3, "plant_spacing": 0.1, "sowing_depth": 2.0, "germination_rate": 80, "safety_factor": 1.25}}
+      },
+      {
+        "id": "senshui", "name": "Сеншуй", "species_key": "onion", "species_name": "Лук",
+        "base_temperature": 5.0, "max_temperature": 30.0, "days_to_maturity": 110, "yield_potential": 4.5, "plant_height": 0.35,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"bulb_weight": "100-150g", "bulb_color": "бронзовый", "bulb_shape": "округлый", "sharpness": "сладкий"},
+        "description": "Японский салатный сорт",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 105}, {"code": "BBCH-19", "gdd_required": 260},
+          {"code": "BBCH-51", "gdd_required": 470}, {"code": "BBCH-61", "gdd_required": 620},
+          {"code": "BBCH-71", "gdd_required": 820}, {"code": "BBCH-89", "gdd_required": 1150}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 18000, "lux_max": 30000, "day_length_opt": 16, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.3, "plant_spacing": 0.12, "sowing_depth": 2.0, "germination_rate": 78, "safety_factor": 1.28}}
+      }
+    ],
+    "garlic": [
+      {
+        "id": "lyubasha", "name": "Любаша", "species_key": "garlic", "species_name": "Чеснок",
+        "base_temperature": 3.0, "max_temperature": 28.0, "days_to_maturity": 100, "yield_potential": 3.5, "plant_height": 0.5,
+        "recommended_seasons": ["autumn"], "growing_types": ["open_ground"],
+        "characteristics": {"bulb_weight": "80-120g", "bulb_color": "белый", "cloves_count": "7-9", "sharpness": "острый", "keeping_quality": "отличная"},
+        "description": "Озимый сорт с высокой зимостойкостью",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 120}, {"code": "BBCH-19", "gdd_required": 280},
+          {"code": "BBCH-51", "gdd_required": 480}, {"code": "BBCH-61", "gdd_required": 650},
+          {"code": "BBCH-71", "gdd_required": 850}, {"code": "BBCH-89", "gdd_required": 1100}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 18000, "lux_max": 30000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.25, "plant_spacing": 0.1, "sowing_depth": 5.0, "germination_rate": 95, "safety_factor": 1.1}}
+      },
+      {
+        "id": "ukrainian_white", "name": "Украинский белый", "species_key": "garlic", "species_name": "Чеснок",
+        "base_temperature": 3.0, "max_temperature": 28.0, "days_to_maturity": 90, "yield_potential": 3.0, "plant_height": 0.45,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"bulb_weight": "60-80g", "bulb_color": "белый", "cloves_count": "15-20", "sharpness": "среднеострый"},
+        "description": "Яровой сорт для весенней посадки",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 100}, {"code": "BBCH-19", "gdd_required": 250},
+          {"code": "BBCH-51", "gdd_required": 430}, {"code": "BBCH-61", "gdd_required": 600},
+          {"code": "BBCH-71", "gdd_required": 800}, {"code": "BBCH-89", "gdd_required": 1050}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-71"]},
+        "light_requirement": {"lux_min": 4000, "lux_opt": 18000, "lux_max": 30000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-19"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.25, "plant_spacing": 0.08, "sowing_depth": 4.0, "germination_rate": 93, "safety_factor": 1.12}}
+      }
+    ],
+    "barley": [
+      {
+        "id": "vakula", "name": "Вакула", "species_key": "barley", "species_name": "Ячмень",
+        "base_temperature": 3.0, "max_temperature": 30.0, "days_to_maturity": 85, "yield_potential": 0.55, "plant_height": 0.8,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"use": "пивоваренный", "protein": "10-12%"},
+        "description": "Пивоваренный ячмень с высоким качеством зерна",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 55}, {"code": "BBCH-19", "gdd_required": 150},
+          {"code": "BBCH-30", "gdd_required": 300}, {"code": "BBCH-51", "gdd_required": 480},
+          {"code": "BBCH-61", "gdd_required": 600}, {"code": "BBCH-71", "gdd_required": 750},
+          {"code": "BBCH-89", "gdd_required": 950}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 4.5, "critical_phases": ["BBCH-30", "BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.03, "sowing_depth": 4.0, "germination_rate": 88, "safety_factor": 1.18}}
+      },
+      {
+        "id": "priazovsky", "name": "Приазовский", "species_key": "barley", "species_name": "Ячмень",
+        "base_temperature": 3.0, "max_temperature": 30.0, "days_to_maturity": 90, "yield_potential": 0.6, "plant_height": 0.85,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"use": "фуражный", "drought_resistance": "высокая"},
+        "description": "Засухоустойчивый фуражный ячмень",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 58}, {"code": "BBCH-19", "gdd_required": 155},
+          {"code": "BBCH-30", "gdd_required": 310}, {"code": "BBCH-51", "gdd_required": 490},
+          {"code": "BBCH-61", "gdd_required": 620}, {"code": "BBCH-71", "gdd_required": 770},
+          {"code": "BBCH-89", "gdd_required": 980}
+        ],
+        "water_requirement": {"daily_need_min": 2.8, "daily_need_opt": 4.2, "critical_phases": ["BBCH-30", "BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 30000, "lux_max": 50000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.03, "sowing_depth": 4.5, "germination_rate": 87, "safety_factor": 1.19}}
+      }
+    ],
+    "eggplant": [
+      {
+        "id": "diamond", "name": "Алмаз", "species_key": "eggplant", "species_name": "Баклажан",
+        "base_temperature": 13.0, "max_temperature": 32.0, "days_to_maturity": 120, "yield_potential": 6.0, "plant_height": 0.6,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "100-150g", "fruit_color": "темно-фиолетовый", "use": "универсальный"},
+        "description": "Среднеспелый сорт для открытого грунта и теплиц",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 130}, {"code": "BBCH-19", "gdd_required": 380},
+          {"code": "BBCH-51", "gdd_required": 650}, {"code": "BBCH-61", "gdd_required": 850, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 1000, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1300},
+          {"code": "BBCH-89", "gdd_required": 1500}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.5, "sowing_depth": 2.0, "germination_rate": 80, "safety_factor": 1.2}}
+      },
+      {
+        "id": "black_beauty", "name": "Черный красавец", "species_key": "eggplant", "species_name": "Баклажан",
+        "base_temperature": 13.0, "max_temperature": 32.0, "days_to_maturity": 110, "yield_potential": 7.0, "plant_height": 0.7,
+        "recommended_seasons": ["spring", "summer"], "growing_types": ["open_ground", "greenhouse"],
+        "characteristics": {"fruit_weight": "200-300g", "fruit_color": "черный", "use": "универсальный"},
+        "description": "Крупноплодный сорт с отличными вкусовыми качествами",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 125}, {"code": "BBCH-19", "gdd_required": 370},
+          {"code": "BBCH-51", "gdd_required": 630}, {"code": "BBCH-61", "gdd_required": 820, "is_critical": true},
+          {"code": "BBCH-71", "gdd_required": 970, "is_critical": true}, {"code": "BBCH-81", "gdd_required": 1250},
+          {"code": "BBCH-89", "gdd_required": 1450}
+        ],
+        "water_requirement": {"daily_need_min": 2.5, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.5, "sowing_depth": 2.0, "germination_rate": 82, "safety_factor": 1.18}}
+      }
+    ],
+    "pea": [
+      {
+        "id": "atlant", "name": "Атлант", "species_key": "pea", "species_name": "Горох",
+        "base_temperature": 4.0, "max_temperature": 28.0, "days_to_maturity": 85, "yield_potential": 0.35, "plant_height": 0.8,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"protein": "22-24%", "use": "продовольственный"},
+        "description": "Лущильный сорт с высоким содержанием белка",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 70}, {"code": "BBCH-19", "gdd_required": 180},
+          {"code": "BBCH-51", "gdd_required": 350}, {"code": "BBCH-61", "gdd_required": 480},
+          {"code": "BBCH-71", "gdd_required": 650}, {"code": "BBCH-89", "gdd_required": 850}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 5.0, "germination_rate": 88, "safety_factor": 1.18}}
+      },
+      {
+        "id": "madonna", "name": "Мадонна", "species_key": "pea", "species_name": "Горох",
+        "base_temperature": 4.0, "max_temperature": 28.0, "days_to_maturity": 75, "yield_potential": 0.4, "plant_height": 0.7,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"protein": "23-25%", "use": "продовольственный"},
+        "description": "Раннеспелый сорт для консервирования",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 65}, {"code": "BBCH-19", "gdd_required": 170},
+          {"code": "BBCH-51", "gdd_required": 330}, {"code": "BBCH-61", "gdd_required": 460},
+          {"code": "BBCH-71", "gdd_required": 620}, {"code": "BBCH-89", "gdd_required": 800}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 4.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 5.0, "germination_rate": 90, "safety_factor": 1.15}}
+      }
+    ],
+    "rapeseed": [
+      {
+        "id": "lider", "name": "Лидер", "species_key": "rapeseed", "species_name": "Рапс",
+        "base_temperature": 3.0, "max_temperature": 30.0, "days_to_maturity": 95, "yield_potential": 0.25, "plant_height": 1.2,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"oil_content": "44-46%", "use": "продовольственный"},
+        "description": "Яровой рапс с низким содержанием эруковой кислоты",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 80}, {"code": "BBCH-19", "gdd_required": 200},
+          {"code": "BBCH-51", "gdd_required": 400}, {"code": "BBCH-61", "gdd_required": 550},
+          {"code": "BBCH-71", "gdd_required": 700}, {"code": "BBCH-89", "gdd_required": 950}
+        ],
+        "water_requirement": {"daily_need_min": 3.5, "daily_need_opt": 5.5, "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 2.5, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "salsa", "name": "Сальса", "species_key": "rapeseed", "species_name": "Рапс",
+        "base_temperature": 3.0, "max_temperature": 30.0, "days_to_maturity": 100, "yield_potential": 0.3, "plant_height": 1.3,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"oil_content": "46-48%", "use": "продовольственный"},
+        "description": "Высокоурожайный яровой рапс",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 85}, {"code": "BBCH-19", "gdd_required": 210},
+          {"code": "BBCH-51", "gdd_required": 420}, {"code": "BBCH-61", "gdd_required": 570},
+          {"code": "BBCH-71", "gdd_required": 720}, {"code": "BBCH-89", "gdd_required": 980}
+        ],
+        "water_requirement": {"daily_need_min": 3.5, "daily_need_opt": 5.5, "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 5000, "lux_opt": 20000, "lux_max": 35000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.05, "sowing_depth": 2.5, "germination_rate": 87, "safety_factor": 1.18}}
+      }
+    ],
+    "soybean": [
+      {
+        "id": "vilana", "name": "Вилана", "species_key": "soybean", "species_name": "Соя",
+        "base_temperature": 10.0, "max_temperature": 35.0, "days_to_maturity": 110, "yield_potential": 0.3, "plant_height": 0.9,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"protein": "38-40%", "oil_content": "20-22%", "use": "продовольственный"},
+        "description": "Раннеспелый сорт сои",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 120}, {"code": "BBCH-19", "gdd_required": 280},
+          {"code": "BBCH-51", "gdd_required": 550}, {"code": "BBCH-61", "gdd_required": 700},
+          {"code": "BBCH-71", "gdd_required": 900}, {"code": "BBCH-89", "gdd_required": 1200}
+        ],
+        "water_requirement": {"daily_need_min": 4.0, "daily_need_opt": 6.0, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "short_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.45, "plant_spacing": 0.05, "sowing_depth": 4.0, "germination_rate": 85, "safety_factor": 1.2}}
+      },
+      {
+        "id": "mageva", "name": "Магева", "species_key": "soybean", "species_name": "Соя",
+        "base_temperature": 10.0, "max_temperature": 35.0, "days_to_maturity": 120, "yield_potential": 0.35, "plant_height": 1.0,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"protein": "39-41%", "oil_content": "21-23%", "drought_resistance": "высокая"},
+        "description": "Засухоустойчивый сорт сои",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 130}, {"code": "BBCH-19", "gdd_required": 300},
+          {"code": "BBCH-51", "gdd_required": 580}, {"code": "BBCH-61", "gdd_required": 740},
+          {"code": "BBCH-71", "gdd_required": 950}, {"code": "BBCH-89", "gdd_required": 1280}
+        ],
+        "water_requirement": {"daily_need_min": 3.5, "daily_need_opt": 5.5, "critical_phases": ["BBCH-61", "BBCH-71"]},
+        "light_requirement": {"lux_min": 6000, "lux_opt": 25000, "lux_max": 45000, "day_length_opt": 14, "photoperiod_type": "short_day", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.45, "plant_spacing": 0.05, "sowing_depth": 4.0, "germination_rate": 86, "safety_factor": 1.19}}
+      }
+    ],
+    "sunflower": [
+      {
+        "id": "lakomka", "name": "Лакомка", "species_key": "sunflower", "species_name": "Подсолнечник",
+        "base_temperature": 8.0, "max_temperature": 35.0, "days_to_maturity": 105, "yield_potential": 0.25, "plant_height": 1.6,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"oil_content": "48-50%", "use": "кондитерский", "seed_size": "крупный"},
+        "description": "Кондитерский сорт с крупными семенами",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 100}, {"code": "BBCH-19", "gdd_required": 250},
+          {"code": "BBCH-51", "gdd_required": 500}, {"code": "BBCH-61", "gdd_required": 700},
+          {"code": "BBCH-71", "gdd_required": 900}, {"code": "BBCH-89", "gdd_required": 1150}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 10000, "lux_opt": 40000, "lux_max": 65000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.25, "sowing_depth": 6.0, "germination_rate": 90, "safety_factor": 1.15}}
+      },
+      {
+        "id": "oliver", "name": "Оливер", "species_key": "sunflower", "species_name": "Подсолнечник",
+        "base_temperature": 8.0, "max_temperature": 35.0, "days_to_maturity": 110, "yield_potential": 0.3, "plant_height": 1.7,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"oil_content": "52-54%", "use": "масличный"},
+        "description": "Высокомасличный гибрид для производства масла",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 105}, {"code": "BBCH-19", "gdd_required": 260},
+          {"code": "BBCH-51", "gdd_required": 520}, {"code": "BBCH-61", "gdd_required": 720},
+          {"code": "BBCH-71", "gdd_required": 930}, {"code": "BBCH-89", "gdd_required": 1200}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 10000, "lux_opt": 40000, "lux_max": 65000, "day_length_opt": 14, "photoperiod_type": "day_neutral", "critical_phases": ["BBCH-51", "BBCH-61"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.7, "plant_spacing": 0.25, "sowing_depth": 6.0, "germination_rate": 92, "safety_factor": 1.12}}
+      }
+    ],
+    "wheat": [
+      {
+        "id": "bezostaya_1", "name": "Безостая 1", "species_key": "wheat", "species_name": "Пшеница",
+        "base_temperature": 3.0, "max_temperature": 28.0, "days_to_maturity": 280, "yield_potential": 0.6, "plant_height": 1.0,
+        "recommended_seasons": ["autumn"], "growing_types": ["open_ground"],
+        "characteristics": {"grain_type": "мягкая", "use": "хлебопекарная", "protein": "12-14%"},
+        "description": "Классический сорт озимой пшеницы",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 50}, {"code": "BBCH-19", "gdd_required": 150},
+          {"code": "BBCH-30", "gdd_required": 300}, {"code": "BBCH-51", "gdd_required": 500},
+          {"code": "BBCH-61", "gdd_required": 650}, {"code": "BBCH-71", "gdd_required": 800},
+          {"code": "BBCH-89", "gdd_required": 1000}
+        ],
+        "water_requirement": {"daily_need_min": 3.0, "daily_need_opt": 5.0, "critical_phases": ["BBCH-30", "BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 35000, "lux_max": 55000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.03, "sowing_depth": 5.0, "germination_rate": 90, "safety_factor": 1.15}}
+      },
+      {
+        "id": "saratovskaya_29", "name": "Саратовская 29", "species_key": "wheat", "species_name": "Пшеница",
+        "base_temperature": 3.0, "max_temperature": 30.0, "days_to_maturity": 100, "yield_potential": 0.5, "plant_height": 0.9,
+        "recommended_seasons": ["spring"], "growing_types": ["open_ground"],
+        "characteristics": {"grain_type": "твердая", "use": "макаронная", "drought_resistance": "высокая", "protein": "14-16%"},
+        "description": "Яровая твердая пшеница для макарон",
+        "phenophase_gdd": [
+          {"code": "BBCH-10", "gdd_required": 60}, {"code": "BBCH-19", "gdd_required": 160},
+          {"code": "BBCH-30", "gdd_required": 320}, {"code": "BBCH-51", "gdd_required": 520},
+          {"code": "BBCH-61", "gdd_required": 670}, {"code": "BBCH-71", "gdd_required": 820},
+          {"code": "BBCH-89", "gdd_required": 1050}
+        ],
+        "water_requirement": {"daily_need_min": 2.8, "daily_need_opt": 4.5, "critical_phases": ["BBCH-30", "BBCH-51", "BBCH-61"]},
+        "light_requirement": {"lux_min": 8000, "lux_opt": 35000, "lux_max": 55000, "day_length_opt": 14, "photoperiod_type": "long_day", "critical_phases": ["BBCH-30", "BBCH-51"]},
+        "seeding_rates": {"open_ground": {"row_spacing": 0.15, "plant_spacing": 0.03, "sowing_depth": 5.0, "germination_rate": 92, "safety_factor": 1.12}}
+      }
+    ]
+  }
+}

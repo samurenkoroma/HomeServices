@@ -4,7 +4,6 @@ Content-Type: application/json
 {
   "query": "SearchVarieties",
   "data": {
-  "speciesKey": "tomato"
   }
 }
 ###
@@ -36,16 +35,17 @@ Content-Type: application/json
 {
   "command": "CreateCropPlan",
   "data": {
-    "bed_id": "bed-123",
+    "bedId": "bed-123",
     "name": "Весенние томаты 2024",
-    "variety_id": "bull_heart",
-    "season_start": "2024-03-01T00:00:00Z",
-    "season_end": "2024-05-31T00:00:00Z",
-    "planting_date": "2024-03-15T00:00:00Z",
+    "speciesKey": "tomato",
+    "varietyId": "bull_heart",
+    "seasonStart": "2024-03-01T00:00:00Z",
+    "seasonEnd": "2024-05-31T00:00:00Z",
+    "plantingDate": "2024-03-15T00:00:00Z",
     "latitude": 55.7558,
     "longitude": 37.6173,
-    "assigned_to": "user-1",
-    "assigned_name": "Иван Иванов"
+    "assignedTo": "user-1",
+    "assignedName": "Иван Иванов"
   }
 }
 
@@ -57,7 +57,7 @@ Content-Type: application/json
 {
   "query": "ListCropPlan",
   "data": {
-    "bed_id": "bed-123"
+    "status": "draft"
   }
 }
 ###
@@ -67,7 +67,7 @@ Content-Type: application/json
 {
   "query": "GetCurrentPhenology",
   "data": {
-    "plan_id": "7448b3b1-98fa-447b-ae41-fdbec984f7b8"
+    "plan_id": "0198ad1a-f374-494f-afc0-087662b0b158"
   }
 }
 
@@ -78,7 +78,7 @@ Content-Type: application/json
 {
   "query": "GetCropPlan",
   "data": {
-    "plan_id": "68e4a742-d9e2-4bdd-adcd-15d230000aa0"
+    "planId": "dfb2500b-6fd7-4be3-b253-5eca2ceea27b"
   }
 }
 
@@ -90,7 +90,7 @@ Content-Type: application/json
 {
   "query": "GetPlanStatistics",
   "data": {
-    "plan_id": "73c86a5e-b346-47a7-ac67-aa52072d5464"
+    "planId": "dfb2500b-6fd7-4be3-b253-5eca2ceea27b"
   }
 }
 
