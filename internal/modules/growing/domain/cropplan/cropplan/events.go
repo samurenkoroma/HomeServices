@@ -7,6 +7,7 @@ import (
 
 // CropPlanCreatedEvent событие создания плана
 type CropPlanCreatedEvent struct {
+	event.BaseEvent
 	PlanID       string
 	BedID        string
 	Name         string
@@ -14,57 +15,51 @@ type CropPlanCreatedEvent struct {
 	VarietyName  string
 	CropName     string
 	PlantingDate time.Time
-	OccurredAt   time.Time
 }
 
-func (e CropPlanCreatedEvent) EventName() string     { return "cropplan.created" }
-func (e CropPlanCreatedEvent) OccurredAt() time.Time { return e.OccurredAt }
+func (e CropPlanCreatedEvent) EventName() string { return "cropplan.created" }
 
 // CropPlanActivatedEvent событие активации плана
 type CropPlanActivatedEvent struct {
+	event.BaseEvent
 	PlanID      string
 	ActivatedAt time.Time
-	OccurredAt  time.Time
 }
 
-func (e CropPlanActivatedEvent) EventName() string     { return "cropplan.activated" }
-func (e CropPlanActivatedEvent) OccurredAt() time.Time { return e.OccurredAt }
+func (e CropPlanActivatedEvent) EventName() string { return "cropplan.activated" }
 
 // CropPlanCompletedEvent событие завершения плана
 type CropPlanCompletedEvent struct {
+	event.BaseEvent
 	PlanID      string
 	CompletedAt time.Time
 	HarvestKg   float64
-	OccurredAt  time.Time
 }
 
-func (e CropPlanCompletedEvent) EventName() string     { return "cropplan.completed" }
-func (e CropPlanCompletedEvent) OccurredAt() time.Time { return e.OccurredAt }
+func (e CropPlanCompletedEvent) EventName() string { return "cropplan.completed" }
 
 // CropPlanCancelledEvent событие отмены плана
 type CropPlanCancelledEvent struct {
+	event.BaseEvent
 	PlanID      string
 	Reason      string
 	CancelledAt time.Time
-	OccurredAt  time.Time
 }
 
-func (e CropPlanCancelledEvent) EventName() string     { return "cropplan.cancelled" }
-func (e CropPlanCancelledEvent) OccurredAt() time.Time { return e.OccurredAt }
+func (e CropPlanCancelledEvent) EventName() string { return "cropplan.cancelled" }
 
 // StageAddedEvent событие добавления этапа
 type StageAddedEvent struct {
-	PlanID     string
-	StageID    string
-	StageName  string
-	BBCHStart  int
-	BBCHEnd    int
-	Order      int
-	OccurredAt time.Time
+	event.BaseEvent
+	PlanID    string
+	StageID   string
+	StageName string
+	BBCHStart int
+	BBCHEnd   int
+	Order     int
 }
 
-func (e StageAddedEvent) EventName() string     { return "cropplan.stage.added" }
-func (e StageAddedEvent) OccurredAt() time.Time { return e.OccurredAt }
+func (e StageAddedEvent) EventName() string { return "cropplan.stage.added" }
 
 // StageStartedEvent событие начала этапа
 type StageStartedEvent struct {

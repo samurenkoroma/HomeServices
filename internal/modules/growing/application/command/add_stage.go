@@ -15,6 +15,10 @@ type addStageHandler struct {
 	uowFactory repository.Factory
 }
 
+func (h *addStageHandler) Name() string {
+	return "AddStage"
+}
+
 // AddStageCmd структура команды
 type AddStageCmd struct {
 	PlanID      string `json:"planId"`
@@ -24,6 +28,12 @@ type AddStageCmd struct {
 	BBCHStart   int    `json:"bbchStart"`
 	BBCHEnd     int    `json:"bbchEnd"`
 	Order       int    `json:"order"`
+}
+
+func NewAddStageHandler(uowFactory repository.Factory) command.Handler {
+	return &addStageHandler{
+		uowFactory: uowFactory,
+	}
 }
 
 // Handle выполняет команду

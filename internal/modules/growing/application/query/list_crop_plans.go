@@ -2,17 +2,12 @@ package query
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/application/dto"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"time"
 )
-
-// ListCropPlansHandler запрос списка планов
-type ListCropPlansHandler struct {
-	PlanRepo cropplan.Repository
-}
 
 // ListCropPlansQuery параметры фильтрации
 type ListCropPlansQuery struct {
@@ -26,24 +21,29 @@ type ListCropPlansQuery struct {
 	Offset     int        `json:"offset,omitempty"`
 }
 
+type listCropPlansHandler struct {
+	PlanRepo cropplan.Repository
+}
+
+func NewListCropPlansHandler(PlanRepo cropplan.Repository) query.Handler {
+	return &listCropPlansHandler{
+		PlanRepo: PlanRepo,
+	}
+}
+
+func (h *listCropPlansHandler) Name() string {
+	return "ListCropPlan"
+}
+
 // ListCropPlansResponse ответ со списком планов
 type ListCropPlansResponse struct {
 	Total int                `json:"total"`
 	Plans []*dto.CropPlanDTO `json:"plans"`
 }
 
-// DecodeListCropPlans декодирует JSON в запрос
-func DecodeListCropPlans(data []byte) (any, error) {
-	var q ListCropPlansQuery
-	if err := json.Unmarshal(data, &q); err != nil {
-		return nil, err
-	}
-	return q, nil
-}
-
 // Handle выполняет запрос
-func (h *ListCropPlansHandler) Handle(ctx context.Context, query any) (any, error) {
-	q, ok := query.(ListCropPlansQuery)
+func (h *listCropPlansHandler) Handle(ctx context.Context, query any) (any, error) {
+	q, ok := query.(*ListCropPlansQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}
@@ -63,7 +63,7 @@ func (h *ListCropPlansHandler) Handle(ctx context.Context, query any) (any, erro
 	} else {
 		// Если нет фильтров, возвращаем все планы (через FindByStatus с пустым?)
 		// В реальном репозитории нужен метод FindAll
-		allPlans, err = h.getAllPlans(ctx)
+		allPlans, err = h.PlanRepo.FindByStatus(ctx, "")
 	}
 
 	if err != nil {
@@ -110,7 +110,7 @@ func (h *ListCropPlansHandler) Handle(ctx context.Context, query any) (any, erro
 
 // getAllPlans временный метод для получения всех планов
 // В реальном репозитории должен быть метод FindAll
-func (h *ListCropPlansHandler) getAllPlans(ctx context.Context) ([]*cropplan.CropPlan, error) {
+func (h *listCropPlansHandler) getAllPlans(ctx context.Context) ([]*cropplan.CropPlan, error) {
 	// Здесь нужна реализация в репозитории
 	// Пока возвращаем пустой список
 	return []*cropplan.CropPlan{}, nil

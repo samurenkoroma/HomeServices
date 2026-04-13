@@ -2,19 +2,31 @@ package query
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"samurenkoroma/services/internal/application/query"
+	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 )
 
 // SearchVarietiesHandler запрос поиска сортов
-type SearchVarietiesHandler struct {
-	CatalogRepo catalog.Repository
+type searchVarietiesHandler struct {
+	uowFactory repository.Factory
+}
+
+func (h *searchVarietiesHandler) Name() string {
+	return "SearchVarieties"
+}
+
+func NewSearchVarietiesHandler(factory repository.Factory) query.Handler {
+	return &searchVarietiesHandler{
+		uowFactory: factory,
+	}
 }
 
 // SearchVarietiesQuery параметры поиска
 type SearchVarietiesQuery struct {
-	SpeciesKey        string `json:"species_key,omitempty"`  // tomato, eggplant, cucumber
+	SpeciesKey        string `json:"speciesKey,omitempty"`   // tomato, eggplant, cucumber
 	GrowingType       string `json:"growing_type,omitempty"` // open_ground, greenhouse
 	Season            string `json:"season,omitempty"`       // spring, summer, autumn
 	Query             string `json:"query,omitempty"`        // поиск по названию
@@ -37,27 +49,15 @@ type VarietyDTO struct {
 	Description        string            `json:"description"`
 }
 
-// SearchVarietiesResponse ответ с результатами поиска
-type SearchVarietiesResponse struct {
-	Total     int          `json:"total"`
-	Varieties []VarietyDTO `json:"varieties"`
-}
-
-// DecodeSearchVarieties декодирует JSON в запрос
-func DecodeSearchVarieties(data []byte) (any, error) {
-	var q SearchVarietiesQuery
-	if err := json.Unmarshal(data, &q); err != nil {
-		return nil, err
-	}
-	return q, nil
-}
-
 // Handle выполняет запрос
-func (h *SearchVarietiesHandler) Handle(ctx context.Context, query any) (any, error) {
-	q, ok := query.(SearchVarietiesQuery)
+func (h *searchVarietiesHandler) Handle(ctx context.Context, query any) (any, error) {
+	q, ok := query.(*SearchVarietiesQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}
+
+	uow, err := h.uowFactory.Begin(ctx)
+	pr := inmemory.NewGrowingProvider(uow.Tx()).(*inmemory.GrowingProvider)
 
 	// Строим фильтр
 	filter := catalog.VarietyFilter{
@@ -69,7 +69,7 @@ func (h *SearchVarietiesHandler) Handle(ctx context.Context, query any) (any, er
 	}
 
 	// Ищем сорта
-	varieties, err := h.CatalogRepo.SearchVarieties(ctx, filter)
+	varieties, err := pr.Catalogs().SearchVarieties(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +100,5 @@ func (h *SearchVarietiesHandler) Handle(ctx context.Context, query any) (any, er
 		}
 	}
 
-	return &SearchVarietiesResponse{
-		Total:     len(varieties),
-		Varieties: varietiesDTO,
-	}, nil
+	return varietiesDTO, nil
 }

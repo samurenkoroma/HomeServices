@@ -1,0 +1,179 @@
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "SearchVarieties",
+  "data": {
+  "speciesKey": "tomato"
+  }
+}
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "ListSpecies",
+  "data": {
+
+  }
+}
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetSpecies",
+  "data": {
+    "key": "tomato"
+  }
+}
+###
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CreateCropPlan",
+  "data": {
+    "bed_id": "bed-123",
+    "name": "Весенние томаты 2024",
+    "variety_id": "bull_heart",
+    "season_start": "2024-03-01T00:00:00Z",
+    "season_end": "2024-05-31T00:00:00Z",
+    "planting_date": "2024-03-15T00:00:00Z",
+    "latitude": 55.7558,
+    "longitude": 37.6173,
+    "assigned_to": "user-1",
+    "assigned_name": "Иван Иванов"
+  }
+}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "ListCropPlan",
+  "data": {
+    "bed_id": "bed-123"
+  }
+}
+###
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetCurrentPhenology",
+  "data": {
+    "plan_id": "7448b3b1-98fa-447b-ae41-fdbec984f7b8"
+  }
+}
+
+###
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetCropPlan",
+  "data": {
+    "plan_id": "68e4a742-d9e2-4bdd-adcd-15d230000aa0"
+  }
+}
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetPlanStatistics",
+  "data": {
+    "plan_id": "73c86a5e-b346-47a7-ac67-aa52072d5464"
+  }
+}
+
+###
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "SkipStage",
+  "data": {
+    "plan_id": "plan-123",
+    "stage_id": "stage-456",
+    "reason": "Погодные условия не позволяют выполнить"
+  }
+}
+
+###
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CompleteStage",
+  "data": {
+    "plan_id": "plan-123",
+    "stage_id": "stage-456"
+  }
+}
+
+###
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "StartStage",
+  "data": {
+    "plan_id": "plan-123",
+    "stage_id": "stage-456",
+    "current_bbch": 61
+  }
+}
+
+###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "AddStage",
+  "data": {
+    "plan_id": "plan-123",
+    "name": "Обработка от вредителей",
+    "type": "protection",
+    "description": "Опрыскивание от тли",
+    "bbch_start": 50,
+    "bbch_end": 69,
+    "order": 5
+  }
+}
+
+###
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "ActivateCropPlan",
+  "data": {
+    "plan_id": "plan-123"
+  }
+}
+
+
+###
+
+POST http://localhost:8080/commands/
+Content-Type: application/json
+
+{
+  "command": "CancelCropPlan",
+  "data": {
+    "plan_id": "plan-123",
+    "reason": "Изменение севооборота"
+  }
+}
+
+###
+

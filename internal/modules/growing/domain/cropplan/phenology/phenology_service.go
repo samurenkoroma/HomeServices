@@ -7,37 +7,47 @@ import (
 	"time"
 )
 
+type PhenologyService interface {
+	GetCurrentPhenology(
+		ctx context.Context,
+		planID string,
+		varietyID string,
+		plantingDate time.Time,
+		lat, lon float64,
+	) (*CurrentPhenology, error)
+}
+
 // PhenologyService основной сервис для работы с фенологией
-type PhenologyService struct {
+type phenologyService struct {
 	catalogRepo     catalog.Repository
 	weatherProvider WeatherProvider
 	gddCalculator   *GDDCalculator
+	useSinusoidal   bool
 }
 
-// NewPhenologyService создает новый сервис фенологии
 func NewPhenologyService(
 	catalogRepo catalog.Repository,
 	weatherProvider WeatherProvider,
-	baseTemp, maxTemp float64,
-) *PhenologyService {
-	return &PhenologyService{
+	useSinusoidal bool,
+) PhenologyService {
+	return &phenologyService{
 		catalogRepo:     catalogRepo,
 		weatherProvider: weatherProvider,
-		gddCalculator:   NewGDDCalculator(baseTemp, maxTemp),
+		gddCalculator:   NewGDDCalculator(),
+		useSinusoidal:   useSinusoidal, // больше не передаем температуры
 	}
 }
 
-// GetCurrentPhenology определяет текущее фенологическое состояние для плана
-func (s *PhenologyService) GetCurrentPhenology(
+func (s *phenologyService) GetCurrentPhenology(
 	ctx context.Context,
 	planID string,
 	varietyID string,
 	plantingDate time.Time,
 	lat, lon float64,
 ) (*CurrentPhenology, error) {
-
+	today := time.Now()
 	// 1. Проверяем дату посадки
-	if plantingDate.After(time.Now()) {
+	if plantingDate.After(today) {
 		return nil, ErrPlantingDateInFuture
 	}
 
@@ -48,7 +58,6 @@ func (s *PhenologyService) GetCurrentPhenology(
 	}
 
 	// 3. Получаем погоду с даты посадки
-	today := time.Now()
 	temps, err := s.weatherProvider.GetHistoricalTemperatures(
 		ctx, lat, lon, plantingDate, today,
 	)
@@ -56,8 +65,17 @@ func (s *PhenologyService) GetCurrentPhenology(
 		return nil, fmt.Errorf("%w: %v", ErrNoWeatherData, err)
 	}
 
-	// 4. Рассчитываем накопленное GDD
-	accumulatedGDD := s.gddCalculator.AccumulateGDD(temps)
+	// 4. Рассчитываем GDD с температурами из сорта!
+	var accumulatedGDD float64
+	if s.useSinusoidal {
+		accumulatedGDD = s.gddCalculator.AccumulateGDDWithSinusoidal(
+			temps, variety.BaseTemperature, variety.MaxTemperature,
+		)
+	} else {
+		accumulatedGDD = s.gddCalculator.AccumulateGDD(
+			temps, variety.BaseTemperature, variety.MaxTemperature,
+		)
+	}
 
 	// 5. Определяем текущую фазу
 	currentPhase := variety.GetPhaseByGDD(accumulatedGDD)
@@ -83,10 +101,15 @@ func (s *PhenologyService) GetCurrentPhenology(
 	}
 
 	// 7. Прогнозируем дни до следующей фазы
-	estimatedDays := 0
+	var estimatedDays int
 	if nextPhase != nil {
 		estimatedDays = s.gddCalculator.PredictDaysToTarget(
-			accumulatedGDD, nextPhase.GDDRequired, temps,
+			accumulatedGDD,
+			nextPhase.GDDRequired,
+			temps,
+			variety.BaseTemperature, // ← из сорта
+			variety.MaxTemperature,  // ← из сорта
+			s.useSinusoidal,
 		)
 	}
 
@@ -104,14 +127,18 @@ func (s *PhenologyService) GetCurrentPhenology(
 
 	// 10. Прогнозируем дату сбора урожая
 	var harvestDate *time.Time
-	if harvestPhase := variety.GetPhaseByGDD(variety.PhenophaseGDD[len(variety.PhenophaseGDD)-1].GDDRequired); harvestPhase != nil {
+	lastPhase := variety.PhenophaseGDD[len(variety.PhenophaseGDD)-1]
+	if lastPhase.GDDRequired > accumulatedGDD {
 		daysToHarvest := s.gddCalculator.PredictDaysToTarget(
 			accumulatedGDD,
-			harvestPhase.GDDRequired,
+			lastPhase.GDDRequired,
 			temps,
+			variety.BaseTemperature,
+			variety.MaxTemperature,
+			s.useSinusoidal,
 		)
-		if daysToHarvest > 0 {
-			date := today.AddDate(0, 0, daysToHarvest)
+		if daysToHarvest > 0 && daysToHarvest < 365 {
+			date := time.Now().AddDate(0, 0, daysToHarvest)
 			harvestDate = &date
 		}
 	}
@@ -135,7 +162,7 @@ func (s *PhenologyService) GetCurrentPhenology(
 }
 
 // calculateDeviation рассчитывает отклонение от идеального развития
-func (s *PhenologyService) calculateDeviation(
+func (s *phenologyService) calculateDeviation(
 	variety *catalog.Variety,
 	plantingDate, currentDate time.Time,
 	actualGDD float64,
@@ -147,26 +174,36 @@ func (s *PhenologyService) calculateDeviation(
 		return 0, ""
 	}
 
-	// Идеальное GDD: 8 единиц в день (при оптимальной температуре)
-	idealGDD := float64(daysSincePlanting) * 8.0
-	deviation := actualGDD - idealGDD
+	// Идеальное GDD зависит от культуры!
+	// Для томата 8 GDD/день, для огурца 10 GDD/день
+	var idealDailyGDD float64
+	switch variety.SpeciesKey {
+	case "tomato":
+		idealDailyGDD = 8.0
+	case "cucumber":
+		idealDailyGDD = 10.0
+	case "eggplant":
+		idealDailyGDD = 9.0
+	default:
+		idealDailyGDD = 8.0
+	}
 
-	deviationDays := int(deviation / 8.0)
+	idealGDD := float64(daysSincePlanting) * idealDailyGDD
+	deviation := actualGDD - idealGDD
+	deviationDays := int(deviation / idealDailyGDD)
 
 	var reason string
 	if deviationDays > 5 {
 		reason = "heat_wave"
 	} else if deviationDays < -5 {
 		reason = "cold_spell"
-	} else if deviationDays < -10 {
-		reason = "severe_cold"
 	}
 
 	return deviationDays, reason
 }
 
 // generateRecommendations генерирует рекомендации на основе текущей фазы
-func (s *PhenologyService) generateRecommendations(
+func (s *phenologyService) generateRecommendations(
 	currentPhaseCode string,
 	deviationDays int,
 	nextPhase *catalog.PhenophaseGDD,
@@ -246,79 +283,82 @@ func (s *PhenologyService) generateRecommendations(
 	return actions
 }
 
-// ForecastDevelopment прогнозирует развитие на указанное количество дней
-func (s *PhenologyService) ForecastDevelopment(
-	ctx context.Context,
-	planID string,
-	varietyID string,
-	plantingDate time.Time,
-	lat, lon float64,
-	forecastDays int,
-) (*PhenologyForecast, error) {
-
-	// Получаем сорт
-	variety, err := s.catalogRepo.GetVariety(ctx, "", varietyID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Получаем исторические температуры
-	today := time.Now()
-	historyTemps, err := s.weatherProvider.GetHistoricalTemperatures(
-		ctx, lat, lon, plantingDate, today,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Получаем прогноз погоды
-	forecastTemps, err := s.weatherProvider.GetForecast(ctx, lat, lon, forecastDays)
-	if err != nil {
-		return nil, err
-	}
-
-	// Объединяем историю и прогноз
-	allTemps := append(historyTemps, forecastTemps...)
-
-	// Рассчитываем накопленное GDD
-	accumulatedGDD := s.gddCalculator.AccumulateGDD(historyTemps)
-
-	// Прогнозируем даты фаз
-	var phases []ForecastPhase
-
-	for _, phase := range variety.PhenophaseGDD {
-		if phase.GDDRequired <= accumulatedGDD {
-			// Фаза уже пройдена
-			continue
-		}
-
-		// Прогнозируем дату достижения фазы
-		daysNeeded := s.gddCalculator.PredictDaysToTarget(
-			accumulatedGDD, phase.GDDRequired, allTemps,
-		)
-		expectedDate := today.AddDate(0, 0, daysNeeded)
-
-		phases = append(phases, ForecastPhase{
-			PhaseCode:    phase.Code,
-			PhaseName:    phase.Name,
-			ExpectedDate: expectedDate,
-			GDDRequired:  phase.GDDRequired,
-			IsCritical:   phase.IsCritical,
-		})
-	}
-
-	// Генерируем рекомендации
-	currentPhase := variety.GetPhaseByGDD(accumulatedGDD)
-	var actions []RecommendedAction
-	if currentPhase != nil {
-		actions = s.generateRecommendations(currentPhase.Code, 0, nil)
-	}
-
-	return &PhenologyForecast{
-		PlanID:             planID,
-		PlantingDate:       plantingDate,
-		ForecastDate:       today,
-		Phases:             phases,
-		RecommendedActions: actions,
-	}, nil
-}
+//
+//// ForecastDevelopment прогнозирует развитие на указанное количество дней
+//func (s *PhenologyService) ForecastDevelopment(
+//	ctx context.Context,
+//	planID string,
+//	varietyID string,
+//	plantingDate time.Time,
+//	lat, lon float64,
+//	forecastDays int,
+//) (*PhenologyForecast, error) {
+//
+//	// Получаем сорт
+//	variety, err := s.catalogRepo.GetVariety(ctx, "", varietyID)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// Получаем исторические температуры
+//	today := time.Now()
+//	historyTemps, err := s.weatherProvider.GetHistoricalTemperatures(
+//		ctx, lat, lon, plantingDate, today,
+//	)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// Получаем прогноз погоды
+//	forecastTemps, err := s.weatherProvider.GetForecast(ctx, lat, lon, forecastDays)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// Объединяем историю и прогноз
+//	allTemps := append(historyTemps, forecastTemps...)
+//
+//	// Рассчитываем накопленное GDD
+//	accumulatedGDD := s.gddCalculator.AccumulateGDD(historyTemps, variety.BaseTemperature, // ← из сорта
+//		variety.MaxTemperature, // ← из сорта
+//	)
+//
+//	// Прогнозируем даты фаз
+//	var phases []ForecastPhase
+//
+//	for _, phase := range variety.PhenophaseGDD {
+//		if phase.GDDRequired <= accumulatedGDD {
+//			// Фаза уже пройдена
+//			continue
+//		}
+//
+//		// Прогнозируем дату достижения фазы
+//		daysNeeded := s.gddCalculator.PredictDaysToTarget(
+//			accumulatedGDD, phase.GDDRequired, allTemps,
+//		)
+//		expectedDate := today.AddDate(0, 0, daysNeeded)
+//
+//		phases = append(phases, ForecastPhase{
+//			PhaseCode:    phase.Code,
+//			PhaseName:    phase.Name,
+//			ExpectedDate: expectedDate,
+//			GDDRequired:  phase.GDDRequired,
+//			IsCritical:   phase.IsCritical,
+//		})
+//	}
+//
+//	// Генерируем рекомендации
+//	currentPhase := variety.GetPhaseByGDD(accumulatedGDD)
+//	var actions []RecommendedAction
+//	if currentPhase != nil {
+//		actions = s.generateRecommendations(currentPhase.Code, 0, nil)
+//	}
+//
+//	return &PhenologyForecast{
+//		PlanID:             planID,
+//		PlantingDate:       plantingDate,
+//		ForecastDate:       today,
+//		Phases:             phases,
+//		RecommendedActions: actions,
+//	}, nil
+//}

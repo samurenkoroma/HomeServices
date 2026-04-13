@@ -2,62 +2,69 @@ package command
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/common/application/uow"
+	"samurenkoroma/services/internal/application/command"
+	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 )
 
 // CompleteCropPlanHandler команда завершения плана (сбор урожая)
-type CompleteCropPlanHandler struct {
-	UowFactory uow.Factory
+type completeCropPlanHandler struct {
+	uowFactory repository.Factory
+}
+
+func (h *completeCropPlanHandler) Name() string {
+	return "CompleteCropPlanHandler"
 }
 
 type CompleteCropPlanCmd struct {
-	PlanID    string  `json:"plan_id"`
-	HarvestKg float64 `json:"harvest_kg"`
+	PlanID    string  `json:"planId"`
+	HarvestKg float64 `json:"harvestKg"`
 }
 
-func DecodeCompleteCropPlan(data []byte) (any, error) {
-	var cmd CompleteCropPlanCmd
-	if err := json.Unmarshal(data, &cmd); err != nil {
-		return nil, err
+func NewCompleteCropPlanHandler(uowFactory repository.Factory) command.Handler {
+	return &completeCropPlanHandler{
+		uowFactory: uowFactory,
 	}
-	if cmd.PlanID == "" {
-		return nil, errors.New("plan_id is required")
-	}
-	if cmd.HarvestKg < 0 {
-		return nil, errors.New("harvest_kg must be non-negative")
-	}
-	return cmd, nil
 }
 
-func (h *CompleteCropPlanHandler) Handle(ctx context.Context, cmd any) error {
-	c, ok := cmd.(CompleteCropPlanCmd)
+func (h *completeCropPlanHandler) Handle(ctx context.Context, cmd any) error {
+	c, ok := cmd.(*CompleteCropPlanCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 
-	uowObj, err := h.UowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	err = uow.Execute(ctx, inmemory.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
+		// Приводим провайдер к нужному типу
+		growingProvider, ok := provider.(*inmemory.GrowingProvider)
+		if !ok {
+			return fmt.Errorf("expected FarmProvider, got %T", provider)
+		}
+		// Получаем план
+		plan, err := growingProvider.CropPlans().FindByID(ctx, c.PlanID)
+		if err != nil {
+			return fmt.Errorf("failed to find plan: %w", err)
+		}
+
+		if err := plan.Complete(c.HarvestKg); err != nil {
+			return err
+		}
+
+		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+			return err
+		}
+
+		uow.RegisterAggregate(plan)
+		return nil
+
+	})
 	if err != nil {
 		return err
 	}
-	defer uowObj.Rollback()
-
-	planRepo := uowObj.CropPlans()
-	plan, err := planRepo.FindByID(ctx, c.PlanID)
-	if err != nil {
-		return err
-	}
-
-	if err := plan.Complete(c.HarvestKg); err != nil {
-		return err
-	}
-
-	if err := planRepo.Update(ctx, plan); err != nil {
-		return err
-	}
-
-	uowObj.RegisterAggregate(plan)
-	return uowObj.Commit()
+	return nil
 }

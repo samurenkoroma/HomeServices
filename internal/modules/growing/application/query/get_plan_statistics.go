@@ -2,23 +2,33 @@ package query
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
 	"time"
 )
 
-// GetPlanStatisticsHandler запрос статистики по плану
-type GetPlanStatisticsHandler struct {
+type getPlanStatisticsHandler struct {
 	PlanRepo cropplan.Repository
 	TaskRepo task.Repository
+}
+
+func NewGetPlanStatisticsHandler(PlanRepo cropplan.Repository, TaskRepo task.Repository) query.Handler {
+	return &getPlanStatisticsHandler{
+		PlanRepo: PlanRepo,
+		TaskRepo: TaskRepo,
+	}
 }
 
 // GetPlanStatisticsQuery параметры запроса
 type GetPlanStatisticsQuery struct {
 	PlanID string `json:"plan_id"`
+}
+
+func (h *getPlanStatisticsHandler) Name() string {
+	return "GetPlanStatistics"
 }
 
 // GetPlanStatisticsResponse ответ со статистикой
@@ -63,21 +73,9 @@ type GetPlanStatisticsResponse struct {
 	Recommendations []string `json:"recommendations,omitempty"`
 }
 
-// DecodeGetPlanStatistics декодирует JSON в запрос
-func DecodeGetPlanStatistics(data []byte) (any, error) {
-	var q GetPlanStatisticsQuery
-	if err := json.Unmarshal(data, &q); err != nil {
-		return nil, err
-	}
-	if q.PlanID == "" {
-		return nil, errors.New("plan_id is required")
-	}
-	return q, nil
-}
-
 // Handle выполняет запрос
-func (h *GetPlanStatisticsHandler) Handle(ctx context.Context, query any) (any, error) {
-	q, ok := query.(GetPlanStatisticsQuery)
+func (h *getPlanStatisticsHandler) Handle(ctx context.Context, query any) (any, error) {
+	q, ok := query.(*GetPlanStatisticsQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}

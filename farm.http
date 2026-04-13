@@ -248,3 +248,19 @@ Content-Type: application/json
     "id": "015c2bd7-105d-4124-99bb-404a2a74c846"
   }
 }
+
+###
+
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+    "query": "SearchVarieties",
+    "data": {
+        "species_key": "tomato",
+        "growing_type": "greenhouse",
+        "season": "spring",
+        "max_days_to_maturity": 100,
+        "limit": 10
+    }
+}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	catalog2 "samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"sync"
 )
 
@@ -13,35 +13,35 @@ import (
 // InMemoryCatalogRepository реализация каталога в памяти
 type InMemoryCatalogRepository struct {
 	mu        sync.RWMutex
-	species   map[string]catalog2.Species
-	varieties map[string]map[string]catalog2.Variety
-	templates map[string][]catalog2.StageTemplate
+	species   map[string]catalog.Species
+	varieties map[string]map[string]catalog.Variety
+	templates map[string][]catalog.StageTemplate
 }
 
 // NewInMemoryCatalogRepository создает новый in-memory репозиторий
 // и инициализирует его данными из GlobalCatalog
 func NewInMemoryCatalogRepository() *InMemoryCatalogRepository {
 	repo := &InMemoryCatalogRepository{
-		species:   make(map[string]catalog2.Species),
-		varieties: make(map[string]map[string]catalog2.Variety),
-		templates: make(map[string][]catalog2.StageTemplate),
+		species:   make(map[string]catalog.Species),
+		varieties: make(map[string]map[string]catalog.Variety),
+		templates: make(map[string][]catalog.StageTemplate),
 	}
 
 	// Загружаем данные из глобального каталога
-	for key, species := range catalog2.GlobalCatalog.Species {
+	for key, species := range catalog.GlobalCatalog.Species {
 		repo.species[key] = species
 	}
 
-	for speciesKey, vars := range catalog2.GlobalCatalog.Varieties {
+	for speciesKey, vars := range catalog.GlobalCatalog.Varieties {
 		if repo.varieties[speciesKey] == nil {
-			repo.varieties[speciesKey] = make(map[string]catalog2.Variety)
+			repo.varieties[speciesKey] = make(map[string]catalog.Variety)
 		}
 		for id, v := range vars {
 			repo.varieties[speciesKey][id] = v
 		}
 	}
 
-	for speciesKey, templates := range catalog2.StageTemplatesBySpecies {
+	for speciesKey, templates := range catalog.StageTemplatesBySpecies {
 		repo.templates[speciesKey] = templates
 	}
 
@@ -49,23 +49,23 @@ func NewInMemoryCatalogRepository() *InMemoryCatalogRepository {
 }
 
 // GetSpecies возвращает вид по ключу
-func (r *InMemoryCatalogRepository) GetSpecies(ctx context.Context, key string) (*catalog2.Species, error) {
+func (r *InMemoryCatalogRepository) GetSpecies(ctx context.Context, key string) (*catalog.Species, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	species, ok := r.species[key]
 	if !ok {
-		return nil, catalog2.ErrSpeciesNotFound
+		return nil, catalog.ErrSpeciesNotFound
 	}
 	return &species, nil
 }
 
 // ListSpecies возвращает все виды
-func (r *InMemoryCatalogRepository) ListSpecies(ctx context.Context) ([]catalog2.Species, error) {
+func (r *InMemoryCatalogRepository) ListSpecies(ctx context.Context) ([]catalog.Species, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	result := make([]catalog2.Species, 0, len(r.species))
+	result := make([]catalog.Species, 0, len(r.species))
 	for _, s := range r.species {
 		result = append(result, s)
 	}
@@ -73,7 +73,7 @@ func (r *InMemoryCatalogRepository) ListSpecies(ctx context.Context) ([]catalog2
 }
 
 // SaveSpecies сохраняет вид
-func (r *InMemoryCatalogRepository) SaveSpecies(ctx context.Context, species *catalog2.Species) error {
+func (r *InMemoryCatalogRepository) SaveSpecies(ctx context.Context, species *catalog.Species) error {
 	if species.Key == "" {
 		return errors.New("species key is required")
 	}
@@ -86,33 +86,33 @@ func (r *InMemoryCatalogRepository) SaveSpecies(ctx context.Context, species *ca
 }
 
 // GetVariety возвращает сорт
-func (r *InMemoryCatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyID string) (*catalog2.Variety, error) {
+func (r *InMemoryCatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyID string) (*catalog.Variety, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	speciesVars, ok := r.varieties[speciesKey]
 	if !ok {
-		return nil, catalog2.ErrSpeciesNotFound
+		return nil, catalog.ErrSpeciesNotFound
 	}
 
 	variety, ok := speciesVars[varietyID]
 	if !ok {
-		return nil, catalog2.ErrVarietyNotFound
+		return nil, catalog.ErrVarietyNotFound
 	}
 	return &variety, nil
 }
 
 // ListVarieties возвращает все сорта вида
-func (r *InMemoryCatalogRepository) ListVarieties(ctx context.Context, speciesKey string) ([]catalog2.Variety, error) {
+func (r *InMemoryCatalogRepository) ListVarieties(ctx context.Context, speciesKey string) ([]catalog.Variety, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	speciesVars, ok := r.varieties[speciesKey]
 	if !ok {
-		return nil, catalog2.ErrSpeciesNotFound
+		return nil, catalog.ErrSpeciesNotFound
 	}
 
-	result := make([]catalog2.Variety, 0, len(speciesVars))
+	result := make([]catalog.Variety, 0, len(speciesVars))
 	for _, v := range speciesVars {
 		result = append(result, v)
 	}
@@ -120,11 +120,11 @@ func (r *InMemoryCatalogRepository) ListVarieties(ctx context.Context, speciesKe
 }
 
 // SearchVarieties ищет сорта по фильтру
-func (r *InMemoryCatalogRepository) SearchVarieties(ctx context.Context, filter catalog2.VarietyFilter) ([]catalog2.Variety, error) {
+func (r *InMemoryCatalogRepository) SearchVarieties(ctx context.Context, filter catalog.VarietyFilter) ([]catalog.Variety, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var result []catalog2.Variety
+	var result []catalog.Variety
 
 	for speciesKey, speciesVars := range r.varieties {
 		// Фильтр по виду
@@ -170,7 +170,7 @@ func (r *InMemoryCatalogRepository) SearchVarieties(ctx context.Context, filter 
 }
 
 // SaveVariety сохраняет сорт
-func (r *InMemoryCatalogRepository) SaveVariety(ctx context.Context, speciesKey string, variety *catalog2.Variety) error {
+func (r *InMemoryCatalogRepository) SaveVariety(ctx context.Context, speciesKey string, variety *catalog.Variety) error {
 	if speciesKey == "" {
 		return errors.New("species key is required")
 	}
@@ -182,7 +182,7 @@ func (r *InMemoryCatalogRepository) SaveVariety(ctx context.Context, speciesKey 
 	defer r.mu.Unlock()
 
 	if r.varieties[speciesKey] == nil {
-		r.varieties[speciesKey] = make(map[string]catalog2.Variety)
+		r.varieties[speciesKey] = make(map[string]catalog.Variety)
 	}
 
 	variety.SpeciesKey = speciesKey
@@ -197,11 +197,11 @@ func (r *InMemoryCatalogRepository) DeleteVariety(ctx context.Context, speciesKe
 
 	speciesVars, ok := r.varieties[speciesKey]
 	if !ok {
-		return catalog2.ErrSpeciesNotFound
+		return catalog.ErrSpeciesNotFound
 	}
 
 	if _, ok := speciesVars[varietyID]; !ok {
-		return catalog2.ErrVarietyNotFound
+		return catalog.ErrVarietyNotFound
 	}
 
 	delete(r.varieties[speciesKey], varietyID)
@@ -209,19 +209,19 @@ func (r *InMemoryCatalogRepository) DeleteVariety(ctx context.Context, speciesKe
 }
 
 // GetStageTemplates возвращает шаблоны этапов для вида
-func (r *InMemoryCatalogRepository) GetStageTemplates(ctx context.Context, speciesKey string) ([]catalog2.StageTemplate, error) {
+func (r *InMemoryCatalogRepository) GetStageTemplates(ctx context.Context, speciesKey string) ([]catalog.StageTemplate, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	templates, ok := r.templates[speciesKey]
 	if !ok {
-		return []catalog2.StageTemplate{}, nil
+		return []catalog.StageTemplate{}, nil
 	}
 	return templates, nil
 }
 
 // SaveStageTemplate сохраняет шаблон этапа
-func (r *InMemoryCatalogRepository) SaveStageTemplate(ctx context.Context, speciesKey string, template *catalog2.StageTemplate) error {
+func (r *InMemoryCatalogRepository) SaveStageTemplate(ctx context.Context, speciesKey string, template *catalog.StageTemplate) error {
 	if speciesKey == "" {
 		return errors.New("species key is required")
 	}
@@ -265,9 +265,9 @@ func (r *InMemoryCatalogRepository) Export() ([]byte, error) {
 	defer r.mu.RUnlock()
 
 	data := struct {
-		Species   map[string]catalog2.Species            `json:"species"`
-		Varieties map[string]map[string]catalog2.Variety `json:"varieties"`
-		Templates map[string][]catalog2.StageTemplate    `json:"templates"`
+		Species   map[string]catalog.Species            `json:"species"`
+		Varieties map[string]map[string]catalog.Variety `json:"varieties"`
+		Templates map[string][]catalog.StageTemplate    `json:"templates"`
 	}{
 		Species:   r.species,
 		Varieties: r.varieties,
@@ -280,9 +280,9 @@ func (r *InMemoryCatalogRepository) Export() ([]byte, error) {
 // Import импортирует каталог из JSON
 func (r *InMemoryCatalogRepository) Import(data []byte) error {
 	var input struct {
-		Species   map[string]catalog2.Species            `json:"species"`
-		Varieties map[string]map[string]catalog2.Variety `json:"varieties"`
-		Templates map[string][]catalog2.StageTemplate    `json:"templates"`
+		Species   map[string]catalog.Species            `json:"species"`
+		Varieties map[string]map[string]catalog.Variety `json:"varieties"`
+		Templates map[string][]catalog.StageTemplate    `json:"templates"`
 	}
 
 	if err := json.Unmarshal(data, &input); err != nil {

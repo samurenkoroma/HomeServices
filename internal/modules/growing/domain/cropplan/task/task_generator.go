@@ -11,13 +11,13 @@ import (
 
 // TaskGenerator генерирует задания на основе фенологии
 type TaskGenerator struct {
-	phenologyService *phenology.PhenologyService
+	phenologyService phenology.PhenologyService
 	catalogRepo      catalog.Repository
 }
 
 // NewTaskGenerator создает новый генератор заданий
 func NewTaskGenerator(
-	phenologyService *phenology.PhenologyService,
+	phenologyService phenology.PhenologyService,
 	catalogRepo catalog.Repository,
 ) *TaskGenerator {
 	return &TaskGenerator{

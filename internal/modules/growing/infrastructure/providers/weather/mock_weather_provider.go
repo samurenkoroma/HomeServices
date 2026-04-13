@@ -11,7 +11,7 @@ type MockWeatherProvider struct {
 	// Генерирует идеальные температуры (20-25°C)
 }
 
-func NewMockWeatherProvider() *MockWeatherProvider {
+func NewMockWeatherProvider() phenology.WeatherProvider {
 	return &MockWeatherProvider{}
 }
 

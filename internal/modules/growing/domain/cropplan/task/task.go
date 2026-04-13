@@ -98,7 +98,7 @@ func NewTask(
 		BedID:      bedID,
 		AssignedTo: assignedTo,
 		Title:      title,
-		CreatedAt:  now,
+		//CreatedAt:  now,
 	})
 
 	return task, nil
@@ -129,8 +129,8 @@ func (t *Task) Start() error {
 	t.UpdatedAt = time.Now()
 
 	t.AddEvent(TaskStartedEvent{
-		TaskID:    t.ID,
-		StartedAt: time.Now(),
+		TaskID: t.ID,
+		//StartedAt: time.Now(),
 	})
 
 	return nil
@@ -152,8 +152,8 @@ func (t *Task) Complete(duration int, completedBy string) error {
 	t.AddEvent(TaskCompletedEvent{
 		TaskID:      t.ID,
 		CompletedBy: completedBy,
-		CompletedAt: now,
-		Duration:    duration,
+		//CompletedAt: now,
+		Duration: duration,
 	})
 
 	return nil
@@ -171,9 +171,9 @@ func (t *Task) Skip(reason string) error {
 	t.AddComment("system", reason)
 
 	t.AddEvent(TaskSkippedEvent{
-		TaskID:    t.ID,
-		Reason:    reason,
-		SkippedAt: time.Now(),
+		TaskID: t.ID,
+		Reason: reason,
+		//SkippedAt: time.Now(),
 	})
 
 	return nil

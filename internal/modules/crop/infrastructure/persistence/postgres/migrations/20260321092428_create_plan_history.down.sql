@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS crop_crop_plan_history;

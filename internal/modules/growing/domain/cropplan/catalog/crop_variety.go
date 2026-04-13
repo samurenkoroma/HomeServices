@@ -17,9 +17,11 @@ var (
 // Species - вид культуры (обобщенная информация)
 // Например: "Томат", "Огурец", "Баклажан"
 type Species struct {
-	Key         string `json:"key"`         // "tomato"
-	Name        string `json:"name"`        // "Томат"
-	Family      string `json:"family"`      // "nightshade"
+	Key         string `json:"key"`      // "tomato"
+	Name        string `json:"name"`     // "Томат"
+	Family      string `json:"family"`   // "nightshade"
+	Category    string `json:"category"` // "Овощные"
+	ImageUrl    string `json:"imageUrl"`
 	Description string `json:"description"` // описание культуры
 }
 
@@ -66,27 +68,32 @@ func (r SeedingRate) CalculateSeedsNeeded(areaM2 float64) (seeds int, weightKg f
 // Например: "Бычье сердце" (томат), "Алмаз" (баклажан)
 type Variety struct {
 	// Идентификация
-	ID          string `json:"id"`           // "bull_heart"
-	Name        string `json:"name"`         // "Бычье сердце"
-	SpeciesKey  string `json:"species_key"`  // ссылка на вид "tomato"
-	SpeciesName string `json:"species_name"` // денормализовано: "Томат"
+	ID          string `json:"id"`          // "bull_heart"
+	Name        string `json:"name"`        // "Бычье сердце"
+	SpeciesKey  string `json:"speciesKey"`  // ссылка на вид "tomato"
+	SpeciesName string `json:"speciesName"` // денормализовано: "Томат"
+
+	// Температурные параметры для GDD расчета
+	BaseTemperature float64 `json:"baseTemperature"` // Tbase (ниже которой рост останавливается)
+	MaxTemperature  float64 `json:"maxTemperature"`  // Tmax (выше которой рост не ускоряется)
 
 	// Период вегетации
-	DaysToMaturity int `json:"days_to_maturity"` // дней от посадки до сбора
+	DaysToMaturity int `json:"daysToMaturity"` // дней от посадки до сбора
 
 	// Фенология (GDD требования)
-	PhenophaseGDD []PhenophaseGDD `json:"phenophase_gdd"`
+	PhenophaseGDD []PhenophaseGDD `json:"phenophaseGDD"`
 
 	// Нормы высева (по способам выращивания)
-	SeedingRates map[string]SeedingRate `json:"seeding_rates"` // key: "open_ground", "greenhouse"
+	SeedingRates map[string]SeedingRate `json:"seedingRates"` // key: "open_ground", "greenhouse"
 
 	// Характеристики
-	YieldPotential     float64           `json:"yield_potential"`     // кг/м²
-	PlantHeight        float64           `json:"plant_height"`        // м
-	RecommendedSeasons []string          `json:"recommended_seasons"` // "spring", "summer"
-	GrowingTypes       []string          `json:"growing_types"`       // "open_ground", "greenhouse"
+	YieldPotential     float64           `json:"yieldPotential"`     // кг/м²
+	PlantHeight        float64           `json:"plantHeight"`        // м
+	RecommendedSeasons []string          `json:"recommendedSeasons"` // "spring", "summer"
+	GrowingTypes       []string          `json:"growingTypes"`       // "open_ground", "greenhouse"
 	Characteristics    map[string]string `json:"characteristics"`
 	Description        string            `json:"description"`
+	Image              string            `json:"image"`
 }
 
 // ========== МЕТОДЫ СОРТА ==========

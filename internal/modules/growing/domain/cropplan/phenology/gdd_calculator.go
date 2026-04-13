@@ -5,92 +5,79 @@ import (
 )
 
 // GDDCalculator рассчитывает накопленные градусо-дни
-// Использует метод Baskerville-Emin для более точного расчета
 type GDDCalculator struct {
-	baseTemperature float64 // базовая температура (ниже которой рост останавливается)
-	maxTemperature  float64 // максимальная температура для расчета
 }
 
 // NewGDDCalculator создает новый калькулятор GDD
-// baseTemp: базовая температура (для томатов 10°C, для огурцов 12°C)
-// maxTemp: максимальная температура (обычно 30°C)
-func NewGDDCalculator(baseTemp, maxTemp float64) *GDDCalculator {
-	return &GDDCalculator{
-		baseTemperature: baseTemp,
-		maxTemperature:  maxTemp,
-	}
+func NewGDDCalculator() *GDDCalculator {
+	return &GDDCalculator{}
 }
 
-// DailyGDD рассчитывает GDD за один день
-// Формула: GDD = (Tmin + Tmax)/2 - Tbase
-// С ограничениями: если Tmin < Tbase, то Tmin = Tbase
-//
-//	если Tmax > Tmax, то Tmax = Tmax
-func (c *GDDCalculator) DailyGDD(tMin, tMax float64) float64 {
+// DailyGDD принимает температуры как параметры
+func (c *GDDCalculator) DailyGDD(tMin, tMax, baseTemp, maxTemp float64) float64 {
 	// Ограничиваем температуры
-	if tMin < c.baseTemperature {
-		tMin = c.baseTemperature
+	if tMin < baseTemp {
+		tMin = baseTemp
 	}
-	if tMax > c.maxTemperature {
-		tMax = c.maxTemperature
+	if tMax > maxTemp {
+		tMax = maxTemp
 	}
 
-	// Средняя температура
 	tAvg := (tMin + tMax) / 2
+	gdd := tAvg - baseTemp
 
-	// GDD не может быть отрицательным
-	gdd := tAvg - c.baseTemperature
 	if gdd < 0 {
 		return 0
 	}
-
-	// Округляем до 1 десятичного знака
 	return math.Round(gdd*10) / 10
 }
 
 // DailyGDDWithSinusoidal рассчитывает GDD с использованием синусоидальной кривой
 // Более точный метод, учитывающий, что температура в течение дня меняется не линейно
-func (c *GDDCalculator) DailyGDDWithSinusoidal(tMin, tMax float64) float64 {
+// Формула: GDD = (Tmin+Tmax)/2 - Tbase + (Tmax-Tmin)/(2π)
+func (c *GDDCalculator) DailyGDDWithSinusoidal(tMin, tMax, baseTemp, maxTemp float64) float64 {
 	// Ограничиваем температуры
-	if tMin < c.baseTemperature {
-		tMin = c.baseTemperature
+	if tMin < baseTemp {
+		tMin = baseTemp
 	}
-	if tMax > c.maxTemperature {
-		tMax = c.maxTemperature
+	if tMax > maxTemp {
+		tMax = maxTemp
 	}
 
-	// Синусоидальная аппроксимация
-	// GDD = ∫(T(t) - Tbase)dt за день
-	// Приближенно: (Tmax + Tmin)/2 - Tbase + (Tmax - Tmin)/(2π)
-
+	// Средняя температура
 	tAvg := (tMin + tMax) / 2
+
+	// Амплитуда
 	amplitude := (tMax - tMin) / 2
 
-	// Коррекция на синусоидальность
-	correction := amplitude / math.Pi
+	// Синусоидальная коррекция
+	// Интеграл синусоиды за полпериода = 2 * amplitude / π
+	// Для целого дня: amplitude / π
+	sinusoidalCorrection := amplitude / math.Pi
 
-	gdd := (tAvg - c.baseTemperature) + correction
+	// GDD с коррекцией
+	gdd := (tAvg - baseTemp) + sinusoidalCorrection
+
 	if gdd < 0 {
 		return 0
 	}
-
 	return math.Round(gdd*10) / 10
 }
 
 // AccumulateGDD суммирует GDD за период
-func (c *GDDCalculator) AccumulateGDD(temps []DailyTemp) float64 {
+func (c *GDDCalculator) AccumulateGDD(temps []DailyTemp, baseTemp, maxTemp float64) float64 {
 	var total float64
 	for _, t := range temps {
-		total += c.DailyGDD(t.Min, t.Max)
+		total += c.DailyGDD(t.Min, t.Max, baseTemp, maxTemp)
 	}
 	return math.Round(total*10) / 10
 }
 
 // AccumulateGDDWithSinusoidal суммирует GDD с синусоидальным методом
-func (c *GDDCalculator) AccumulateGDDWithSinusoidal(temps []DailyTemp) float64 {
+func (c *GDDCalculator) AccumulateGDDWithSinusoidal(temps []DailyTemp, baseTemp, maxTemp float64) float64 {
 	var total float64
 	for _, t := range temps {
-		total += c.DailyGDDWithSinusoidal(t.Min, t.Max)
+		total += c.DailyGDDWithSinusoidal(t.Min, t.Max, baseTemp, maxTemp)
 	}
 	return math.Round(total*10) / 10
 }
@@ -99,6 +86,8 @@ func (c *GDDCalculator) AccumulateGDDWithSinusoidal(temps []DailyTemp) float64 {
 func (c *GDDCalculator) PredictDaysToTarget(
 	currentGDD, targetGDD float64,
 	recentTemps []DailyTemp,
+	baseTemp, maxTemp float64,
+	useSinusoidal bool,
 ) int {
 	if targetGDD <= currentGDD {
 		return 0
@@ -110,12 +99,16 @@ func (c *GDDCalculator) PredictDaysToTarget(
 		days = len(recentTemps)
 	}
 	if days == 0 {
-		return 14 // дефолтное значение, если нет данных
+		return 14
 	}
 
 	var sum float64
 	for i := len(recentTemps) - days; i < len(recentTemps); i++ {
-		sum += c.DailyGDD(recentTemps[i].Min, recentTemps[i].Max)
+		if useSinusoidal {
+			sum += c.DailyGDDWithSinusoidal(recentTemps[i].Min, recentTemps[i].Max, baseTemp, maxTemp)
+		} else {
+			sum += c.DailyGDD(recentTemps[i].Min, recentTemps[i].Max, baseTemp, maxTemp)
+		}
 	}
 	avgDailyGDD := sum / float64(days)
 

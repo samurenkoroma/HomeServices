@@ -1,0 +1,521 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Cropplan API - Система управления выращиванием культур",
+    "description": "API для планирования посевов, управления этапами, фенологией и заданиями агрономов",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Support Team",
+      "email": "support@cropplan.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://api.cropplan.com",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Commands",
+      "description": "Команды (изменение состояния)"
+    },
+    {
+      "name": "Queries",
+      "description": "Запросы (чтение данных)"
+    }
+  ],
+  "paths": {
+    "/commands/": {
+      "post": {
+        "tags": ["Commands"],
+        "summary": "Выполнение команды",
+        "description": "Универсальный эндпоинт для всех команд. В зависимости от поля 'command' выполняется соответствующее действие.",
+        "operationId": "executeCommand",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandRequest"
+              },
+              "examples": {
+                "CreateCropPlan": {
+                  "summary": "Создание плана",
+                  "value": {
+                    "command": "CreateCropPlan",
+                    "data": {
+                      "bed_id": "bed-123",
+                      "name": "Весенние томаты",
+                      "variety_id": "bull_heart",
+                      "season_start": "2024-03-01T00:00:00Z",
+                      "season_end": "2024-05-31T00:00:00Z",
+                      "planting_date": "2024-03-15T00:00:00Z",
+                      "latitude": 55.7558,
+                      "longitude": 37.6173,
+                      "assigned_to": "user-1",
+                      "assigned_name": "Иван Иванов"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Команда успешно выполнена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queries/": {
+      "post": {
+        "tags": ["Queries"],
+        "summary": "Выполнение запроса",
+        "description": "Универсальный эндпоинт для всех запросов. В зависимости от поля 'query' возвращаются соответствующие данные.",
+        "operationId": "executeQuery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              },
+              "examples": {
+                "GetCropPlan": {
+                  "summary": "Получение плана",
+                  "value": {
+                    "query": "GetCropPlan",
+                    "data": {
+                      "plan_id": "plan-123"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Запрос успешно выполнен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/CropPlanDTO" },
+                    { "$ref": "#/components/schemas/CurrentPhenologyResponse" },
+                    { "$ref": "#/components/schemas/DailyTasksResponse" },
+                    { "$ref": "#/components/schemas/PlanStatisticsResponse" },
+                    { "$ref": "#/components/schemas/SearchVarietiesResponse" },
+                    { "$ref": "#/components/schemas/RotationRecommendationsResponse" }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CommandRequest": {
+        "type": "object",
+        "required": ["command", "data"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Название команды",
+            "enum": [
+              "CreateCropPlan",
+              "ActivateCropPlan",
+              "CompleteCropPlan",
+              "CancelCropPlan",
+              "AddStage",
+              "StartStage",
+              "CompleteStage",
+              "SkipStage"
+            ],
+            "example": "CreateCropPlan"
+          },
+          "data": {
+            "type": "object",
+            "description": "Данные команды (зависят от типа команды)",
+            "additionalProperties": true
+          }
+        }
+      },
+      "QueryRequest": {
+        "type": "object",
+        "required": ["query", "data"],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Название запроса",
+            "enum": [
+              "GetCropPlan",
+              "ListCropPlans",
+              "GetCurrentPhenology",
+              "GetDailyTasks",
+              "GetPlanStatistics",
+              "SearchVarieties",
+              "GetRotationRecommendations"
+            ],
+            "example": "GetCropPlan"
+          },
+          "data": {
+            "type": "object",
+            "description": "Параметры запроса (зависят от типа запроса)",
+            "additionalProperties": true
+          }
+        }
+      },
+      "CommandResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Command executed successfully"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "plan_id is required"
+          },
+          "code": {
+            "type": "integer",
+            "example": 400
+          }
+        }
+      },
+      "CropPlanDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "plan-123" },
+          "bed_id": { "type": "string", "example": "bed-123" },
+          "name": { "type": "string", "example": "Весенние томаты" },
+          "variety_id": { "type": "string", "example": "bull_heart" },
+          "variety_name": { "type": "string", "example": "Бычье сердце" },
+          "crop_name": { "type": "string", "example": "Томат" },
+          "status": { "type": "string", "enum": ["draft", "active", "completed", "cancelled"] },
+          "status_text": { "type": "string", "example": "Активный" },
+          "season_start": { "type": "string", "format": "date-time" },
+          "season_end": { "type": "string", "format": "date-time" },
+          "planting_date": { "type": "string", "format": "date-time" },
+          "seeds_planted": { "type": "integer", "example": 350 },
+          "expected_yield": { "type": "number", "example": 850 },
+          "harvest_kg": { "type": "number", "example": 0 },
+          "progress": { "type": "number", "example": 65.5 },
+          "stages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StageDTO" }
+          },
+          "current_stage": { "$ref": "#/components/schemas/StageDTO" },
+          "assigned_to": { "type": "string", "example": "user-1" },
+          "assigned_name": { "type": "string", "example": "Иван Иванов" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "started_at": { "type": "string", "format": "date-time" },
+          "completed_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "StageDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "stage-456" },
+          "name": { "type": "string", "example": "Цветение" },
+          "type": { "type": "string", "example": "protection" },
+          "description": { "type": "string", "example": "Обработка от вредителей" },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "completed", "skipped"] },
+          "status_text": { "type": "string", "example": "В процессе" },
+          "order": { "type": "integer", "example": 4 },
+          "bbch_start": { "type": "integer", "example": 50 },
+          "bbch_end": { "type": "integer", "example": 69 },
+          "is_applicable": { "type": "boolean", "example": true },
+          "start_date": { "type": "string", "format": "date-time" },
+          "end_date": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CurrentPhenologyResponse": {
+        "type": "object",
+        "properties": {
+          "plan_id": { "type": "string", "example": "plan-123" },
+          "plan_name": { "type": "string", "example": "Весенние томаты" },
+          "variety_id": { "type": "string", "example": "bull_heart" },
+          "variety_name": { "type": "string", "example": "Бычье сердце" },
+          "accumulated_gdd": { "type": "number", "example": 680.5 },
+          "required_gdd_for_next": { "type": "number", "example": 800 },
+          "current_phase_code": { "type": "string", "example": "BBCH-61" },
+          "current_phase_name": { "type": "string", "example": "Цветение" },
+          "progress_percent": { "type": "number", "example": 75.5 },
+          "estimated_days_to_next_phase": { "type": "integer", "example": 5 },
+          "estimated_harvest_date": { "type": "string", "example": "2024-05-20" },
+          "deviation_days": { "type": "integer", "example": 2 },
+          "deviation_reason": { "type": "string", "example": "heat_wave" },
+          "is_critical": { "type": "boolean", "example": true },
+          "recommended_actions": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RecommendedAction" }
+          },
+          "available_stages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StageDTO" }
+          }
+        }
+      },
+      "RecommendedAction": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "example": "Обработка от вредителей" },
+          "description": { "type": "string", "example": "Опрыскивание от тли и клещей" },
+          "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+          "due_days": { "type": "integer", "example": 1 }
+        }
+      },
+      "DailyTasksResponse": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "example": "2024-01-15" },
+          "tasks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TaskDTO" }
+          },
+          "summary": { "$ref": "#/components/schemas/TaskSummary" }
+        }
+      },
+      "TaskDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "task-789" },
+          "plan_id": { "type": "string", "example": "plan-123" },
+          "bed_id": { "type": "string", "example": "bed-123" },
+          "type": { "type": "string", "example": "protection" },
+          "type_text": { "type": "string", "example": "Обработка" },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "completed", "skipped"] },
+          "status_text": { "type": "string", "example": "Ожидает" },
+          "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+          "priority_text": { "type": "string", "example": "Высокий" },
+          "priority_color": { "type": "string", "example": "#F44336" },
+          "title": { "type": "string", "example": "Обработка от вредителей" },
+          "description": { "type": "string", "example": "Опрыскивание от тли" },
+          "instructions": { "type": "string", "example": "1. Приготовить раствор..." },
+          "scheduled_date": { "type": "string", "format": "date-time" },
+          "due_date": { "type": "string", "format": "date-time" },
+          "is_overdue": { "type": "boolean", "example": false },
+          "estimated_duration": { "type": "integer", "example": 60 },
+          "actual_duration": { "type": "integer", "example": 45 },
+          "latitude": { "type": "number", "example": 55.7558 },
+          "longitude": { "type": "number", "example": 37.6173 },
+          "photos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PhotoDTO" }
+          },
+          "comments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CommentDTO" }
+          },
+          "completed_at": { "type": "string", "format": "date-time" },
+          "completed_by": { "type": "string", "example": "user-1" }
+        }
+      },
+      "PhotoDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "photo-123" },
+          "url": { "type": "string", "example": "https://storage.com/photo.jpg" },
+          "thumbnail": { "type": "string", "example": "https://storage.com/thumb.jpg" },
+          "taken_at": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string", "example": "После обработки" }
+        }
+      },
+      "CommentDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "comment-123" },
+          "user_id": { "type": "string", "example": "user-1" },
+          "user_name": { "type": "string", "example": "Иван Иванов" },
+          "text": { "type": "string", "example": "Выполнено" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TaskSummary": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 8 },
+          "completed": { "type": "integer", "example": 3 },
+          "pending": { "type": "integer", "example": 5 },
+          "overdue": { "type": "integer", "example": 1 },
+          "high_priority": { "type": "integer", "example": 2 },
+          "urgent_priority": { "type": "integer", "example": 1 }
+        }
+      },
+      "PlanStatisticsResponse": {
+        "type": "object",
+        "properties": {
+          "plan_id": { "type": "string", "example": "plan-123" },
+          "plan_name": { "type": "string", "example": "Весенние томаты" },
+          "variety_name": { "type": "string", "example": "Бычье сердце" },
+          "status": { "type": "string", "example": "active" },
+          "progress": { "type": "number", "example": 65.5 },
+          "completed_stages": { "type": "integer", "example": 4 },
+          "total_stages": { "type": "integer", "example": 7 },
+          "pending_stages": { "type": "integer", "example": 2 },
+          "in_progress_stages": { "type": "integer", "example": 1 },
+          "skipped_stages": { "type": "integer", "example": 0 },
+          "days_since_planting": { "type": "integer", "example": 45 },
+          "days_remaining": { "type": "integer", "example": 20 },
+          "days_to_harvest": { "type": "integer", "example": 20 },
+          "expected_yield": { "type": "number", "example": 850 },
+          "actual_yield": { "type": "number", "example": 320 },
+          "yield_efficiency": { "type": "number", "example": 37.6 },
+          "total_tasks": { "type": "integer", "example": 24 },
+          "completed_tasks": { "type": "integer", "example": 16 },
+          "pending_tasks": { "type": "integer", "example": 6 },
+          "overdue_tasks": { "type": "integer", "example": 2 },
+          "avg_task_completion_days": { "type": "number", "example": 2.5 },
+          "deviation_days": { "type": "integer", "example": 2 },
+          "recommendations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "SearchVarietiesResponse": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 2 },
+          "varieties": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/VarietyDTO" }
+          }
+        }
+      },
+      "VarietyDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "cherry" },
+          "name": { "type": "string", "example": "Черри" },
+          "species_key": { "type": "string", "example": "tomato" },
+          "species_name": { "type": "string", "example": "Томат" },
+          "days_to_maturity": { "type": "integer", "example": 90 },
+          "yield_potential": { "type": "number", "example": 5 },
+          "plant_height": { "type": "number", "example": 1.5 },
+          "recommended_seasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "growing_types": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "characteristics": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "description": { "type": "string" }
+        }
+      },
+      "RotationRecommendationsResponse": {
+        "type": "object",
+        "properties": {
+          "bed_id": { "type": "string", "example": "bed-123" },
+          "last_crop": { "$ref": "#/components/schemas/CropHistoryDTO" },
+          "recommended_crops": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CropFamilyDTO" }
+          },
+          "not_recommended_crops": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CropFamilyDTO" }
+          },
+          "recent_history": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CropHistoryDTO" }
+          },
+          "advice": { "type": "string" }
+        }
+      },
+      "CropFamilyDTO": {
+        "type": "object",
+        "properties": {
+          "family": { "type": "string", "example": "legumes" },
+          "name": { "type": "string", "example": "Бобовые" },
+          "description": { "type": "string" }
+        }
+      },
+      "CropHistoryDTO": {
+        "type": "object",
+        "properties": {
+          "crop_name": { "type": "string", "example": "Томат" },
+          "crop_family": { "type": "string", "example": "nightshade" },
+          "year": { "type": "integer", "example": 2023 },
+          "season": { "type": "string", "example": "summer" },
+          "harvested_at": { "type": "string", "example": "2023-08-15" }
+        }
+      }
+    }
+  }
+}

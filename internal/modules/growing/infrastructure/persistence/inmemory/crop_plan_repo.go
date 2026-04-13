@@ -13,8 +13,7 @@ type CropPlanRepo struct {
 	plans map[string]*cropplan.CropPlan
 }
 
-// NewCropPlanRepo создает новый in-memory репозиторий
-func NewCropPlanRepo() *CropPlanRepo {
+func NewCropPlanRepo() cropplan.Repository {
 	return &CropPlanRepo{
 		plans: make(map[string]*cropplan.CropPlan),
 	}

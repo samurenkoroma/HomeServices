@@ -2,34 +2,31 @@ package query
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/application/dto"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 )
 
-// GetCropPlanHandler запрос получения плана
-type GetCropPlanHandler struct {
-	PlanRepo cropplan.Repository
-}
-
 type GetCropPlanQuery struct {
 	PlanID string `json:"plan_id"`
 }
-
-func DecodeGetCropPlan(data []byte) (any, error) {
-	var q GetCropPlanQuery
-	if err := json.Unmarshal(data, &q); err != nil {
-		return nil, err
-	}
-	if q.PlanID == "" {
-		return nil, errors.New("plan_id is required")
-	}
-	return q, nil
+type getCropPlanHandler struct {
+	PlanRepo cropplan.Repository
 }
 
-func (h *GetCropPlanHandler) Handle(ctx context.Context, query any) (any, error) {
-	q, ok := query.(GetCropPlanQuery)
+func NewGetCropPlanHandler(PlanRepo cropplan.Repository) query.Handler {
+	return &getCropPlanHandler{
+		PlanRepo: PlanRepo,
+	}
+}
+
+func (h *getCropPlanHandler) Name() string {
+	return "GetCropPlan"
+}
+
+func (h *getCropPlanHandler) Handle(ctx context.Context, query any) (any, error) {
+	q, ok := query.(*GetCropPlanQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}

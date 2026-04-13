@@ -2,20 +2,33 @@ package query
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/application/dto"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
 )
 
-// GetCurrentPhenologyHandler запрос текущей фенологии
-type GetCurrentPhenologyHandler struct {
+type getCurrentPhenologyHandler struct {
 	PlanRepo         cropplan.Repository
 	CatalogRepo      catalog.Repository
-	PhenologyService *phenology.PhenologyService
+	PhenologyService phenology.PhenologyService
+}
+
+func (h *getCurrentPhenologyHandler) Name() string {
+	return "GetCurrentPhenology"
+}
+
+func NewGetCurrentPhenologyHandler(PlanRepo cropplan.Repository,
+	CatalogRepo catalog.Repository,
+	PhenologyService phenology.PhenologyService) query.Handler {
+	return &getCurrentPhenologyHandler{
+		PlanRepo:         PlanRepo,
+		CatalogRepo:      CatalogRepo,
+		PhenologyService: PhenologyService,
+	}
 }
 
 // GetCurrentPhenologyQuery параметры запроса
@@ -57,21 +70,9 @@ type GetCurrentPhenologyResponse struct {
 	AvailableStages []dto.StageDTO `json:"available_stages"`
 }
 
-// DecodeGetCurrentPhenology декодирует JSON в запрос
-func DecodeGetCurrentPhenology(data []byte) (any, error) {
-	var q GetCurrentPhenologyQuery
-	if err := json.Unmarshal(data, &q); err != nil {
-		return nil, err
-	}
-	if q.PlanID == "" {
-		return nil, errors.New("plan_id is required")
-	}
-	return q, nil
-}
-
 // Handle выполняет запрос
-func (h *GetCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any, error) {
-	q, ok := query.(GetCurrentPhenologyQuery)
+func (h *getCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any, error) {
+	q, ok := query.(*GetCurrentPhenologyQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}

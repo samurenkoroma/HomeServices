@@ -6,23 +6,28 @@ func init() {
 		Key:         "eggplant",
 		Name:        "Баклажан",
 		Family:      "nightshade",
+		Category:    "Овощные",
+		ImageUrl:    "https://images.pexels.com/photos/33567189/pexels-photo-33567189.jpeg",
 		Description: "Теплолюбивая овощная культура",
 	})
 
 	// Сорт "Алмаз"
 	diamond := Variety{
-		ID:                 "diamond",
-		Name:               "Алмаз",
-		SpeciesKey:         "eggplant",
-		SpeciesName:        "Баклажан",
+		ID:          "diamond",
+		Name:        "Алмаз",
+		SpeciesKey:  "eggplant",
+		SpeciesName: "Баклажан",
+		// Температуры для огурца (ДРУГИЕ!)
+		BaseTemperature:    13.0, // ← для огурца
+		MaxTemperature:     32.0, // ← для огурца
 		DaysToMaturity:     120,
 		YieldPotential:     6.0,
 		PlantHeight:        0.6,
 		RecommendedSeasons: []string{"spring", "summer"},
 		GrowingTypes:       []string{"open_ground", "greenhouse"},
 		Characteristics: map[string]string{
-			"fruit_weight": "100-150g",
-			"fruit_color":  "темно-фиолетовый",
+			"fruitWeight": "100-150g",
+			"fruitColor":  "темно-фиолетовый",
 		},
 		Description: "Среднеспелый сорт",
 

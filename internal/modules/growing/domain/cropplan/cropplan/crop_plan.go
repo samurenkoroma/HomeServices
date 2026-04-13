@@ -124,7 +124,6 @@ func NewCropPlan(
 		VarietyName:  varietyName,
 		CropName:     cropName,
 		PlantingDate: plantingDate,
-		OccurredAt:   now,
 	})
 
 	return plan, nil
@@ -174,13 +173,12 @@ func (p *CropPlan) AddStage(stage Stage) error {
 	p.updatedAt = time.Now()
 
 	p.AddEvent(StageAddedEvent{
-		PlanID:     p.id,
-		StageID:    stage.ID,
-		StageName:  stage.Name,
-		BBCHStart:  stage.BBCHStart,
-		BBCHEnd:    stage.BBCHEnd,
-		Order:      stage.Order,
-		OccurredAt: time.Now(),
+		PlanID:    p.id,
+		StageID:   stage.ID,
+		StageName: stage.Name,
+		BBCHStart: stage.BBCHStart,
+		BBCHEnd:   stage.BBCHEnd,
+		Order:     stage.Order,
 	})
 
 	return nil
@@ -375,7 +373,6 @@ func (p *CropPlan) Activate() error {
 	p.AddEvent(CropPlanActivatedEvent{
 		PlanID:      p.id,
 		ActivatedAt: now,
-		OccurredAt:  now,
 	})
 
 	return nil
@@ -403,7 +400,6 @@ func (p *CropPlan) complete() {
 		PlanID:      p.id,
 		CompletedAt: now,
 		HarvestKg:   p.harvestKg,
-		OccurredAt:  now,
 	})
 }
 
@@ -431,7 +427,6 @@ func (p *CropPlan) Cancel(reason string) error {
 		PlanID:      p.id,
 		Reason:      reason,
 		CancelledAt: time.Now(),
-		OccurredAt:  time.Now(),
 	})
 
 	return nil

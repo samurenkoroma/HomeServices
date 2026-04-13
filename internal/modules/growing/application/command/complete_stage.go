@@ -2,78 +2,71 @@ package command
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
-
-	"samurenkoroma/services/internal/common/application/uow"
-	"samurenkoroma/services/internal/growing/cropplan/cropplan"
+	"samurenkoroma/services/internal/application/command"
+	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 )
 
 // CompleteStageHandler команда завершения этапа
-type CompleteStageHandler struct {
-	UowFactory uow.Factory
+type completeStageHandler struct {
+	uowFactory repository.Factory
+}
+
+func (h *completeStageHandler) Name() string {
+	return "CompleteStage"
 }
 
 // CompleteStageCmd структура команды
 type CompleteStageCmd struct {
-	PlanID  string `json:"plan_id"`
-	StageID string `json:"stage_id"`
+	PlanID  string `json:"planId"`
+	StageID string `json:"stageId"`
 }
 
-// DecodeCompleteStage декодирует JSON в команду
-func DecodeCompleteStage(data []byte) (any, error) {
-	var cmd CompleteStageCmd
-	if err := json.Unmarshal(data, &cmd); err != nil {
-		return nil, fmt.Errorf("failed to decode CompleteStage command: %w", err)
+func NewCompleteStageCommand(uowFactory repository.Factory) command.Handler {
+	return &completeStageHandler{
+		uowFactory: uowFactory,
 	}
-
-	if cmd.PlanID == "" {
-		return nil, errors.New("plan_id is required")
-	}
-	if cmd.StageID == "" {
-		return nil, errors.New("stage_id is required")
-	}
-
-	return cmd, nil
 }
 
 // Handle выполняет команду
-func (h *CompleteStageHandler) Handle(ctx context.Context, cmd any) error {
+func (h *completeStageHandler) Handle(ctx context.Context, cmd any) error {
 	c, ok := cmd.(CompleteStageCmd)
 	if !ok {
-		return errors.New("invalid command type")
+		return command.ErrInvalidCommandType
 	}
 
-	// Начинаем транзакцию
-	uowObj, err := h.UowFactory.Begin(ctx)
+	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin unit of work: %w", err)
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer uowObj.Rollback()
 
-	// Получаем план
-	planRepo := uowObj.CropPlans()
-	plan, err := planRepo.FindByID(ctx, c.PlanID)
+	err = uow.Execute(ctx, inmemory.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
+		// Приводим провайдер к нужному типу
+		growingProvider, ok := provider.(*inmemory.GrowingProvider)
+		if !ok {
+			return fmt.Errorf("expected FarmProvider, got %T", provider)
+		}
+		// Получаем план
+		plan, err := growingProvider.CropPlans().FindByID(ctx, c.PlanID)
+		if err != nil {
+			return fmt.Errorf("failed to find plan: %w", err)
+		}
+
+		if err := plan.CompleteStage(c.StageID); err != nil {
+			return fmt.Errorf("failed to complete stage: %w", err)
+		}
+
+		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+			return err
+		}
+
+		uow.RegisterAggregate(plan)
+		return nil
+
+	})
 	if err != nil {
-		return fmt.Errorf("failed to find plan: %w", err)
+		return err
 	}
-
-	// Завершаем этап
-	if err := plan.CompleteStage(c.StageID); err != nil {
-		return fmt.Errorf("failed to complete stage: %w", err)
-	}
-
-	// Сохраняем изменения
-	if err := planRepo.Update(ctx, plan); err != nil {
-		return fmt.Errorf("failed to update plan: %w", err)
-	}
-
-	uowObj.RegisterAggregate(plan)
-
-	if err := uowObj.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
 	return nil
 }
