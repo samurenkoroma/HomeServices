@@ -95,7 +95,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 		return err
 	}
 	pr := inmemory2.NewGrowingProvider(tx).(*inmemory2.GrowingProvider)
-	queryRouter.Register(growingQueries.NewSearchVarietiesHandler(uowFactory), utils.DecodeJSON[growingQueries.SearchVarietiesQuery])
+	queryRouter.Register(growingQueries.NewListVarietiesHandler(uowFactory), utils.DecodeJSON[growingQueries.ListVarietiesQuery])
 	queryRouter.Register(growingQueries.NewGetSpeciesHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetSpeciesQuery])
 	queryRouter.Register(growingQueries.NewGetVarietyHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetVarietyQuery])
 	queryRouter.Register(growingQueries.NewGetCropPlanHandler(pr.CropPlans()), utils.DecodeJSON[growingQueries.GetCropPlanQuery])

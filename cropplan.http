@@ -2,8 +2,9 @@ POST http://localhost:8080/queries/
 Content-Type: application/json
 
 {
-  "query": "SearchVarieties",
+  "query": "ListVarieties",
   "data": {
+    "speciesKey": "tomato"
   }
 }
 ###
@@ -26,6 +27,17 @@ Content-Type: application/json
   "query": "GetSpecies",
   "data": {
     "key": "tomato"
+  }
+}
+###
+POST http://localhost:8080/queries/
+Content-Type: application/json
+
+{
+  "query": "GetVariety",
+  "data": {
+    "key": "pea",
+    "id": "madonna"
   }
 }
 ###

@@ -20,6 +20,7 @@ type GrowingProvider struct {
 	phenologyService phenology.PhenologyService
 
 	oncePlan sync.Once
+	instance *GrowingProvider
 }
 
 var (
@@ -32,10 +33,12 @@ func (p *GrowingProvider) ProviderName() string {
 }
 
 func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
-
-	return &GrowingProvider{
-		tx: tx,
-	}
+	once.Do(func() {
+		instance = &GrowingProvider{
+			tx: tx,
+		}
+	})
+	return instance
 }
 
 func (p *GrowingProvider) PhenologyService() phenology.PhenologyService {

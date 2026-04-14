@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
+	"strings"
 )
 
 // CatalogRepository реализация репозитория каталога для PostgreSQL
@@ -14,7 +15,7 @@ type CatalogRepository struct {
 }
 
 // NewCatalogRepository создает новый репозиторий каталога
-func NewCatalogRepository(tx *sql.Tx) catalog.Repository {
+func NewCatalogRepository(tx *sql.Tx) *CatalogRepository {
 	return &CatalogRepository{tx: tx}
 }
 
@@ -166,15 +167,16 @@ func (r *CatalogRepository) DeleteSpecies(ctx context.Context, key string) error
 
 // GetVariety возвращает сорт по ID
 func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyID string) (*catalog.Variety, error) {
-	// Если speciesKey не указан, найдем по varietyID
 	var query string
 	var args []interface{}
 
 	if speciesKey != "" {
 		query = `
             SELECT id, name, species_key, species_name, base_temperature, max_temperature,
-                   days_to_maturity, yield_potential, plant_height, recommended_seasons,
-                   growing_types, characteristics, description, water_requirement,
+                   days_to_maturity, yield_potential, plant_height, 
+                   COALESCE(recommended_seasons, '{}') as recommended_seasons,
+                   COALESCE(growing_types, '{}') as growing_types,
+                   characteristics, description, water_requirement,
                    light_requirement, phenophase_gdd, seeding_rates
             FROM public.growing_varieties
             WHERE id = $1 AND species_key = $2
@@ -183,8 +185,10 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
 	} else {
 		query = `
             SELECT id, name, species_key, species_name, base_temperature, max_temperature,
-                   days_to_maturity, yield_potential, plant_height, recommended_seasons,
-                   growing_types, characteristics, description, water_requirement,
+                   days_to_maturity, yield_potential, plant_height,
+                   COALESCE(recommended_seasons, '{}') as recommended_seasons,
+                   COALESCE(growing_types, '{}') as growing_types,
+                   characteristics, description, water_requirement,
                    light_requirement, phenophase_gdd, seeding_rates
             FROM public.growing_varieties
             WHERE id = $1
@@ -193,7 +197,7 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
 	}
 
 	var variety catalog.Variety
-	var recommendedSeasons, growingTypes []string
+	var recommendedSeasonsStr, growingTypesStr string // ПРОМЕЖУТОЧНЫЕ ПЕРЕМЕННЫЕ ДЛЯ МАССИВОВ
 	var characteristicsJSON, waterReqJSON, lightReqJSON, phenophaseJSON, seedingRatesJSON []byte
 
 	err := r.tx.QueryRowContext(ctx, query, args...).Scan(
@@ -206,8 +210,8 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
 		&variety.DaysToMaturity,
 		&variety.YieldPotential,
 		&variety.PlantHeight,
-		&recommendedSeasons,
-		&growingTypes,
+		&recommendedSeasonsStr,
+		&growingTypesStr,
 		&characteristicsJSON,
 		&variety.Description,
 		&waterReqJSON,
@@ -222,29 +226,40 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
 		return nil, fmt.Errorf("failed to get variety: %w", err)
 	}
 
+	// Парсим массивы PostgreSQL в []string
+	variety.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
+	variety.GrowingTypes = parsePostgresArray(growingTypesStr)
+
 	// Декодируем JSON поля
-	if err := json.Unmarshal(characteristicsJSON, &variety.Characteristics); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal characteristics: %w", err)
+	if len(characteristicsJSON) > 0 {
+		if err := json.Unmarshal(characteristicsJSON, &variety.Characteristics); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal characteristics: %w", err)
+		}
 	}
 
-	if err := json.Unmarshal(waterReqJSON, &variety.WaterRequirement); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal water requirement: %w", err)
+	if len(waterReqJSON) > 0 {
+		if err := json.Unmarshal(waterReqJSON, &variety.WaterRequirement); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal water requirement: %w", err)
+		}
 	}
 
-	if err := json.Unmarshal(lightReqJSON, &variety.LightRequirement); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal light requirement: %w", err)
+	if len(lightReqJSON) > 0 {
+		if err := json.Unmarshal(lightReqJSON, &variety.LightRequirement); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal light requirement: %w", err)
+		}
 	}
 
-	if err := json.Unmarshal(phenophaseJSON, &variety.PhenophaseGDD); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal phenophase: %w", err)
+	if len(phenophaseJSON) > 0 {
+		if err := json.Unmarshal(phenophaseJSON, &variety.PhenophaseGDD); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal phenophase: %w", err)
+		}
 	}
 
-	if err := json.Unmarshal(seedingRatesJSON, &variety.SeedingRates); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal seeding rates: %w", err)
+	if len(seedingRatesJSON) > 0 {
+		if err := json.Unmarshal(seedingRatesJSON, &variety.SeedingRates); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal seeding rates: %w", err)
+		}
 	}
-
-	variety.RecommendedSeasons = recommendedSeasons
-	variety.GrowingTypes = growingTypes
 
 	return &variety, nil
 }
@@ -253,8 +268,10 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
 func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string) ([]catalog.Variety, error) {
 	query := `
         SELECT id, name, species_key, species_name, base_temperature, max_temperature,
-               days_to_maturity, yield_potential, plant_height, recommended_seasons,
-               growing_types, characteristics, description, water_requirement,
+               days_to_maturity, yield_potential, plant_height,
+               COALESCE(recommended_seasons, '{}') as recommended_seasons,
+               COALESCE(growing_types, '{}') as growing_types,
+               characteristics, description, water_requirement,
                light_requirement, phenophase_gdd, seeding_rates
         FROM public.growing_varieties
         WHERE species_key = $1
@@ -270,7 +287,7 @@ func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string
 	var varieties []catalog.Variety
 	for rows.Next() {
 		var v catalog.Variety
-		var recommendedSeasons, growingTypes []string
+		var recommendedSeasonsStr, growingTypesStr string
 		var characteristicsJSON, waterReqJSON, lightReqJSON, phenophaseJSON, seedingRatesJSON []byte
 
 		err := rows.Scan(
@@ -283,8 +300,8 @@ func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string
 			&v.DaysToMaturity,
 			&v.YieldPotential,
 			&v.PlantHeight,
-			&recommendedSeasons,
-			&growingTypes,
+			&recommendedSeasonsStr,
+			&growingTypesStr,
 			&characteristicsJSON,
 			&v.Description,
 			&waterReqJSON,
@@ -296,15 +313,14 @@ func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string
 			return nil, fmt.Errorf("failed to scan variety: %w", err)
 		}
 
-		// Декодируем JSON
+		v.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
+		v.GrowingTypes = parsePostgresArray(growingTypesStr)
+
 		json.Unmarshal(characteristicsJSON, &v.Characteristics)
 		json.Unmarshal(waterReqJSON, &v.WaterRequirement)
 		json.Unmarshal(lightReqJSON, &v.LightRequirement)
 		json.Unmarshal(phenophaseJSON, &v.PhenophaseGDD)
 		json.Unmarshal(seedingRatesJSON, &v.SeedingRates)
-
-		v.RecommendedSeasons = recommendedSeasons
-		v.GrowingTypes = growingTypes
 
 		varieties = append(varieties, v)
 	}
@@ -316,8 +332,10 @@ func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string
 func (r *CatalogRepository) SearchVarieties(ctx context.Context, filter catalog.VarietyFilter) ([]catalog.Variety, error) {
 	query := `
         SELECT id, name, species_key, species_name, base_temperature, max_temperature,
-               days_to_maturity, yield_potential, plant_height, recommended_seasons,
-               growing_types, characteristics, description, water_requirement,
+               days_to_maturity, yield_potential, plant_height,
+               COALESCE(recommended_seasons, '{}') as recommended_seasons,
+               COALESCE(growing_types, '{}') as growing_types,
+               characteristics, description, water_requirement,
                light_requirement, phenophase_gdd, seeding_rates
         FROM public.growing_varieties
         WHERE 1=1
@@ -366,7 +384,7 @@ func (r *CatalogRepository) SearchVarieties(ctx context.Context, filter catalog.
 	var varieties []catalog.Variety
 	for rows.Next() {
 		var v catalog.Variety
-		var recommendedSeasons, growingTypes []string
+		var recommendedSeasonsStr, growingTypesStr string
 		var characteristicsJSON, waterReqJSON, lightReqJSON, phenophaseJSON, seedingRatesJSON []byte
 
 		err := rows.Scan(
@@ -379,8 +397,8 @@ func (r *CatalogRepository) SearchVarieties(ctx context.Context, filter catalog.
 			&v.DaysToMaturity,
 			&v.YieldPotential,
 			&v.PlantHeight,
-			&recommendedSeasons,
-			&growingTypes,
+			&recommendedSeasonsStr,
+			&growingTypesStr,
 			&characteristicsJSON,
 			&v.Description,
 			&waterReqJSON,
@@ -392,14 +410,14 @@ func (r *CatalogRepository) SearchVarieties(ctx context.Context, filter catalog.
 			return nil, fmt.Errorf("failed to scan variety: %w", err)
 		}
 
+		v.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
+		v.GrowingTypes = parsePostgresArray(growingTypesStr)
+
 		json.Unmarshal(characteristicsJSON, &v.Characteristics)
 		json.Unmarshal(waterReqJSON, &v.WaterRequirement)
 		json.Unmarshal(lightReqJSON, &v.LightRequirement)
 		json.Unmarshal(phenophaseJSON, &v.PhenophaseGDD)
 		json.Unmarshal(seedingRatesJSON, &v.SeedingRates)
-
-		v.RecommendedSeasons = recommendedSeasons
-		v.GrowingTypes = growingTypes
 
 		varieties = append(varieties, v)
 	}
@@ -706,4 +724,33 @@ func (r *CatalogRepository) DeleteAllStageTemplates(ctx context.Context, species
 	}
 
 	return nil
+}
+
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+// parsePostgresArray преобразует строку массива PostgreSQL в []string
+// Формат PostgreSQL массива: {value1,value2,value3} или {"value with space","value2"}
+func parsePostgresArray(arrStr string) []string {
+	if arrStr == "" || arrStr == "{}" {
+		return []string{}
+	}
+
+	// Убираем фигурные скобки
+	content := arrStr[1 : len(arrStr)-1]
+	if content == "" {
+		return []string{}
+	}
+
+	// Разделяем по запятой
+	parts := strings.Split(content, ",")
+	result := make([]string, 0, len(parts))
+
+	for _, p := range parts {
+		// Убираем кавычки, если есть
+		p = strings.TrimSpace(p)
+		p = strings.Trim(p, "\"")
+		result = append(result, p)
+	}
+
+	return result
 }
