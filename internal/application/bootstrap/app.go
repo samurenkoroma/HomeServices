@@ -17,6 +17,7 @@ import (
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
 	growingQueries "samurenkoroma/services/internal/modules/growing/application/query"
 	inmemory2 "samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -83,6 +84,7 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	commandRouter.Register(growingCommands.NewCreateCropPlanHandler(uowFactory), utils.DecodeJSON[growingCommands.CreateCropPlanCmd])
 	commandRouter.Register(growingCommands.NewSkipStageCommand(uowFactory), utils.DecodeJSON[growingCommands.SkipStageCmd])
 	commandRouter.Register(growingCommands.NewStartStageCommand(uowFactory), utils.DecodeJSON[growingCommands.StartStageCmd])
+	commandRouter.Register(growingCommands.NewCreateSeasonHandler(uowFactory), utils.DecodeJSON[growingCommands.CreateSeasonCmd])
 	//commandRouter.Register(growingCommands.NewActivateSeasonCommand(uowFactory), utils.DecodeJSON[growingCommands.ActivateSeasonCmd])
 	//commandRouter.Register(growingCommands.NewRecordOperationHandler(uowFactory), utils.DecodeJSON[growingCommands.RecordOperationCmd])
 	//commandRouter.Register(growingCommands.NewConfigureAreaHandler(uowFactory), utils.DecodeJSON[growingCommands.ConfigureAreaCmd])
@@ -94,7 +96,8 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	if err != nil {
 		return err
 	}
-	pr := inmemory2.NewGrowingProvider(tx).(*inmemory2.GrowingProvider)
+	pr := postgres.NewPostgresGrowingProvider(tx).(*inmemory2.RedisGrowingProvider)
+	queryRouter.Register(growingQueries.ListSeasonsHandler(pr.Seasons()), utils.DecodeJSON[growingQueries.ListSeasonsQuery])
 	queryRouter.Register(growingQueries.NewListVarietiesHandler(uowFactory), utils.DecodeJSON[growingQueries.ListVarietiesQuery])
 	queryRouter.Register(growingQueries.NewGetSpeciesHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetSpeciesQuery])
 	queryRouter.Register(growingQueries.NewGetVarietyHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetVarietyQuery])

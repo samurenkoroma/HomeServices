@@ -5,15 +5,14 @@ import (
 	"time"
 )
 
-// CropPlanCreatedEvent событие создания плана
 type CropPlanCreatedEvent struct {
 	event.BaseEvent
 	PlanID       string
-	BedID        string
+	AreaId       string
 	Name         string
 	VarietyID    string
 	VarietyName  string
-	CropName     string
+	SpeciesName  string
 	PlantingDate time.Time
 }
 

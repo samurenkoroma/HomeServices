@@ -6,7 +6,6 @@ func NewUUID() string {
 	return uuid.New().String()
 }
 
-func IsValidUUID(u string) bool {
-	_, err := uuid.Parse(u)
-	return err == nil
+func UUIDIsValid(u string) bool {
+	return uuid.Validate(u) == nil
 }

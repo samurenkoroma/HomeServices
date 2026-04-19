@@ -48,9 +48,9 @@ func (h *addStageHandler) Handle(ctx context.Context, cmd any) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	err = uow.Execute(ctx, inmemory.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
-		growingProvider, ok := provider.(*inmemory.GrowingProvider)
+		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
 		if !ok {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}

@@ -36,8 +36,8 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	return uow.Execute(ctx, postgres.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
-		growingProvider, ok := provider.(*postgres.GrowingProvider)
+	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
+		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
 			return fmt.Errorf("invalid provider type")
 		}

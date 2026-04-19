@@ -49,7 +49,7 @@ func (h *listVarietiesHandler) Handle(ctx context.Context, query any) (any, erro
 	}
 
 	uow, _ := h.uowFactory.Begin(ctx)
-	pr := inmemory.NewGrowingProvider(uow.Tx()).(*inmemory.GrowingProvider)
+	pr := inmemory.NewRedisGrowingProvider(uow.Tx()).(*inmemory.RedisGrowingProvider)
 
 	// Ищем сорта
 	return pr.Catalogs().ListVarieties(ctx, q.SpeciesKey)

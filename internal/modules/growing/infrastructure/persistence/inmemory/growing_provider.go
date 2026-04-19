@@ -7,41 +7,40 @@ import (
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
+	"samurenkoroma/services/internal/modules/growing/domain/season"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/providers/weather"
 	"sync"
 )
 
-type GrowingProvider struct {
+type RedisGrowingProvider struct {
 	tx               *sql.Tx
 	tasks            task.Repository
 	cropplans        cropplan.Repository
 	catalogs         catalog.Repository
 	phenologyService phenology.PhenologyService
+	seasons          season.Repository
 
 	oncePlan sync.Once
-	instance *GrowingProvider
 }
 
 var (
-	instance *GrowingProvider
+	instance *RedisGrowingProvider
 	once     sync.Once
 )
 
-func (p *GrowingProvider) ProviderName() string {
+func (p *RedisGrowingProvider) ProviderName() string {
 	return "growing"
 }
 
-func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
-	once.Do(func() {
-		instance = &GrowingProvider{
-			tx: tx,
-		}
-	})
-	return instance
+func NewRedisGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
+	return &RedisGrowingProvider{
+		tx: tx,
+	}
+
 }
 
-func (p *GrowingProvider) PhenologyService() phenology.PhenologyService {
+func (p *RedisGrowingProvider) PhenologyService() phenology.PhenologyService {
 	if p.phenologyService == nil {
 
 		p.phenologyService = phenology.NewPhenologyService(
@@ -53,20 +52,27 @@ func (p *GrowingProvider) PhenologyService() phenology.PhenologyService {
 	return p.phenologyService
 }
 
-func (p *GrowingProvider) CropPlans() cropplan.Repository {
+func (p *RedisGrowingProvider) CropPlans() cropplan.Repository {
 	p.oncePlan.Do(func() {
 		p.cropplans = NewCropPlanRepo()
 	})
 	return p.cropplans
 }
 
-func (p *GrowingProvider) Catalogs() catalog.Repository {
+func (p *RedisGrowingProvider) Seasons() season.Repository {
+	if p.seasons == nil {
+		p.seasons = postgres.NewSeasonRepository(p.tx)
+	}
+	return p.seasons
+}
+
+func (p *RedisGrowingProvider) Catalogs() catalog.Repository {
 	if p.catalogs == nil {
 		p.catalogs = postgres.NewCatalogRepository(p.tx)
 	}
 	return p.catalogs
 }
-func (p *GrowingProvider) Tasks() task.Repository {
+func (p *RedisGrowingProvider) Tasks() task.Repository {
 	if p.tasks == nil {
 		p.tasks = NewTaskRepo()
 	}

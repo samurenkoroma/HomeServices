@@ -115,6 +115,18 @@ type Variety struct {
 	Image              string            `json:"image"`
 }
 
+func (v *Variety) GetId() string {
+	return v.ID
+}
+
+func (v *Variety) GetName() string {
+	return v.Name
+}
+
+func (v *Variety) GetSpeciesName() string {
+	return v.SpeciesName
+}
+
 // ========== МЕТОДЫ СОРТА ==========
 
 // GetPhaseByGDD возвращает текущую фазу по накопленному GDD

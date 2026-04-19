@@ -72,7 +72,7 @@ func (r *CropPlanRepo) Delete(ctx context.Context, id string) error {
 }
 
 // FindByBed находит все планы на грядке
-func (r *CropPlanRepo) FindByBed(ctx context.Context, bedID string) ([]*cropplan.CropPlan, error) {
+func (r *CropPlanRepo) FindByArea(ctx context.Context, bedID string) ([]*cropplan.CropPlan, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 

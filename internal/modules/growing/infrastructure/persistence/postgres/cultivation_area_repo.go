@@ -22,7 +22,6 @@ func NewCultivationAreaRepository(tx *sql.Tx) cultivationarea.Repository {
 }
 
 // Save сохраняет место выращивания
-// Save сохраняет место выращивания
 func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationarea.CultivationArea) error {
 	query := `
         INSERT INTO public.growing_cultivation_areas (

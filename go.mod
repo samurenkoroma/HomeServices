@@ -1,4 +1,4 @@
-module samurenkoroma/services
+	module samurenkoroma/services
 
 go 1.25.0
 

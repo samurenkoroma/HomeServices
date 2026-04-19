@@ -34,7 +34,7 @@ func (r *seasonRepo) Save(ctx context.Context, s *season.Season) error {
     `
 
 	_, err := r.tx.ExecContext(ctx, query,
-		string(s.GetID()),
+		string(s.GetId()),
 		s.GetName(),
 		s.GetStartDate(),
 		s.GetEndDate(),

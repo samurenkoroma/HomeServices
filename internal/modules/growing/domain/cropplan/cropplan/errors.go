@@ -4,9 +4,10 @@ import "errors"
 
 var (
 	// Общие ошибки
-	ErrPlanNotFound  = errors.New("crop plan not found")
-	ErrInvalidPlanID = errors.New("invalid plan id")
-	ErrInvalidBedID  = errors.New("invalid bed id")
+	ErrPlanNotFound   = errors.New("crop plan not found")
+	ErrInvalidPlanID  = errors.New("invalid plan id")
+	ErrAreaRequired   = errors.New("area is required")
+	ErrSeasonRequired = errors.New("season is required")
 
 	// Ошибки статуса
 	ErrPlanNotDraft         = errors.New("plan is not in draft status")

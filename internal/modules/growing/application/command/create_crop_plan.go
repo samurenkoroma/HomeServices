@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/core/domain/types"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
+	"samurenkoroma/services/internal/modules/growing/domain/season"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // CreateCropPlanHandler команда создания плана
@@ -28,17 +29,13 @@ func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
 
 // CreateCropPlanCmd структура команды
 type CreateCropPlanCmd struct {
-	BedID        string    `json:"bedId"`
+	AreaID       string    `json:"areaID"`
 	Name         string    `json:"name"`
 	VarietyID    string    `json:"varietyId"`
 	SpeciesKey   string    `json:"speciesKey"`
-	SeasonStart  time.Time `json:"seasonStart"`
-	SeasonEnd    time.Time `json:"seasonEnd"`
+	SeasonId     string    `json:"seasonId"`
 	PlantingDate time.Time `json:"plantingDate"`
-	Latitude     float64   `json:"latitude"`
-	Longitude    float64   `json:"longitude"`
 	AssignedTo   string    `json:"assignedTo"`
-	AssignedName string    `json:"assignedName"`
 }
 
 // Handle выполняет команду
@@ -53,9 +50,9 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	err = uow.Execute(ctx, inmemory.NewGrowingProvider, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
-		growingProvider, ok := provider.(*inmemory.GrowingProvider)
+		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
 		if !ok {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
@@ -65,22 +62,20 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 			return fmt.Errorf("variety not found: %w", err)
 		}
 
+		seasons, err := growingProvider.Seasons().FindByID(ctx, season.SeasonID(c.SeasonId))
+		if err != nil {
+			return fmt.Errorf("variety not found: %w", err)
+		}
+
 		// Создаем план
-		planID := uuid.New().String()
 		plan, err := cropplan.NewCropPlan(
-			planID,
-			c.BedID,
+			types.NewUUID(),
 			c.Name,
-			c.VarietyID,
-			variety.Name,
-			variety.SpeciesName,
-			c.SeasonStart,
-			c.SeasonEnd,
 			c.PlantingDate,
-			c.Latitude,
-			c.Longitude,
+			cropplan.Area{Id: c.AreaID},
+			seasons,
+			variety,
 			c.AssignedTo,
-			c.AssignedName,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create plan: %w", err)

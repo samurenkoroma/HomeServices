@@ -51,13 +51,9 @@ Content-Type: application/json
     "name": "Весенние томаты 2024",
     "speciesKey": "tomato",
     "varietyId": "bull_heart",
-    "seasonStart": "2024-03-01T00:00:00Z",
-    "seasonEnd": "2024-05-31T00:00:00Z",
+    "seasonId": "season-1",
     "plantingDate": "2024-03-15T00:00:00Z",
-    "latitude": 55.7558,
-    "longitude": 37.6173,
-    "assignedTo": "user-1",
-    "assignedName": "Иван Иванов"
+    "assignedTo": "user-1"
   }
 }
 

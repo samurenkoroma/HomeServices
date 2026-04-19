@@ -18,29 +18,34 @@ const (
 	StatusCancelled Status = "cancelled"
 )
 
-// CropPlan план выращивания
+type Area interface {
+	GetId() string
+}
+type Variety interface {
+	GetId() string
+	GetName() string
+	GetSpeciesName() string
+}
+type Season interface {
+	GetId() string
+	IsFinished() bool
+}
+
 type CropPlan struct {
 	aggregate.BaseAggregate
 
 	// Идентификация
-	id    string
-	bedID string
-	name  string
+	id      string
+	name    string
+	area    Area
+	variety Variety
+	season  Season
 
-	// Сорт
-	varietyID   string
-	varietyName string
-	cropName    string
-
-	// Сезон и посадка
-	seasonStart  time.Time
-	seasonEnd    time.Time
 	plantingDate time.Time
 
-	// Агрономические данные
-	seedsPlanted  int
-	expectedYield float64
-	harvestKg     float64
+	harvestKg float64
+
+	metadata map[string]interface{}
 
 	// Статус и этапы
 	status Status
@@ -52,77 +57,64 @@ type CropPlan struct {
 	startedAt   *time.Time
 	completedAt *time.Time
 
-	// Геолокация (для погоды)
-	latitude  float64
-	longitude float64
-
 	// Ответственный агроном
-	assignedTo   string
-	assignedName string
+	assignedTo string
 }
 
 // NewCropPlan создает новый план
 func NewCropPlan(
-	id, bedID, name string,
-	varietyID, varietyName, cropName string,
-	seasonStart, seasonEnd, plantingDate time.Time,
-	latitude, longitude float64,
-	assignedTo, assignedName string,
+	id,
+	name string,
+	plantingDate time.Time,
+	area Area,
+	season Season,
+	variety Variety,
+	assignedTo string,
 ) (*CropPlan, error) {
 
 	if id == "" {
 		return nil, ErrInvalidPlanID
 	}
-	if bedID == "" {
-		return nil, ErrInvalidBedID
-	}
 	if name == "" {
 		return nil, errors.New("plan name is required")
 	}
-	if varietyID == "" {
+	if variety.GetId() == "" {
 		return nil, ErrVarietyRequired
 	}
-	if plantingDate.IsZero() {
-		return nil, ErrPlantingDateRequired
+	if area.GetId() == "" {
+		return nil, ErrAreaRequired
 	}
-
-	// Проверка сезона
-	if seasonStart.After(seasonEnd) {
-		return nil, ErrInvalidSeason
+	if season.GetId() == "" {
+		return nil, ErrSeasonRequired
 	}
-	if plantingDate.Before(seasonStart) || plantingDate.After(seasonEnd) {
-		return nil, ErrInvalidPlantingDate
+	if types.UUIDIsValid(assignedTo) {
+		return nil, errors.New("assigned plan is required")
 	}
 
 	now := time.Now()
 
 	plan := &CropPlan{
 		id:           id,
-		bedID:        bedID,
+		area:         area,
 		name:         name,
-		varietyID:    varietyID,
-		varietyName:  varietyName,
-		cropName:     cropName,
-		seasonStart:  seasonStart,
-		seasonEnd:    seasonEnd,
+		variety:      variety,
+		season:       season,
 		plantingDate: plantingDate,
 		status:       StatusDraft,
 		stages:       []Stage{},
 		createdAt:    now,
 		updatedAt:    now,
-		latitude:     latitude,
-		longitude:    longitude,
 		assignedTo:   assignedTo,
-		assignedName: assignedName,
+		metadata:     make(map[string]interface{}),
 	}
 
 	plan.AddEvent(CropPlanCreatedEvent{
 		PlanID:       id,
-		BedID:        bedID,
+		AreaId:       area.GetId(),
 		Name:         name,
-		VarietyID:    varietyID,
-		VarietyName:  varietyName,
-		CropName:     cropName,
+		VarietyID:    variety.GetId(),
+		VarietyName:  variety.GetName(),
+		SpeciesName:  variety.GetSpeciesName(),
 		PlantingDate: plantingDate,
 	})
 
@@ -132,26 +124,23 @@ func NewCropPlan(
 // ========== GETTERS ==========
 
 func (p *CropPlan) ID() string              { return p.id }
-func (p *CropPlan) BedID() string           { return p.bedID }
+func (p *CropPlan) Area() Area              { return p.area }
 func (p *CropPlan) Name() string            { return p.name }
-func (p *CropPlan) VarietyID() string       { return p.varietyID }
-func (p *CropPlan) VarietyName() string     { return p.varietyName }
-func (p *CropPlan) CropName() string        { return p.cropName }
-func (p *CropPlan) SeasonStart() time.Time  { return p.seasonStart }
-func (p *CropPlan) SeasonEnd() time.Time    { return p.seasonEnd }
+func (p *CropPlan) Variety() Variety        { return p.variety }
+func (p *CropPlan) Season() Season          { return p.season }
 func (p *CropPlan) PlantingDate() time.Time { return p.plantingDate }
 func (p *CropPlan) Status() Status          { return p.status }
 func (p *CropPlan) Stages() []Stage         { return append([]Stage(nil), p.stages...) }
-func (p *CropPlan) SeedsPlanted() int       { return p.seedsPlanted }
-func (p *CropPlan) ExpectedYield() float64  { return p.expectedYield }
-func (p *CropPlan) HarvestKg() float64      { return p.harvestKg }
-func (p *CropPlan) CreatedAt() time.Time    { return p.createdAt }
-func (p *CropPlan) StartedAt() *time.Time   { return p.startedAt }
-func (p *CropPlan) CompletedAt() *time.Time { return p.completedAt }
-func (p *CropPlan) Latitude() float64       { return p.latitude }
-func (p *CropPlan) Longitude() float64      { return p.longitude }
-func (p *CropPlan) AssignedTo() string      { return p.assignedTo }
-func (p *CropPlan) AssignedName() string    { return p.assignedName }
+
+// func (p *CropPlan) SeedsPlanted() int       { return p.seedsPlanted }
+// func (p *CropPlan) ExpectedYield() float64  { return p.expectedYield }
+func (p *CropPlan) HarvestKg() float64               { return p.harvestKg }
+func (p *CropPlan) CreatedAt() time.Time             { return p.createdAt }
+func (p *CropPlan) UpdatedAt() time.Time             { return p.updatedAt }
+func (p *CropPlan) StartedAt() *time.Time            { return p.startedAt }
+func (p *CropPlan) CompletedAt() *time.Time          { return p.completedAt }
+func (p *CropPlan) AssignedTo() string               { return p.assignedTo }
+func (p *CropPlan) Metadata() map[string]interface{} { return p.metadata }
 
 // ========== УПРАВЛЕНИЕ ЭТАПАМИ ==========
 
@@ -353,7 +342,7 @@ func (p *CropPlan) CanActivate() error {
 	if len(p.stages) == 0 {
 		return ErrNoStages
 	}
-	if time.Now().After(p.seasonEnd) {
+	if p.season.IsFinished() {
 		return errors.New("cannot activate plan after season end")
 	}
 	return nil
@@ -409,7 +398,7 @@ func (p *CropPlan) Complete(harvestKg float64) error {
 		return err
 	}
 
-	p.harvestKg = harvestKg
+	p.metadata["harvestKg"] = harvestKg
 	p.complete()
 	return nil
 }
@@ -436,13 +425,13 @@ func (p *CropPlan) Cancel(reason string) error {
 
 // SetSeedsPlanted устанавливает количество посаженных семян
 func (p *CropPlan) SetSeedsPlanted(seeds int) {
-	p.seedsPlanted = seeds
+	p.metadata["seedsPlanted"] = seeds
 	p.updatedAt = time.Now()
 }
 
 // SetExpectedYield устанавливает ожидаемую урожайность
 func (p *CropPlan) SetExpectedYield(yield float64) {
-	p.expectedYield = yield
+	p.metadata["expectedYield"] = yield
 	p.updatedAt = time.Now()
 }
 

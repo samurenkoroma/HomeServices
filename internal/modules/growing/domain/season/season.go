@@ -33,6 +33,7 @@ type Season struct {
 func NewSeason(
 	name string,
 	startDate, endDate time.Time,
+	status SeasonStatus,
 	createdBy string,
 	description string,
 ) (*Season, error) {
@@ -51,17 +52,17 @@ func NewSeason(
 		name:        name,
 		startDate:   startDate,
 		endDate:     endDate,
-		status:      SeasonStatusPlanning,
+		status:      status,
 		createdBy:   createdBy,
 		description: description,
 	}
 
-	s.AddEvent(SeasonCreated{
-		SeasonID:  string(s.Id),
-		Name:      s.name,
-		StartDate: s.startDate,
-		EndDate:   s.endDate,
-	})
+	//s.AddEvent(SeasonCreated{
+	//	SeasonID:  string(s.Id),
+	//	Name:      s.name,
+	//	StartDate: s.startDate,
+	//	EndDate:   s.endDate,
+	//})
 
 	return s, nil
 }
@@ -138,7 +139,8 @@ func (s *Season) IsActiveAt(date time.Time) bool {
 }
 
 // Getters
-func (s *Season) GetID() SeasonID         { return s.Id }
+func (s *Season) GetId() string           { return string(s.Id) }
+func (s *Season) IsFinished() bool        { return time.Now().After(s.endDate) }
 func (s *Season) GetName() string         { return s.name }
 func (s *Season) GetStartDate() time.Time { return s.startDate }
 func (s *Season) GetEndDate() time.Time   { return s.endDate }

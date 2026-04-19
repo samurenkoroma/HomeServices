@@ -53,7 +53,7 @@ func (h *listCropPlansHandler) Handle(ctx context.Context, query any) (any, erro
 	var err error
 
 	if q.BedID != "" {
-		allPlans, err = h.PlanRepo.FindByBed(ctx, q.BedID)
+		allPlans, err = h.PlanRepo.FindByArea(ctx, q.BedID)
 	} else if q.VarietyID != "" {
 		allPlans, err = h.PlanRepo.FindByVariety(ctx, q.VarietyID)
 	} else if q.Status != "" {

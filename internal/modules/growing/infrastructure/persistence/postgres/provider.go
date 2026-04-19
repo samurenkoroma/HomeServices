@@ -7,8 +7,8 @@ import (
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 )
 
-// GrowingProvider — провайдер репозиториев для контекста культур
-type GrowingProvider struct {
+// PostgresGrowingProvider — провайдер репозиториев для контекста культур
+type PostgresGrowingProvider struct {
 	tx *sql.Tx
 
 	// Кеш репозиториев
@@ -16,21 +16,21 @@ type GrowingProvider struct {
 	cultivationAreaRepo cultivationarea.Repository
 }
 
-func (p *GrowingProvider) ProviderName() string {
+func (p *PostgresGrowingProvider) ProviderName() string {
 	return "growing"
 }
 
-// Проверяем, что GrowingProvider реализует интерфейс RepositoryProvider
-var _ repository.RepositoryProvider = (*GrowingProvider)(nil)
+// Проверяем, что PostgresGrowingProvider реализует интерфейс RepositoryProvider
+var _ repository.RepositoryProvider = (*PostgresGrowingProvider)(nil)
 
-func NewGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
-	return &GrowingProvider{
+func NewPostgresGrowingProvider(tx *sql.Tx) repository.RepositoryProvider {
+	return &PostgresGrowingProvider{
 		tx: tx,
 	}
 }
 
 // Seasons возвращает репозиторий всех объектов
-func (p *GrowingProvider) Seasons() season.Repository {
+func (p *PostgresGrowingProvider) Seasons() season.Repository {
 	if p.seasonsRepo == nil {
 		p.seasonsRepo = NewSeasonRepository(p.tx)
 	}
@@ -38,7 +38,7 @@ func (p *GrowingProvider) Seasons() season.Repository {
 }
 
 // CultivationAreas возвращает репозиторий всех объектов
-func (p *GrowingProvider) CultivationAreas() cultivationarea.Repository {
+func (p *PostgresGrowingProvider) CultivationAreas() cultivationarea.Repository {
 	if p.cultivationAreaRepo == nil {
 		p.cultivationAreaRepo = NewCultivationAreaRepository(p.tx)
 	}
