@@ -15,9 +15,5 @@ func DecodeJSON[T any](data []byte) (any, error) {
 		return nil, err
 	}
 
-	if err := validate.Struct(v); err != nil {
-		fmt.Print(err.Error())
-		return nil, err
-	}
 	return &v, validate.Struct(v)
 }

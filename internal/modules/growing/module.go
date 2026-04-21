@@ -74,7 +74,7 @@ func NewModule(uowFactory repository.Factory) module.Module {
 			Handler: growingQueries.NewGetCropPlanHandler(pr.CropPlans()),
 			Decoder: utils.DecodeJSON[growingQueries.GetCropPlanQuery],
 		}, {
-			Name:    "ListCropPlans",
+			Name:    "ListCropPlan",
 			Handler: growingQueries.NewListCropPlansHandler(pr.CropPlans()),
 			Decoder: utils.DecodeJSON[growingQueries.ListCropPlansQuery],
 		}, {

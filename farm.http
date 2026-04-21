@@ -6,7 +6,7 @@ Content-Type: application/json
   "command": "CreateObject",
   "data": {
     "type": "greenhouse",
-    "name": 23,
+    "name": "shalash",
     "attributes": {
       "length": 12,
       "width": 4

@@ -38,7 +38,7 @@ func NewModule(uowFactory repository.Factory) module.Module {
 		},
 		Queries: []module.QueryHandler{
 			{
-				Name:    "QueryFarm",
+				Name:    "GetCurrentFarm",
 				Handler: farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()),
 				Decoder: utils.DecodeJSON[farmQueries.GetCurrentFarmQuery],
 			}, {

@@ -47,7 +47,7 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	err = uow.Execute(ctx, postgres.NewFarmProvider, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
 			return fmt.Errorf("invalid provider type")

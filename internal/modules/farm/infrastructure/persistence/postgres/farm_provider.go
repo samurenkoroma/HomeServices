@@ -19,9 +19,9 @@ func (p *FarmProvider) ProviderName() string {
 }
 
 // Проверяем, что FarmProvider реализует интерфейс RepositoryProvider
-//var _ repository.RepositoryProvider = (*FarmProvider)(nil)
+var _ repository.RepositoryProvider = (*FarmProvider)(nil)
 
-func NewFarmProvider(tx *sql.Tx) repository.RepositoryProvider {
+func NewPostgresFarmProvider(tx *sql.Tx) repository.RepositoryProvider {
 	return &FarmProvider{
 		tx: tx,
 	}

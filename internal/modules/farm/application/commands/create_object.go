@@ -42,7 +42,7 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	err = uow.Execute(ctx, postgres.NewFarmProvider, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
