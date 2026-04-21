@@ -15,10 +15,6 @@ type getCurrentFarmHandler struct {
 	projector physicalobject.ObjectProjections
 }
 
-func (h *getCurrentFarmHandler) Name() string {
-	return "GetCurrentFarm"
-}
-
 func NewGetCurrentFarmHandler(projector physicalobject.ObjectProjections) query.Handler {
 	return &getCurrentFarmHandler{projector: projector}
 }
@@ -31,13 +27,6 @@ func (h *getCurrentFarmHandler) Handle(ctx context.Context, payload any) (any, e
 	if q.Id != "" {
 		return h.projector.GetByID(ctx, q.Id)
 	}
-
-	/*
-
-		if q.TypeObj != "" {
-			filter.Type = physicalobject.ObjectType(q.TypeObj)
-		}
-	*/
 
 	fields, _ := h.projector.GetList(ctx, physicalobject.POFilter{Type: physicalobject.ObjectTypeField})
 	plots, _ := h.projector.GetList(ctx, physicalobject.POFilter{Type: physicalobject.ObjectTypePlot})

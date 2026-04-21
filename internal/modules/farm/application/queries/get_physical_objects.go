@@ -19,10 +19,6 @@ type getPhysicalObjectsHandler struct {
 	projector physicalobject.ObjectProjections
 }
 
-func (h *getPhysicalObjectsHandler) Name() string {
-	return "GetObjects"
-}
-
 func NewGetPhysicalObjectsHandler(projector physicalobject.ObjectProjections) query.Handler {
 	return &getPhysicalObjectsHandler{projector: projector}
 }

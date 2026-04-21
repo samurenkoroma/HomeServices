@@ -11,14 +11,13 @@ type Decoder func([]byte) (any, error)
 
 type Handler interface {
 	Handle(ctx context.Context, payload any) (any, error)
-	Name() string
 }
 
 //type HandlerFunc func(ctx context.Context, payload any) (any, error)
 
 type Router interface {
 	// Register регистрирует query
-	Register(handler Handler, decoder Decoder)
+	Register(string, Handler, Decoder)
 	// Dispatch выполняет query
 	Dispatch(ctx context.Context, name string, payload []byte) (any, error)
 }

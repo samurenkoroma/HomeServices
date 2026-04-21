@@ -3,13 +3,14 @@ POST http://localhost:8080/commands/
 Content-Type: application/json
 
 {
-  "command": "CreatePhysicalObject",
+  "command": "CreateObject",
   "data": {
     "type": "greenhouse",
-    "name": "Теплица 3",
-    "length": 12,
-    "width": 4,
-    "owner_id": "d940abb7-b622-4b89-a0f0-9b99abdbd860",
+    "name": 23,
+    "attributes": {
+      "length": 12,
+      "width": 4
+    },
     "geometry": {
       "type": "Point",
       "coordinates": [

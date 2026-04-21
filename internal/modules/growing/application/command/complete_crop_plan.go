@@ -13,10 +13,6 @@ type completeCropPlanHandler struct {
 	uowFactory repository.Factory
 }
 
-func (h *completeCropPlanHandler) Name() string {
-	return "CompleteCropPlanHandler"
-}
-
 type CompleteCropPlanCmd struct {
 	PlanID    string  `json:"planId"`
 	HarvestKg float64 `json:"harvestKg"`

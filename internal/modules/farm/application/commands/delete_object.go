@@ -17,10 +17,6 @@ type deleteFarmObjectHandler struct {
 	uowFactory repository.Factory
 }
 
-func (h *deleteFarmObjectHandler) Name() string {
-	return "DeleteObject"
-}
-
 func NewDeleteFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &deleteFarmObjectHandler{uowFactory: uowFactory}
 }

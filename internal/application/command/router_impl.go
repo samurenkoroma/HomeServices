@@ -18,9 +18,9 @@ func NewRouter() Router {
 	}
 }
 
-func (r *router) Register(handler Handler, decoder DecoderFunc) {
-	r.handlers[handler.Name()] = handler
-	r.decoders[handler.Name()] = decoder
+func (r *router) Register(cmd string, handler Handler, decoder DecoderFunc) {
+	r.handlers[cmd] = handler
+	r.decoders[cmd] = decoder
 }
 
 func (r *router) Dispatch(ctx context.Context, commandName string, cmd any) error {

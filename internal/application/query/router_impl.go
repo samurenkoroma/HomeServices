@@ -23,11 +23,11 @@ func NewRouter() Router {
 	}
 }
 
-func (r *router) Register(handler Handler, decoder Decoder) {
+func (r *router) Register(name string, handler Handler, decoder Decoder) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.handlers[handler.Name()] = registeredQuery{
+	r.handlers[name] = registeredQuery{
 		decoder: decoder,
 		handler: handler,
 	}

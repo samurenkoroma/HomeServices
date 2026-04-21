@@ -25,10 +25,6 @@ type updatePhysicalObjectHandler struct {
 	uowFactory repository.Factory
 }
 
-func (h *updatePhysicalObjectHandler) Name() string {
-	return "UpdateObject"
-}
-
 func NewUpdateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &updatePhysicalObjectHandler{uowFactory: uowFactory}
 }

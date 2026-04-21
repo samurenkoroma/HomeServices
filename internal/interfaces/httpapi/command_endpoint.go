@@ -18,18 +18,28 @@ func CommandEndpoint(router command.Router) http.HandlerFunc {
 			return
 		}
 
-		handlerCmd, _ := router.ResolveCommandPayload(payload.Command, payload.Data)
-
-		err := router.Dispatch(r.Context(),
-			payload.Command,
-			handlerCmd,
-		)
-
+		handlerCmd, err := router.ResolveCommandPayload(payload.Command, payload.Data)
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
+		if err := router.Dispatch(r.Context(), payload.Command, handlerCmd); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(ErrResponse{
+				Error: err.Error(),
+			})
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+type ErrResponse struct {
+	Error string `json:"error"`
 }

@@ -18,14 +18,13 @@ type CreateFarmObjectCmd struct {
 	Name    string          `json:"name" validate:"required"`
 	GeoJSON spatial.GeoJSON `json:"geometry" validate:"required"`
 
-	Attributes map[string]interface{} `json:"attributes,omitempty"`
+	Attributes struct {
+		Length float64 `json:"length" validate:"required"`
+		Width  float64 `json:"width" validate:"required"`
+	} `json:"attributes,omitempty"`
 }
 type createPhysicalHandler struct {
 	uowFactory repository.Factory
-}
-
-func (h *createPhysicalHandler) Name() string {
-	return "CreateObject"
 }
 
 func NewCreateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
@@ -50,11 +49,9 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		var newObj *physicalobject.PhysicalObject
-		length := c.Attributes["length"].(float64)
-		width := c.Attributes["width"].(float64)
 		dim := types.Dimension{
-			Length: length,
-			Width:  width,
+			Length: c.Attributes.Length,
+			Width:  c.Attributes.Width,
 		}
 		area := spatial.CalculateAreaFromGeometry(uow.Tx(), c.GeoJSON)
 		// 1. Создаем поле
@@ -77,9 +74,5 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
