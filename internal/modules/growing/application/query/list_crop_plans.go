@@ -52,19 +52,19 @@ func (h *listCropPlansHandler) Handle(ctx context.Context, query any) (any, erro
 	var allPlans []*cropplan.CropPlan
 	var err error
 
-	if q.BedID != "" {
-		allPlans, err = h.PlanRepo.FindByArea(ctx, q.BedID)
-	} else if q.VarietyID != "" {
-		allPlans, err = h.PlanRepo.FindByVariety(ctx, q.VarietyID)
-	} else if q.Status != "" {
-		allPlans, err = h.PlanRepo.FindByStatus(ctx, cropplan.Status(q.Status))
-	} else if q.AssignedTo != "" {
-		allPlans, err = h.PlanRepo.FindByAssignedTo(ctx, q.AssignedTo)
-	} else {
-		// Если нет фильтров, возвращаем все планы (через FindByStatus с пустым?)
-		// В реальном репозитории нужен метод FindAll
-		allPlans, err = h.PlanRepo.FindByStatus(ctx, "")
-	}
+	//if q.BedID != "" {
+	allPlans, err = h.PlanRepo.FindByArea(ctx, q.BedID)
+	//} else if q.VarietyID != "" {
+	//	allPlans, err = h.PlanRepo.FindByVariety(ctx, q.VarietyID)
+	//} else if q.Status != "" {
+	//	allPlans, err = h.PlanRepo.FindByStatus(ctx, cropplan.Status(q.Status))
+	//} else if q.AssignedTo != "" {
+	//	allPlans, err = h.PlanRepo.FindByAssignedTo(ctx, q.AssignedTo)
+	//} else {
+	//	Если нет фильтров, возвращаем все планы (через FindByStatus с пустым?)
+	//	В реальном репозитории нужен метод FindAll
+	//allPlans, err = h.PlanRepo.FindByStatus(ctx, "")
+	//}
 
 	if err != nil {
 		return nil, err

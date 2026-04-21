@@ -9,7 +9,6 @@ import (
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"time"
 )
@@ -52,12 +51,12 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 
 	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
-		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
+		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		// Получаем сорт из каталога
-		variety, err := growingProvider.Catalogs().GetVariety(ctx, c.SpeciesKey, c.VarietyID)
+		variety, err := growingProvider.Catalog().GetVariety(ctx, c.SpeciesKey, c.VarietyID)
 		if err != nil {
 			return fmt.Errorf("variety not found: %w", err)
 		}
@@ -66,13 +65,16 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		if err != nil {
 			return fmt.Errorf("variety not found: %w", err)
 		}
-
+		area, err := growingProvider.CultivationAreas().FindByID(ctx, c.AreaID)
+		if err != nil {
+			return fmt.Errorf("variety not found: %w", err)
+		}
 		// Создаем план
 		plan, err := cropplan.NewCropPlan(
 			types.NewUUID(),
 			c.Name,
 			c.PlantingDate,
-			cropplan.Area{Id: c.AreaID},
+			area,
 			seasons,
 			variety,
 			c.AssignedTo,

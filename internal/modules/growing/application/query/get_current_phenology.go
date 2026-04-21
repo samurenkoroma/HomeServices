@@ -84,7 +84,7 @@ func (h *getCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any
 	}
 
 	// Получаем сорт
-	variety, err := h.CatalogRepo.GetVariety(ctx, plan.CropName(), plan.VarietyID())
+	variety, err := h.CatalogRepo.GetVariety(ctx, plan.Variety().GetSpeciesName(), plan.Variety().GetId())
 	if err != nil {
 		return nil, fmt.Errorf("variety not found: %w", err)
 	}
@@ -93,10 +93,12 @@ func (h *getCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any
 	current, err := h.PhenologyService.GetCurrentPhenology(
 		ctx,
 		plan.ID(),
-		plan.VarietyID(),
+		plan.Variety().GetId(),
 		plan.PlantingDate(),
-		plan.Latitude(),
-		plan.Longitude(),
+		30.5,
+		40.2,
+		//plan.Latitude(),
+		//plan.Longitude(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get phenology: %w", err)

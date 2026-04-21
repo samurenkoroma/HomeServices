@@ -55,7 +55,7 @@ func (h *completeCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 			return err
 		}
 
-		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
 			return err
 		}
 

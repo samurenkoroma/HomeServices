@@ -3,6 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 )
@@ -14,6 +16,8 @@ type PostgresGrowingProvider struct {
 	// Кеш репозиториев
 	seasonsRepo         season.Repository
 	cultivationAreaRepo cultivationarea.Repository
+	catalog             catalog.Repository
+	cropPlans           cropplan.Repository
 }
 
 func (p *PostgresGrowingProvider) ProviderName() string {
@@ -43,4 +47,17 @@ func (p *PostgresGrowingProvider) CultivationAreas() cultivationarea.Repository 
 		p.cultivationAreaRepo = NewCultivationAreaRepository(p.tx)
 	}
 	return p.cultivationAreaRepo
+}
+
+func (p *PostgresGrowingProvider) Catalog() catalog.Repository {
+	if p.catalog == nil {
+		p.catalog = NewCatalogRepository(p.tx)
+	}
+	return p.catalog
+}
+func (p *PostgresGrowingProvider) CropPlans() cropplan.Repository {
+	if p.cropPlans == nil {
+		p.cropPlans = NewCropPlanRepository(p.tx)
+	}
+	return p.cropPlans
 }

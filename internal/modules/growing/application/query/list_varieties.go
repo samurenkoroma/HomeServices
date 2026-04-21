@@ -52,7 +52,7 @@ func (h *listVarietiesHandler) Handle(ctx context.Context, query any) (any, erro
 	pr := inmemory.NewRedisGrowingProvider(uow.Tx()).(*inmemory.RedisGrowingProvider)
 
 	// Ищем сорта
-	return pr.Catalogs().ListVarieties(ctx, q.SpeciesKey)
+	return pr.Catalog().ListVarieties(ctx, q.SpeciesKey)
 	//if err != nil {
 	//	return nil, err
 	//}

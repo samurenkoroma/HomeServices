@@ -17,7 +17,7 @@ type RedisGrowingProvider struct {
 	tx               *sql.Tx
 	tasks            task.Repository
 	cropplans        cropplan.Repository
-	catalogs         catalog.Repository
+	catalog          catalog.Repository
 	phenologyService phenology.PhenologyService
 	seasons          season.Repository
 
@@ -44,7 +44,7 @@ func (p *RedisGrowingProvider) PhenologyService() phenology.PhenologyService {
 	if p.phenologyService == nil {
 
 		p.phenologyService = phenology.NewPhenologyService(
-			p.Catalogs(),
+			p.Catalog(),
 			weather.NewMockWeatherProvider(),
 			true,
 		)
@@ -66,11 +66,11 @@ func (p *RedisGrowingProvider) Seasons() season.Repository {
 	return p.seasons
 }
 
-func (p *RedisGrowingProvider) Catalogs() catalog.Repository {
-	if p.catalogs == nil {
-		p.catalogs = postgres.NewCatalogRepository(p.tx)
+func (p *RedisGrowingProvider) Catalog() catalog.Repository {
+	if p.catalog == nil {
+		p.catalog = postgres.NewCatalogRepository(p.tx)
 	}
-	return p.catalogs
+	return p.catalog
 }
 func (p *RedisGrowingProvider) Tasks() task.Repository {
 	if p.tasks == nil {

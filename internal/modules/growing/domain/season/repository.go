@@ -9,7 +9,7 @@ type Repository interface {
 	FindByID(ctx context.Context, id SeasonID) (*Season, error)
 	FindAll(ctx context.Context) ([]*Season, error)
 
-	//Delete(ctx context.Context, id SeasonID) error
+	Delete(ctx context.Context, id SeasonID) error
 	//
 	//// Поиск
 	//FindByName(ctx context.Context, name string) (*Season, error)

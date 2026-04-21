@@ -157,34 +157,34 @@ func (h *getPlanStatisticsHandler) Handle(ctx context.Context, query any) (any, 
 	}
 
 	daysRemaining := 0
-	if time.Now().Before(plan.SeasonEnd()) {
-		daysRemaining = int(time.Until(plan.SeasonEnd()).Hours() / 24)
+	if time.Now().Before(plan.Season().GetEndDate()) {
+		daysRemaining = int(time.Until(plan.Season().GetEndDate()).Hours() / 24)
 	}
 
 	// Эффективность урожая
 	yieldEfficiency := 0.0
-	if plan.ExpectedYield() > 0 {
-		yieldEfficiency = (plan.HarvestKg() / plan.ExpectedYield()) * 100
-	}
+	//if plan.ExpectedYield() > 0 {
+	//	yieldEfficiency = (plan.HarvestKg() / plan.ExpectedYield()) * 100
+	//}
 
 	// Рекомендации
 	recommendations := generateRecommendations(progress, overdueTasks, daysRemaining, yieldEfficiency)
 
 	return &GetPlanStatisticsResponse{
-		PlanID:                plan.ID(),
-		PlanName:              plan.Name(),
-		VarietyName:           plan.VarietyName(),
-		Status:                string(plan.Status()),
-		Progress:              progress,
-		CompletedStages:       completedStages,
-		TotalStages:           totalStages,
-		PendingStages:         pendingStages,
-		InProgressStages:      inProgressStages,
-		SkippedStages:         skippedStages,
-		DaysSincePlanting:     daysSincePlanting,
-		DaysRemaining:         daysRemaining,
-		DaysToHarvest:         daysRemaining, // упрощенно
-		ExpectedYield:         plan.ExpectedYield(),
+		PlanID:            plan.ID(),
+		PlanName:          plan.Name(),
+		VarietyName:       plan.Variety().GetName(),
+		Status:            string(plan.Status()),
+		Progress:          progress,
+		CompletedStages:   completedStages,
+		TotalStages:       totalStages,
+		PendingStages:     pendingStages,
+		InProgressStages:  inProgressStages,
+		SkippedStages:     skippedStages,
+		DaysSincePlanting: daysSincePlanting,
+		DaysRemaining:     daysRemaining,
+		DaysToHarvest:     daysRemaining, // упрощенно
+		//ExpectedYield:         plan.ExpectedYield(),
 		ActualYield:           plan.HarvestKg(),
 		YieldEfficiency:       yieldEfficiency,
 		TotalTasks:            totalTasks,

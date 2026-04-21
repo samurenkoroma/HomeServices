@@ -39,7 +39,7 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	}
 	defer rows.Close()
 
-	var items []*physicalobject.POListItem
+	items := []*physicalobject.POListItem{}
 	for rows.Next() {
 		var item physicalobject.POListItem
 		if err := rows.Scan(&item.Id, &item.TypeObj, &item.Name, &geomJSON, &item.Area, &attrJSON, &item.Status, &item.OwnerId, &item.CreatedAt); err != nil {

@@ -124,7 +124,7 @@ func (g *GreenhouseArea) SetFarmRefID(farmRefID string) {
 }
 
 // Геттеры
-func (g *GreenhouseArea) GetID() string                        { return g.Id }
+func (g *GreenhouseArea) GetId() string                        { return g.Id }
 func (g *GreenhouseArea) GetFarmRefID() string                 { return g.farmRefID }
 func (g *GreenhouseArea) GetType() AreaType                    { return AreaTypeGreenhouse }
 func (g *GreenhouseArea) GetName() string                      { return g.name }

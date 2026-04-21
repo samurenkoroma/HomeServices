@@ -191,7 +191,7 @@ func (f *FieldArea) SetFarmRefID(farmRefID string) {
 }
 
 // Геттеры
-func (f *FieldArea) GetID() string                        { return f.Id }
+func (f *FieldArea) GetId() string                        { return f.Id }
 func (f *FieldArea) GetFarmRefID() string                 { return f.farmRefID }
 func (f *FieldArea) GetType() AreaType                    { return AreaTypeField }
 func (f *FieldArea) GetName() string                      { return f.name }

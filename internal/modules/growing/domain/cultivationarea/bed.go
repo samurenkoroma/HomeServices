@@ -132,7 +132,7 @@ func (b *Bed) ConfigureForSeason(seasonID string, config AreaConfig) error {
 }
 
 // Getters
-func (b *Bed) GetID() string                        { return b.Id }
+func (b *Bed) GetId() string                        { return b.Id }
 func (b *Bed) GetFarmRefID() string                 { return b.farmRefID }
 func (b *Bed) GetType() AreaType                    { return AreaTypeBed }
 func (b *Bed) GetName() string                      { return b.name }

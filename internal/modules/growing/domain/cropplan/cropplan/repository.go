@@ -9,11 +9,11 @@ import (
 type Repository interface {
 	// Базовые операции
 	Save(ctx context.Context, plan *CropPlan) error
-	//FindByID(ctx context.Context, id string) (*CropPlan, error)
+	FindByID(ctx context.Context, id string) (*CropPlan, error)
 	//Delete(ctx context.Context, id string) error
 	//
 	//Запросы по полям
-	//FindByArea(ctx context.Context, areaId string) ([]*CropPlan, error)
+	FindByArea(ctx context.Context, areaId string) ([]*CropPlan, error)
 	//FindByVariety(ctx context.Context, varietyID string) ([]*CropPlan, error)
 	//FindByStatus(ctx context.Context, status Status) ([]*CropPlan, error)
 	//FindByAssignedTo(ctx context.Context, userID string) ([]*CropPlan, error)

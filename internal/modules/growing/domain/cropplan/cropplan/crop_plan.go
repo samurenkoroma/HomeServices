@@ -29,6 +29,8 @@ type Variety interface {
 type Season interface {
 	GetId() string
 	IsFinished() bool
+	GetStartDate() time.Time
+	GetEndDate() time.Time
 }
 
 type CropPlan struct {

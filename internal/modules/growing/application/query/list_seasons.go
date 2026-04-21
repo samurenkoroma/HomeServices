@@ -52,18 +52,18 @@ func (h *listSeasonsHandler) Handle(ctx context.Context, query any) (any, error)
 }
 
 type SeasonDTO struct {
-	Id           string    `json:"id"`
-	Name         string    `json:"name"`
-	Year         int       `json:"year"`
-	Type         string    `json:"type"`
-	StartDate    time.Time `json:"startDate"`
-	EndDate      time.Time `json:"endDate"`
-	Status       string    `json:"status"`
-	Statistics   `json:"statistics"`
-	Weather      `json:"weather"`
-	Notes        string `json:"notes"`
-	Financial    `json:"financial"`
-	PlantingArea []PlantingArea `json:"plantingArea"`
+	Id            string    `json:"id"`
+	Name          string    `json:"name"`
+	Year          int       `json:"year"`
+	Type          string    `json:"type"`
+	StartDate     time.Time `json:"startDate"`
+	EndDate       time.Time `json:"endDate"`
+	Status        string    `json:"status"`
+	Statistics    `json:"statistics"`
+	Weather       `json:"weather"`
+	Notes         string `json:"notes"`
+	Financial     `json:"financial"`
+	PlantingAreas []PlantingArea `json:"plantingArea"`
 }
 
 type Financial struct {

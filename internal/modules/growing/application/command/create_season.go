@@ -36,11 +36,11 @@ func (h *createSeasonHandler) Handle(ctx context.Context, cmd any) error {
 	if !ok {
 		return command.ErrInvalidCommandType
 	}
-	startDate, err := time.Parse("2006-01-02", c.StartDate)
+	startDate, err := time.Parse(time.RFC3339, c.StartDate)
 	if err != nil {
 		return fmt.Errorf("invalid start date %s", err)
 	}
-	endDate, err := time.Parse("2006-01-02", c.StartDate)
+	endDate, err := time.Parse(time.RFC3339, c.StartDate)
 	if err != nil {
 		return fmt.Errorf("invalid start date %s", err)
 	}

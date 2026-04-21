@@ -50,7 +50,7 @@ type AreaSnapshot struct {
 type CultivationArea interface {
 	aggregate.Aggregate
 	// Базовые методы
-	GetID() string
+	GetId() string
 	GetFarmRefID() string
 	GetType() AreaType
 	GetName() string

@@ -130,7 +130,7 @@ func (b *Block) SetFarmRefID(farmRefID string) {
 }
 
 // Геттеры
-func (b *Block) GetID() string                        { return b.Id }
+func (b *Block) GetId() string                        { return b.Id }
 func (b *Block) GetFarmRefID() string                 { return b.farmRefID }
 func (b *Block) GetType() AreaType                    { return AreaTypeBlock }
 func (b *Block) GetName() string                      { return b.name }

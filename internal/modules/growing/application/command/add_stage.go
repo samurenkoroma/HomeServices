@@ -81,7 +81,7 @@ func (h *addStageHandler) Handle(ctx context.Context, cmd any) error {
 		}
 
 		// Сохраняем изменения
-		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
 			return fmt.Errorf("failed to update plan: %w", err)
 		}
 

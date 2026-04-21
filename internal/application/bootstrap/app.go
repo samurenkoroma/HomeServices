@@ -16,7 +16,7 @@ import (
 	growingCommands "samurenkoroma/services/internal/modules/growing/application/command"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
 	growingQueries "samurenkoroma/services/internal/modules/growing/application/query"
-	inmemory2 "samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
+	//inmemory2 "samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/pkg/utils"
 
@@ -96,16 +96,16 @@ func registerGrowing(commandRouter command.Router, queryRouter query.Router, uow
 	if err != nil {
 		return err
 	}
-	pr := postgres.NewPostgresGrowingProvider(tx).(*inmemory2.RedisGrowingProvider)
+	pr := postgres.NewPostgresGrowingProvider(tx).(*postgres.PostgresGrowingProvider)
 	queryRouter.Register(growingQueries.ListSeasonsHandler(pr.Seasons()), utils.DecodeJSON[growingQueries.ListSeasonsQuery])
 	queryRouter.Register(growingQueries.NewListVarietiesHandler(uowFactory), utils.DecodeJSON[growingQueries.ListVarietiesQuery])
-	queryRouter.Register(growingQueries.NewGetSpeciesHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetSpeciesQuery])
-	queryRouter.Register(growingQueries.NewGetVarietyHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.GetVarietyQuery])
+	queryRouter.Register(growingQueries.NewGetSpeciesHandler(pr.Catalog()), utils.DecodeJSON[growingQueries.GetSpeciesQuery])
+	queryRouter.Register(growingQueries.NewGetVarietyHandler(pr.Catalog()), utils.DecodeJSON[growingQueries.GetVarietyQuery])
 	queryRouter.Register(growingQueries.NewGetCropPlanHandler(pr.CropPlans()), utils.DecodeJSON[growingQueries.GetCropPlanQuery])
 	queryRouter.Register(growingQueries.NewListCropPlansHandler(pr.CropPlans()), utils.DecodeJSON[growingQueries.ListCropPlansQuery])
-	queryRouter.Register(growingQueries.NewListSpeciesHandler(pr.Catalogs()), utils.DecodeJSON[growingQueries.ListSpeciesQuery])
-	queryRouter.Register(growingQueries.NewGetPlanStatisticsHandler(pr.CropPlans(), pr.Tasks()), utils.DecodeJSON[growingQueries.GetPlanStatisticsQuery])
-	queryRouter.Register(growingQueries.NewGetCurrentPhenologyHandler(pr.CropPlans(), pr.Catalogs(), pr.PhenologyService()), utils.DecodeJSON[growingQueries.GetCurrentPhenologyQuery])
+	queryRouter.Register(growingQueries.NewListSpeciesHandler(pr.Catalog()), utils.DecodeJSON[growingQueries.ListSpeciesQuery])
+	//queryRouter.Register(growingQueries.NewGetPlanStatisticsHandler(pr.CropPlans(), pr.Tasks()), utils.DecodeJSON[growingQueries.GetPlanStatisticsQuery])
+	//queryRouter.Register(growingQueries.NewGetCurrentPhenologyHandler(pr.CropPlans(), pr.Catalog(), pr.PhenologyService()), utils.DecodeJSON[growingQueries.GetCurrentPhenologyQuery])
 	//queryRouter.Register(growingQueries.NewGetCultivationAreasHandler(growingProvider.Areas()), utils.DecodeJSON[growingQueries.GetCultivationAreasQuery])
 	return nil
 }

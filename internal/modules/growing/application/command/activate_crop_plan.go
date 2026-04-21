@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 )
 
 // ActivateCropPlanHandler команда активации плана
@@ -37,9 +37,9 @@ func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
+	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
 		// Приводим провайдер к нужному типу
-		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
+		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
 			return fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
@@ -53,7 +53,7 @@ func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 			return err
 		}
 
-		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
 			return err
 		}
 

@@ -78,7 +78,7 @@ func (r *CropPlanRepo) FindByArea(ctx context.Context, bedID string) ([]*croppla
 
 	var result []*cropplan.CropPlan
 	for _, plan := range r.plans {
-		if plan.BedID() == bedID {
+		if plan.Area().GetId() == bedID {
 			result = append(result, plan)
 		}
 	}
@@ -92,7 +92,7 @@ func (r *CropPlanRepo) FindByVariety(ctx context.Context, varietyID string) ([]*
 
 	var result []*cropplan.CropPlan
 	for _, plan := range r.plans {
-		if plan.VarietyID() == varietyID {
+		if plan.Variety().GetId() == varietyID {
 			result = append(result, plan)
 		}
 	}
@@ -138,8 +138,8 @@ func (r *CropPlanRepo) FindActiveByDate(ctx context.Context, date time.Time) ([]
 			continue
 		}
 		// Проверяем, что дата в пределах сезона
-		if (date.Equal(plan.SeasonStart()) || date.After(plan.SeasonStart())) &&
-			(date.Equal(plan.SeasonEnd()) || date.Before(plan.SeasonEnd())) {
+		if (date.Equal(plan.Season().GetStartDate()) || date.After(plan.Season().GetStartDate())) &&
+			(date.Equal(plan.Season().GetEndDate()) || date.Before(plan.Season().GetEndDate())) {
 			result = append(result, plan)
 		}
 	}
@@ -153,11 +153,11 @@ func (r *CropPlanRepo) FindBySeason(ctx context.Context, bedID string, seasonSta
 
 	var result []*cropplan.CropPlan
 	for _, plan := range r.plans {
-		if plan.BedID() != bedID {
+		if plan.Area().GetId() != bedID {
 			continue
 		}
 		// Проверяем пересечение сезонов
-		if plan.SeasonStart().Before(seasonEnd) && seasonStart.Before(plan.SeasonEnd()) {
+		if plan.Season().GetStartDate().Before(seasonEnd) && seasonStart.Before(plan.Season().GetEndDate()) {
 			result = append(result, plan)
 		}
 	}
@@ -173,11 +173,11 @@ func (r *CropPlanRepo) GetStatistics(ctx context.Context, filter cropplan.Statis
 
 	for _, plan := range r.plans {
 		// Фильтр по грядке
-		if filter.BedID != "" && plan.BedID() != filter.BedID {
+		if filter.BedID != "" && plan.Area().GetId() != filter.BedID {
 			continue
 		}
 		// Фильтр по сорту
-		if filter.VarietyID != "" && plan.VarietyID() != filter.VarietyID {
+		if filter.VarietyID != "" && plan.Variety().GetId() != filter.VarietyID {
 			continue
 		}
 		// Фильтр по дате

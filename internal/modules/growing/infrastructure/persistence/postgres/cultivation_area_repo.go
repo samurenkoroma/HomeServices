@@ -54,7 +54,7 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 	}
 
 	_, err = r.tx.ExecContext(ctx, query,
-		area.GetID(),
+		area.GetId(),
 		area.GetFarmRefID(),
 		string(area.GetType()),
 		area.GetName(),

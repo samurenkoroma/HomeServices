@@ -57,7 +57,7 @@ func (h *completeStageHandler) Handle(ctx context.Context, cmd any) error {
 			return fmt.Errorf("failed to complete stage: %w", err)
 		}
 
-		if err := growingProvider.CropPlans().Update(ctx, plan); err != nil {
+		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
 			return err
 		}
 
