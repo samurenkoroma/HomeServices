@@ -47,20 +47,20 @@ func (h *deleteSeasonHandler) Handle(ctx context.Context, cmd any) error {
 		if err != nil {
 			return fmt.Errorf("failed to find season: %w", err)
 		}
-		if c.Permanently {
 
-			err = growingProvider.Seasons().Delete(ctx, c.SeasonId)
-		} else {
-			err = growingProvider.Seasons().Save(ctx, c.SeasonId)
-			obj
-		}
 		//TODO сделать проверки на наличие записей сезона
-		err = growingProvider.Seasons().Delete(ctx, c.SeasonId, c.SoftDelete)
+
+		if c.Permanently {
+			err = growingProvider.Seasons().Delete(ctx, season.SeasonID(c.SeasonId))
+		} else {
+			obj.Delete()
+			err = growingProvider.Seasons().Save(ctx, obj)
+		}
 		if err != nil {
 			return fmt.Errorf("variety not found: %w", err)
 		}
 
-		uow.RegisterAggregate(newSeason)
+		uow.RegisterAggregate(obj)
 
 		return nil
 	})

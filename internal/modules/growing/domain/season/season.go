@@ -155,6 +155,11 @@ func (s *Season) Duration() int {
 	return int(s.endDate.Sub(s.startDate).Hours() / 24)
 }
 
+func (s *Season) Delete() {
+	now := time.Now()
+	s.DeletedAt = &now
+}
+
 // Rehydrate восстанавливает тип культуры из БД
 func Rehydrate(id SeasonID, status SeasonStatus, createdBy, name, description string, startDate, endDate, createdAt, updatedAt time.Time) *Season {
 	return &Season{
