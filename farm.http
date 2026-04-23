@@ -1,12 +1,12 @@
-### commands
-POST http://localhost:8080/commands/
+POST http://localhost:8080/api/commands/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjhmYWE5MzktN2RhNy00NzA2LThiNjAtMmQ1NjMyNzYwMDBkIiwidXNlcm5hbWUiOiJzaGFsYXNoIiwiZW1haWwiOiJ0ZXN0QHRlc3QucnUiLCJyb2xlIjoid29ya2VyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3Njk3MTQ2OCwiaWF0IjoxNzc2ODg1MDY4fQ.TmNBxJ3FhT00fi_NVbg2lLjaCTg9-1f5IMzks6jPxZY
 
 {
   "command": "CreateObject",
   "data": {
     "type": "greenhouse",
-    "name": "shalash",
+    "name": "shalasawdadawdawdh",
     "attributes": {
       "length": 12,
       "width": 4

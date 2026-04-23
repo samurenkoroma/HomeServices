@@ -23,12 +23,11 @@ func (r *router) Register(cmd string, handler Handler, decoder DecoderFunc) {
 	r.decoders[cmd] = decoder
 }
 
-func (r *router) Dispatch(ctx context.Context, commandName string, cmd any) error {
+func (r *router) Dispatch(ctx context.Context, commandName string, cmd any) (any, error) {
 	handler, ok := r.handlers[commandName]
 	if !ok {
-		return errors.New("command handler not found")
+		return nil, errors.New("command handler not found")
 	}
-
 	return handler.Handle(ctx, cmd)
 }
 

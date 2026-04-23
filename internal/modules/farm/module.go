@@ -7,7 +7,7 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	farmCommands "samurenkoroma/services/internal/modules/farm/application/commands"
 	farmQueries "samurenkoroma/services/internal/modules/farm/application/queries"
-	farmProjections "samurenkoroma/services/internal/modules/farm/infrastructure/persistence/projections"
+	farmProjections "samurenkoroma/services/internal/modules/farm/infrastructure/projections"
 	"samurenkoroma/services/pkg/utils"
 )
 
@@ -19,32 +19,47 @@ type farmModule struct {
 func NewModule(uowFactory repository.Factory) module.Module {
 	farmProvider := farmProjections.NewFarmProjectionsProvider(uowFactory.DB())
 	return &farmModule{
-		Commands: []module.CommandHandler{
-			{
-				Name:    "CreateObject",
-				Handler: farmCommands.NewCreateFarmObjectHandler(uowFactory),
-				Decoder: utils.DecodeJSON[farmCommands.CreateFarmObjectCmd],
-			},
-			{
-				Name:    "UpdateObject",
-				Handler: farmCommands.NewUpdateFarmObjectHandler(uowFactory),
-				Decoder: utils.DecodeJSON[farmCommands.UpdateFarmObjectCommand],
-			},
-			{
-				Name:    "DeleteObject",
-				Handler: farmCommands.NewDeleteFarmObjectHandler(uowFactory),
-				Decoder: utils.DecodeJSON[farmCommands.DeleteFarmObjectCommand],
-			},
+		Commands: []module.CommandHandler{{
+			Name:    "CreateObject",
+			Handler: farmCommands.NewCreateFarmObjectHandler(uowFactory),
+			Decoder: utils.DecodeJSON[farmCommands.CreateFarmObjectCmd],
+		}, {
+			Name:    "UpdateObject",
+			Handler: farmCommands.NewUpdateFarmObjectHandler(uowFactory),
+			Decoder: utils.DecodeJSON[farmCommands.UpdateFarmObjectCommand],
+		}, {
+			Name:    "DeleteObject",
+			Handler: farmCommands.NewDeleteFarmObjectHandler(uowFactory),
+			Decoder: utils.DecodeJSON[farmCommands.DeleteFarmObjectCommand],
 		},
-		Queries: []module.QueryHandler{
+
 			{
-				Name:    "GetCurrentFarm",
-				Handler: farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()),
-				Decoder: utils.DecodeJSON[farmQueries.GetCurrentFarmQuery],
+				Name:    "CreateOrganization",
+				Handler: nil,
+				Decoder: nil,
 			}, {
-				Name:    "GetObjects",
-				Handler: farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()),
-				Decoder: utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery],
+				Name:    "UpdateOrganization",
+				Handler: nil,
+				Decoder: nil,
+			}},
+		Queries: []module.QueryHandler{{
+			Name:    "GetCurrentFarm",
+			Handler: farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()),
+			Decoder: utils.DecodeJSON[farmQueries.GetCurrentFarmQuery],
+		}, {
+			Name:    "GetObjects",
+			Handler: farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()),
+			Decoder: utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery],
+		},
+			//{
+			//	Name:    "MyOrganizations",
+			//	Handler: farmQueries.NewMyOrganizationsHandler(),
+			//	Decoder: utils.DecodeJSON[farmQueries.GetMyOrganizationsQuery],
+			//},
+			{
+				Name:    "CurrentOrganization",
+				Handler: nil,
+				Decoder: nil,
 			},
 		},
 	}

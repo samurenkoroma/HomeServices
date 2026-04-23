@@ -38,15 +38,15 @@ type CreateCropPlanCmd struct {
 }
 
 // Handle выполняет команду
-func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
+func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateCropPlanCmd)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
@@ -99,8 +99,6 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return nil, err
 }

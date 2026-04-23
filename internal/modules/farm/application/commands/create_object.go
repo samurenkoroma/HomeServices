@@ -31,15 +31,15 @@ func NewCreateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 	return &createPhysicalHandler{uowFactory: uowFactory}
 }
 
-func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
+func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateFarmObjectCmd)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
@@ -74,5 +74,5 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) error {
 		return nil
 	})
 
-	return err
+	return nil, err
 }

@@ -2,13 +2,12 @@ package auth
 
 import (
 	"context"
-
-	"samurenkoroma/services/internal/auth/domain"
+	"samurenkoroma/services/internal/modules/auth/domain"
 )
 
 type contextKey string
 
-const userInfoKey contextKey = "user_info"
+const UserInfoKey contextKey = "user_info"
 
 // UserInfo информация о пользователе в контексте
 type UserInfo struct {
@@ -20,12 +19,12 @@ type UserInfo struct {
 
 // WithUser добавляет пользователя в контекст
 func WithUser(ctx context.Context, user *UserInfo) context.Context {
-	return context.WithValue(ctx, userInfoKey, user)
+	return context.WithValue(ctx, UserInfoKey, user)
 }
 
 // GetUser извлекает пользователя из контекста
 func GetUser(ctx context.Context) *UserInfo {
-	user, ok := ctx.Value(userInfoKey).(*UserInfo)
+	user, ok := ctx.Value(UserInfoKey).(*UserInfo)
 	if !ok {
 		return nil
 	}

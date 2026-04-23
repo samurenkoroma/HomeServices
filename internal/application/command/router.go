@@ -6,12 +6,12 @@ import (
 )
 
 type Handler interface {
-	Handle(ctx context.Context, cmd any) error
+	Handle(ctx context.Context, cmd any) (any, error)
 }
 type DecoderFunc func([]byte) (any, error)
 
 type Router interface {
 	Register(string, Handler, DecoderFunc)
-	Dispatch(context.Context, string, any) error
+	Dispatch(ctx context.Context, commandName string, cmd any) (any, error)
 	ResolveCommandPayload(string, json.RawMessage) (any, error)
 }

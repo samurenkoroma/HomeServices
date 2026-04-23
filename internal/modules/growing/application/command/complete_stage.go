@@ -30,15 +30,15 @@ func NewCompleteStageCommand(uowFactory repository.Factory) command.Handler {
 }
 
 // Handle выполняет команду
-func (h *completeStageHandler) Handle(ctx context.Context, cmd any) error {
+func (h *completeStageHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(CompleteStageCmd)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
@@ -65,8 +65,5 @@ func (h *completeStageHandler) Handle(ctx context.Context, cmd any) error {
 		return nil
 
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return nil, err
 }

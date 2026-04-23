@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 
@@ -22,44 +21,40 @@ func NewDeleteFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 }
 
 // Handle обрабатывает команду
-func (h *deleteFarmObjectHandler) Handle(ctx context.Context, cmd any) error {
+func (h *deleteFarmObjectHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*DeleteFarmObjectCommand)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
-			return fmt.Errorf("invalid provider type")
+			return repository.ErrInvalidProviderType
 		}
 
 		// Получаем объект
 		obj, err := farmProvider.Objects().FindByID(ctx, physicalobject.PhysicalObjectID(c.ID))
 		if err != nil {
-			return fmt.Errorf("failed to find physical object: %w", err)
+			return err
 		}
 		if err := obj.Delete(); err != nil {
-			return fmt.Errorf("Ошибка удаления %w", err)
+			return err
 		}
 
 		// Сохраняем
 		if err := farmProvider.Objects().Delete(ctx, obj); err != nil {
-			return fmt.Errorf("failed to save physical object: %w", err)
+			return err
 		}
 
 		uow.RegisterAggregate(obj)
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return nil, err
 }

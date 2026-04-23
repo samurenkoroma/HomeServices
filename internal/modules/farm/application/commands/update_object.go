@@ -30,21 +30,15 @@ func NewUpdateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
 }
 
 // Handle обрабатывает команду
-func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error {
+func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*UpdateFarmObjectCommand)
 	if !ok {
-		return command.ErrInvalidCommandType
-	}
-
-	if c.Status != nil {
-		if *c.Status != "active" && *c.Status != "inactive" {
-			return fmt.Errorf("invalid status: %s, must be 'active' or 'inactive'", *c.Status)
-		}
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
@@ -105,9 +99,5 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) error
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return nil, err
 }

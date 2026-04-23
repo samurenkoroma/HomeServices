@@ -1,0 +1,27 @@
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{"email":"dev@agro.com", "username": "awdawd","password":"admin123"}
+
+###
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+"email": "admin@example.com",
+"password": "admin123"
+}
+
+
+
+###
+GET http://localhost:8080/api/queries/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6Im93bmVyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzI5MzQ5MywiaWF0IjoxNzc3MjA3MDkzfQ.iiN56jVhATYJ7hORbt0CqX1yveUKlShZbiQDtS4FY9g
+
+{
+  "query": "Me",
+  "data": {
+  }
+}
+

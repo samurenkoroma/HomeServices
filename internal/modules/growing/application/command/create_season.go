@@ -31,23 +31,23 @@ type CreateSeasonCmd struct {
 	Description string `json:"description"`
 }
 
-func (h *createSeasonHandler) Handle(ctx context.Context, cmd any) error {
+func (h *createSeasonHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateSeasonCmd)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 	startDate, err := time.Parse(time.RFC3339, c.StartDate)
 	if err != nil {
-		return fmt.Errorf("invalid start date %s", err)
+		return nil, err
 	}
 	endDate, err := time.Parse(time.RFC3339, c.StartDate)
 	if err != nil {
-		return fmt.Errorf("invalid start date %s", err)
+		return nil, err
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
@@ -70,8 +70,5 @@ func (h *createSeasonHandler) Handle(ctx context.Context, cmd any) error {
 
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return nil, err
 }

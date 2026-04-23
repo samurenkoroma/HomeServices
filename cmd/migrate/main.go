@@ -329,6 +329,7 @@ type module struct {
 func getModules(moduleFlag string) []module {
 	allModules := []module{
 		//{Name: "shared", Path: "shared"},
+		{Name: "auth", Path: "auth/infrastructure/persistence/postgres/migrations"},
 		{Name: "farm", Path: "farm/infrastructure/persistence/postgres/migrations"},
 		{Name: "crop", Path: "crop/infrastructure/persistence/postgres/migrations"},
 		{Name: "growing", Path: "growing/infrastructure/persistence/postgres/migrations"},

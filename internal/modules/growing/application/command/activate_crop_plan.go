@@ -13,10 +13,6 @@ type activateCropPlanHandler struct {
 	uowFactory repository.Factory
 }
 
-func (h *activateCropPlanHandler) Name() string {
-	return "ActivateCropPlan"
-}
-
 // ActivateCropPlanCmd структура команды
 type ActivateCropPlanCmd struct {
 	PlanID string `json:"planId"`
@@ -26,15 +22,15 @@ func NewActivateCropPlanCmd(uowFactory repository.Factory) command.Handler {
 	return &activateCropPlanHandler{uowFactory: uowFactory}
 }
 
-func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
+func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*ActivateCropPlanCmd)
 	if !ok {
-		return command.ErrInvalidCommandType
+		return nil, command.ErrInvalidCommandType
 	}
 
 	uow, err := h.uowFactory.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, err
 	}
 
 	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
@@ -62,9 +58,6 @@ func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) error {
 		return nil
 	})
 
-	if err != nil {
-		return err
-	}
-	return nil
+	return nil, err
 
 }

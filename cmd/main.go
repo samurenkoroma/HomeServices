@@ -19,7 +19,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	app, err := c.Build(ctx, conn)
+	app, err := c.Build(ctx, conn, conf)
 	if err != nil {
 		log.Fatal(err)
 	}

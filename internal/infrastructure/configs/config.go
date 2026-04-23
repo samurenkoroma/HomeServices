@@ -14,8 +14,14 @@ type Config struct {
 	Auth   AuthConfig
 	Server ServerConfig
 	Logger LoggerConfig
+	Redis  RedisConfig
 }
-
+type RedisConfig struct {
+	Host     string
+	Port     int
+	Password string
+	DB       int
+}
 type AuthConfig struct {
 	AccessSecret  string
 	RefreshSecret string
@@ -63,6 +69,12 @@ func LoadConfig() *Config {
 		Logger: LoggerConfig{
 			Level:  getInt("LOG_LEVEL", 0),
 			Format: getString("LOG_FORMAT", "json"),
+		},
+		Redis: RedisConfig{
+			Host:     getString("REDIS_HOST", "localhost"),
+			Port:     getInt("REDIS_PORT", 6379),
+			Password: getString("REDIS_PASSWORD", ""),
+			DB:       getInt("REDIS_DB", 0),
 		},
 	}
 }
