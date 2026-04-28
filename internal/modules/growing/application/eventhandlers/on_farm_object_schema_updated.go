@@ -36,10 +36,10 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
+	_, err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
-			return fmt.Errorf("invalid provider type")
+			return nil, fmt.Errorf("invalid provider type")
 		}
 		var area cultivationarea.CultivationArea
 
@@ -49,7 +49,7 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 			// Создано поле → создаём FieldArea
 			err := json.Unmarshal(e.Schema, &elements)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			for _, bed := range elements {
 				if bed.TypeObj != string(cultivationarea.AreaTypeBed) {
@@ -57,7 +57,7 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 				}
 				bUUID, err := uuid.Parse(bed.Id)
 				if err != nil {
-					return err
+					return nil, err
 				}
 
 				area = cultivationarea.NewBed(
@@ -69,22 +69,22 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 				)
 				a, ok := area.(*cultivationarea.Bed)
 				if !ok {
-					return fmt.Errorf("invalid area type")
+					return nil, fmt.Errorf("invalid area type")
 				}
 				a.SetAttributes(bed.Width, bed.Length, bed.X, bed.Y)
 				// Сохраняем операционное место
 				if err := growingProvider.CultivationAreas().Save(ctx, a); err != nil {
-					return fmt.Errorf("failed to save cultivation area: %w", err)
+					return nil, err
 				}
 			}
 
 		default:
 			// Не интересуют другие типы событий
-			return nil
+			return nil, nil
 		}
 
 		uow.RegisterAggregate(area)
-		return nil
+		return nil, nil
 	})
-
+	return err
 }

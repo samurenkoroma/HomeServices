@@ -1,4 +1,4 @@
-package commands
+package auth
 
 import (
 	"encoding/json"
@@ -51,12 +51,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx := r.Context()
-	err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) error {
+	_, err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		authProvider, ok := provider.(*postgres.PostgresAuthProvider)
 		if !ok {
 			response.WriteInternalError(w, err.Error())
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 
 		userRepo := authProvider.Users()
@@ -67,24 +67,24 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		user, err := userRepo.FindByEmail(ctx, req.Email)
 		if err != nil {
 			response.WriteNotFound(w, err.Error())
-			return domain.ErrInvalidCredentials
+			return nil, domain.ErrInvalidCredentials
 		}
 
 		// Проверяем пароль
 		if !user.CheckPassword(req.Password) {
 			response.WriteValidationError(w, domain.ErrInvalidCredentials.Error())
-			return domain.ErrInvalidCredentials
+			return nil, domain.ErrInvalidCredentials
 		}
 
 		// Проверяем статус
 		if !user.IsActive() {
-			return domain.ErrUserInactive
+			return nil, domain.ErrUserInactive
 		}
 
 		// Получаем все членства пользователя
 		memberships, err := membershipRepo.FindByUser(ctx, user.ID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// Собираем информацию об организациях
@@ -149,7 +149,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			)
 		}
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// Обновляем время последнего входа
@@ -169,7 +169,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 				CurrentOrg: currentOrg,
 			}).WriteJSON(w, http.StatusOK)
 
-		return nil
+		return nil, nil
 	})
 	return
 }

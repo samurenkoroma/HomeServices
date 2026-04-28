@@ -1,4 +1,4 @@
-package commands
+package auth
 
 import (
 	"samurenkoroma/services/internal/core/domain/repository"

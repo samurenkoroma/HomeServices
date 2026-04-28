@@ -4,19 +4,18 @@ import (
 	"context"
 	"fmt"
 	"samurenkoroma/services/internal/core/domain/repository"
-	"samurenkoroma/services/internal/modules/auth/application/commands"
+	"samurenkoroma/services/internal/modules/auth/application/commands/auth"
 	"samurenkoroma/services/internal/modules/auth/application/dto"
 	"samurenkoroma/services/internal/modules/auth/domain"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/persistence/postgres"
-	"samurenkoroma/services/pkg/response"
 )
 
-type MeResponseQuery struct {
+type MeQuery struct {
 }
 
 // MeResponse ответ с информацией о текущем пользователе
 type MeResponse struct {
-	User         commands.User               `json:"user"`
+	User         auth.User                   `json:"user"`
 	Organization []*dto.UserOrganizationInfo `json:"organizations"`
 	CurrentOrg   *dto.UserOrganizationInfo   `json:"currentOrg"`
 }
@@ -31,32 +30,36 @@ func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	var data MeResponse
-	err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) (any, error) {
 		authProvider, ok := provider.(*postgres.PostgresAuthProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 
 		userRepo := authProvider.Users()
+		membershipRepo := authProvider.Memberships()
 		orgRepo := authProvider.Organizations()
 
 		// Получаем пользователя
 		user, err := userRepo.FindByID(ctx, userID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		orgs, err := orgRepo.ListByUser(ctx, user.ID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		var organizations []*dto.UserOrganizationInfo
 		for _, o := range orgs {
+			member, err2 := membershipRepo.FindByUserAndOrganization(ctx, user.ID, o.ID)
+			if err2 != nil {
+				return nil, err2
+			}
 			organizations = append(organizations, &dto.UserOrganizationInfo{
 				OrganizationID:   o.ID,
 				OrganizationName: o.Name,
-				Role:             "Владелец",
+				Role:             member.GetRoleName(),
 			})
 		}
 		// Определяем текущую организацию
@@ -72,8 +75,8 @@ func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
 			}
 		}
 
-		data = MeResponse{
-			User: commands.User{
+		return MeResponse{
+			User: auth.User{
 				Id:    user.ID,
 				Name:  user.Username,
 				Email: user.Email,
@@ -81,10 +84,7 @@ func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
 			},
 			Organization: organizations,
 			CurrentOrg:   currentOrg,
-		}
-		return nil
+		}, nil
 
 	})
-
-	return response.Success(data), nil
 }

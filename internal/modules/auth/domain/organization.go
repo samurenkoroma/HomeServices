@@ -20,6 +20,10 @@ type Organization struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+func NewSimpleOrganization(name string) (*Organization, error) {
+	return NewOrganization(name, "", "", "", "")
+}
+
 // NewOrganization создает новую организацию
 func NewOrganization(name, taxID, address, phone, email string) (*Organization, error) {
 	if name == "" {

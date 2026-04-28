@@ -18,7 +18,7 @@ var (
 
 type UnitOfWork interface {
 	// Execute выполняет функцию в рамках транзакции
-	Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error
+	Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) (any, error)) (any, error)
 	Tx() *sql.Tx
 	RegisterAggregate(agg aggregate.Aggregate)
 	Commit() error
@@ -50,25 +50,26 @@ func (uow *unitOfWork) Tx() *sql.Tx {
 	return uow.tx
 }
 
-func (uow *unitOfWork) Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) error) error {
+func (uow *unitOfWork) Execute(ctx context.Context, build func(tx *sql.Tx) RepositoryProvider, fn func(RepositoryProvider) (any, error)) (any, error) {
 	// Создаем провайдер для этой транзакции
 	provider := build(uow.tx)
 
 	// Выполняем бизнес-логику
-	if err := fn(provider); err != nil {
+	data, err := fn(provider)
+	if err != nil {
 		// В случае ошибки — откат
 		if rbErr := uow.Rollback(); rbErr != nil {
-			return fmt.Errorf("rollback error: %v, original error: %w", rbErr, err)
+			return nil, fmt.Errorf("rollback error: %v, original error: %w", rbErr, err)
 		}
-		return err
+		return nil, err
 	}
 
 	// Пробуем закоммитить
 	if err := uow.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	return nil
+	return data, nil
 }
 
 func (uow *unitOfWork) RegisterAggregate(agg aggregate.Aggregate) {

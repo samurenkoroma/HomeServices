@@ -1,4 +1,4 @@
-package commands
+package auth
 
 import (
 	"encoding/json"
@@ -59,23 +59,23 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		response.WriteInternalError(w, "failed to start transaction")
 		return
 	}
-	err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) error {
+	_, err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		authProvider, ok := provider.(*postgres.PostgresAuthProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		userRepo := authProvider.Users()
 
 		// Проверяем, не существует ли пользователь
 		existing, _ := userRepo.FindByEmail(ctx, req.Email)
 		if existing != nil {
-			return domain.ErrUserAlreadyExists
+			return nil, domain.ErrUserAlreadyExists
 		}
 
 		existing, _ = userRepo.FindByUsername(ctx, req.Username)
 		if existing != nil {
-			return domain.ErrUserAlreadyExists
+			return nil, domain.ErrUserAlreadyExists
 		}
 
 		// Определяем роль
@@ -91,12 +91,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			response.WriteValidationError(w, err.Error())
-			return err
+			return nil, err
 		}
 
 		// Сохраняем
 		if err := userRepo.Save(ctx, user); err != nil {
-			return fmt.Errorf("failed to save user: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(user)
@@ -107,7 +107,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 			Role:     string(user.Role),
 			Message:  "User registered successfully",
 		}).WriteJSON(w, http.StatusCreated)
-		return nil
+		return nil, nil
 	})
 	return
 

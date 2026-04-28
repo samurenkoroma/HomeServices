@@ -5,7 +5,7 @@ import (
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/domain/repository"
-	"samurenkoroma/services/internal/modules/auth/application/commands"
+	"samurenkoroma/services/internal/modules/auth/application/commands/auth"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/jwt"
 	"samurenkoroma/services/pkg/response"
 )
@@ -23,7 +23,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	mux := http.NewServeMux()
 
 	// ========== AUTH ЭНДПОИНТЫ (без CQRS) ==========
-	authHandler := commands.NewAuthHandler(cfg.UowFactory, cfg.JWTService)
+	authHandler := auth.NewAuthHandler(cfg.UowFactory, cfg.JWTService)
 
 	mux.HandleFunc("POST /auth/register", authHandler.Register)
 	mux.HandleFunc("POST /auth/login", authHandler.Login)

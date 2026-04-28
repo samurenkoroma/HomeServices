@@ -23,10 +23,10 @@ func OnFarmObjectCreated(ctx context.Context, event event.DomainEvent) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
-	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
+	_, err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
-			return fmt.Errorf("invalid provider type")
+			return nil, fmt.Errorf("invalid provider type")
 		}
 		var area cultivationarea.CultivationArea
 
@@ -53,16 +53,16 @@ func OnFarmObjectCreated(ctx context.Context, event event.DomainEvent) error {
 
 		default:
 			// Не интересуют другие типы событий
-			return nil
+			return nil, nil
 		}
 
 		// Сохраняем операционное место
 		if err := growingProvider.CultivationAreas().Save(ctx, area); err != nil {
-			return fmt.Errorf("failed to save cultivation area: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(area)
-		return nil
+		return nil, nil
 	})
-
+	return err
 }

@@ -12,13 +12,17 @@ import (
 	"samurenkoroma/services/internal/modules/auth/infrastructure/persistence/postgres"
 )
 
+type SwitchOrganizationCmd struct {
+	OrganizationID string `json:"organization_id"`
+}
+
 type switchOrganizationResult struct {
-	TokenPair  *jwt.TokenPair           `json:"token_pair"`
-	CurrentOrg dto.UserOrganizationInfo `json:"current_org"`
+	TokenPair  *jwt.TokenPair           `json:"tokenPair"`
+	CurrentOrg dto.UserOrganizationInfo `json:"currentOrg"`
 }
 
 func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) {
-	c, ok := cmd.(dto.SwitchOrganizationCmd)
+	c, ok := cmd.(*SwitchOrganizationCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
 	}
@@ -33,12 +37,11 @@ func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) 
 	if !ok {
 		return nil, domain.ErrUnauthorized
 	}
-	var response switchOrganizationResult
-	err = uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresAuthProvider, func(provider repository.RepositoryProvider) (any, error) {
 
 		authProvider, ok := provider.(*postgres.PostgresAuthProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 
 		userRepo := authProvider.Users()
@@ -48,29 +51,29 @@ func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) 
 		// Получаем пользователя
 		user, err := userRepo.FindByID(ctx, userID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// Проверяем членство в организации
 		membership, err := membershipRepo.FindByUserAndOrganization(ctx, userID, c.OrganizationID)
 		if err != nil {
-			return errors.New("you don't have access to this organization")
+			return nil, errors.New("you don't have access to this organization")
 		}
 
 		if !membership.IsActive {
-			return errors.New("membership is not active")
+			return nil, errors.New("membership is not active")
 		}
 
 		// Получаем информацию об организации
 		org, err := orgRepo.FindByID(ctx, c.OrganizationID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// Обновляем текущую организацию в профиле
 		user.SetCurrentOrganization(org.ID)
 		if err := userRepo.Update(ctx, user); err != nil {
-			return err
+			return nil, err
 		}
 		uow.RegisterAggregate(user)
 		// Генерируем новые токены с новой организацией
@@ -83,10 +86,10 @@ func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) 
 			string(membership.Role),
 		)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		response = switchOrganizationResult{
+		return switchOrganizationResult{
 			TokenPair: tokenPair,
 			CurrentOrg: dto.UserOrganizationInfo{
 				OrganizationID:   org.ID,
@@ -94,9 +97,7 @@ func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) 
 				Role:             string(membership.Role),
 				RoleName:         membership.GetRoleName(),
 			},
-		}
-		return nil
+		}, nil
 	})
 
-	return response, nil
 }

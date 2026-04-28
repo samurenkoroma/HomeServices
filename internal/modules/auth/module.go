@@ -5,6 +5,7 @@ import (
 	"samurenkoroma/services/internal/application/module"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/auth/application/commands/organization"
 	"samurenkoroma/services/internal/modules/auth/application/queries"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/jwt"
 	"samurenkoroma/services/pkg/utils"
@@ -16,26 +17,26 @@ type authModule struct {
 }
 
 func NewModule(uowFactory repository.Factory, jwtService *jwt.Service) module.Module {
-	//h := organization.NewOrganizationHandler(uowFactory, jwtService)
+	h := organization.NewOrganizationHandler(uowFactory, jwtService)
 	return &authModule{
 
 		Commands: []module.CommandHandler{
-			//{
-			//	Name:    "SwitchOrganization",
-			//	Handler: h.Switch,
-			//	Decoder: utils.DecodeJSON[dto.SwitchOrganizationCmd],
-			//},
-			//{
-			//	Name:    "SwitchOrganization",
-			//	Handler: h.Switch,
-			//	Decoder: utils.DecodeJSON[dto.SwitchOrganizationCmd],
-			//},
+			{
+				Name:    "SwitchOrganization",
+				Handler: h.Switch,
+				Decoder: utils.DecodeJSON[organization.SwitchOrganizationCmd],
+			},
+			{
+				Name:    "CreateOrganization",
+				Handler: h.Create,
+				Decoder: utils.DecodeJSON[organization.CreateOrganizationCmd],
+			},
 		},
 		Queries: []module.QueryHandler{
 			{
 				Name:    "Me",
 				Handler: queries.NewUserHandler(uowFactory, jwtService),
-				Decoder: utils.DecodeJSON[queries.MeResponseQuery],
+				Decoder: utils.DecodeJSON[queries.MeQuery],
 			},
 		},
 	}

@@ -28,7 +28,7 @@ func (r *router) Dispatch(ctx context.Context, commandName string, cmd any) (any
 	if !ok {
 		return nil, errors.New("command handler not found")
 	}
-	return handler.Handle(ctx, cmd)
+	return handler(ctx, cmd)
 }
 
 func (r *router) ResolveCommandPayload(commandName string, data json.RawMessage) (any, error) {

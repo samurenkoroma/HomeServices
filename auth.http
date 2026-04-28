@@ -15,13 +15,25 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:8080/api/queries/
+POST http://localhost:8080/api/queries/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6Im93bmVyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzI5MzQ5MywiaWF0IjoxNzc3MjA3MDkzfQ.iiN56jVhATYJ7hORbt0CqX1yveUKlShZbiQDtS4FY9g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6Im93bmVyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzQwNDA3MSwiaWF0IjoxNzc3MzE3NjcxfQ.rzgUSDRWd3dmAKpdHcu-LSJ5asRxPwz16ooulp-KkqI
 
 {
   "query": "Me",
   "data": {
+  }
+}
+
+###
+POST http://localhost:8080/api/commands/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6Im93bmVyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzM5ODI5OSwiaWF0IjoxNzc3MzExODk5fQ.v8uQ1b_VWIZcK1uXnwa8vFBGSJzAWFO6-ntVWJZ01bM
+
+{
+  "command": "CreateOrganization",
+  "data": {
+    "name": "огород"
   }
 }
 

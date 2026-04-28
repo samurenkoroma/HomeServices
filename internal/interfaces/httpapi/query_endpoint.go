@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/application/query/dto"
+	"samurenkoroma/services/pkg/response"
 )
 
 func QueryEndpoint(router query.Router) http.HandlerFunc {
@@ -24,11 +25,12 @@ func QueryEndpoint(router query.Router) http.HandlerFunc {
 			payload.Data,
 		)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			resp := response.FromError(err)
+			statusCode := getStatusCodeForError(resp.Error.Code)
+			resp.WriteJSON(w, statusCode)
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result)
+		response.WriteSuccess(w, result)
 	}
 }

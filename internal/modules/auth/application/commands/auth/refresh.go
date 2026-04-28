@@ -1,4 +1,4 @@
-package commands
+package auth
 
 // // RefreshRequest запрос на обновление токена
 //
