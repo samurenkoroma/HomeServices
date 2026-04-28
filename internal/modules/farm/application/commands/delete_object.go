@@ -12,16 +12,8 @@ import (
 type DeleteFarmObjectCommand struct {
 	ID string `json:"id" validate:"required"`
 }
-type deleteFarmObjectHandler struct {
-	uowFactory repository.Factory
-}
 
-func NewDeleteFarmObjectHandler(uowFactory repository.Factory) command.Handler {
-	return &deleteFarmObjectHandler{uowFactory: uowFactory}
-}
-
-// Handle обрабатывает команду
-func (h *deleteFarmObjectHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *FarmObjectHandler) Delete(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*DeleteFarmObjectCommand)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -32,29 +24,27 @@ func (h *deleteFarmObjectHandler) Handle(ctx context.Context, cmd any) (any, err
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) (any, error) {
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
-			return repository.ErrInvalidProviderType
+			return nil, repository.ErrInvalidProviderType
 		}
 
 		// Получаем объект
 		obj, err := farmProvider.Objects().FindByID(ctx, physicalobject.PhysicalObjectID(c.ID))
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if err := obj.Delete(); err != nil {
-			return err
+			return nil, err
 		}
 
 		// Сохраняем
 		if err := farmProvider.Objects().Delete(ctx, obj); err != nil {
-			return err
+			return nil, err
 		}
 
 		uow.RegisterAggregate(obj)
-		return nil
+		return nil, nil
 	})
-
-	return nil, err
 }

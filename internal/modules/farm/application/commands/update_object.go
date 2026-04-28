@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
 
@@ -21,16 +20,8 @@ type UpdateFarmObjectCommand struct {
 	Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	Schema      json.RawMessage        `json:"schema,omitempty"`
 }
-type updatePhysicalObjectHandler struct {
-	uowFactory repository.Factory
-}
 
-func NewUpdateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
-	return &updatePhysicalObjectHandler{uowFactory: uowFactory}
-}
-
-// Handle обрабатывает команду
-func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *FarmObjectHandler) Update(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*UpdateFarmObjectCommand)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -41,19 +32,19 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) (any,
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) (any, error) {
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
-			return fmt.Errorf("invalid provider type")
+			return nil, repository.ErrInvalidProviderType
 		}
 
 		// Получаем объект
 		obj, err := farmProvider.Objects().FindByID(ctx, physicalobject.PhysicalObjectID(c.ID))
 		if err != nil {
-			return fmt.Errorf("failed to find physical object: %w", err)
+			return nil, err
 		}
 		if obj == nil {
-			return physicalobject.ErrPhysicalObjectNotFound
+			return nil, physicalobject.ErrPhysicalObjectNotFound
 		}
 
 		// Обновляем поля
@@ -68,18 +59,18 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) (any,
 		if c.Status != nil {
 			if *c.Status == "active" {
 				if err := obj.Activate(); err != nil {
-					return err
+					return nil, err
 				}
 			} else if *c.Status == "inactive" {
 				if err := obj.Deactivate(); err != nil {
-					return err
+					return nil, err
 				}
 			}
 		}
 
 		if c.Geometry != nil {
 			if err := obj.SetGeometry(*c.Geometry); err != nil {
-				return fmt.Errorf("failed to set geometry: %w", err)
+				return nil, err
 			}
 		}
 
@@ -92,12 +83,10 @@ func (h *updatePhysicalObjectHandler) Handle(ctx context.Context, cmd any) (any,
 
 		// Сохраняем
 		if err := farmProvider.Objects().Save(ctx, obj); err != nil {
-			return fmt.Errorf("failed to save physical object: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(obj)
-		return nil
+		return nil, nil
 	})
-
-	return nil, err
 }

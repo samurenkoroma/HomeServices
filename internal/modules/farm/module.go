@@ -18,30 +18,21 @@ type farmModule struct {
 
 func NewModule(uowFactory repository.Factory) module.Module {
 	farmProvider := farmProjections.NewFarmProjectionsProvider(uowFactory.DB())
+	h := farmCommands.NewFarmObjectHandler(uowFactory)
 	return &farmModule{
 		Commands: []module.CommandHandler{{
 			Name:    "CreateObject",
-			Handler: farmCommands.NewCreateFarmObjectHandler(uowFactory),
+			Handler: h.Create,
 			Decoder: utils.DecodeJSON[farmCommands.CreateFarmObjectCmd],
 		}, {
 			Name:    "UpdateObject",
-			Handler: farmCommands.NewUpdateFarmObjectHandler(uowFactory),
+			Handler: h.Update,
 			Decoder: utils.DecodeJSON[farmCommands.UpdateFarmObjectCommand],
 		}, {
 			Name:    "DeleteObject",
-			Handler: farmCommands.NewDeleteFarmObjectHandler(uowFactory),
+			Handler: h.Delete,
 			Decoder: utils.DecodeJSON[farmCommands.DeleteFarmObjectCommand],
-		},
-
-			{
-				Name:    "CreateOrganization",
-				Handler: nil,
-				Decoder: nil,
-			}, {
-				Name:    "UpdateOrganization",
-				Handler: nil,
-				Decoder: nil,
-			}},
+		}},
 		Queries: []module.QueryHandler{{
 			Name:    "GetCurrentFarm",
 			Handler: farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()),

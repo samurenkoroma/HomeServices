@@ -23,15 +23,8 @@ type CreateFarmObjectCmd struct {
 		Width  float64 `json:"width" validate:"required"`
 	} `json:"attributes,omitempty"`
 }
-type createPhysicalHandler struct {
-	uowFactory repository.Factory
-}
 
-func NewCreateFarmObjectHandler(uowFactory repository.Factory) command.Handler {
-	return &createPhysicalHandler{uowFactory: uowFactory}
-}
-
-func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *FarmObjectHandler) Create(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateFarmObjectCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -42,11 +35,11 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) (any, error
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		var newObj *physicalobject.PhysicalObject
 		dim := types.Dimension{
@@ -67,12 +60,10 @@ func (h *createPhysicalHandler) Handle(ctx context.Context, cmd any) (any, error
 
 		// 2. Сохраняем поле
 		if err := farmProvider.Objects().Save(ctx, newObj); err != nil {
-			return fmt.Errorf("failed to save field: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(newObj)
-		return nil
+		return nil, nil
 	})
-
-	return nil, err
 }

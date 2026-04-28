@@ -13,6 +13,7 @@ import (
 	"samurenkoroma/services/internal/interfaces/httpapi"
 	"samurenkoroma/services/internal/modules/auth"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/jwt"
+	"samurenkoroma/services/internal/modules/farm"
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
 	"time"
@@ -42,7 +43,7 @@ func Build(ctx context.Context, db *sql.DB, conf *configs.Config) (*App, error) 
 	commandRouter := command.NewRouter()
 	queryRouter := query.NewRouter()
 	modules := []module.Module{
-		//farm.NewModule(uowFactory),
+		farm.NewModule(uowFactory),
 		//growing.NewModule(uowFactory),
 		auth.NewModule(uowFactory, jwtService),
 	}
