@@ -35,11 +35,11 @@ func NewModule(uowFactory repository.Factory) module.Module {
 		}},
 		Queries: []module.QueryHandler{{
 			Name:    "GetCurrentFarm",
-			Handler: farmQueries.NewGetCurrentFarmHandler(farmProvider.Objects()),
+			Handler: farmQueries.NewFarmHandler(farmProvider.Objects()).CurrentFarm,
 			Decoder: utils.DecodeJSON[farmQueries.GetCurrentFarmQuery],
 		}, {
 			Name:    "GetObjects",
-			Handler: farmQueries.NewGetPhysicalObjectsHandler(farmProvider.Objects()),
+			Handler: farmQueries.NewFarmHandler(farmProvider.Objects()).GetPhysicalObjects,
 			Decoder: utils.DecodeJSON[farmQueries.GetPhysicalObjectsQuery],
 		},
 			//{

@@ -15,14 +15,8 @@ type GetPhysicalObjectsQuery struct {
 	OwnerId string `json:"owner_id,omitempty"`
 	Search  string `json:"search,omitempty"`
 }
-type getPhysicalObjectsHandler struct {
-	projector physicalobject.ObjectProjections
-}
 
-func NewGetPhysicalObjectsHandler(projector physicalobject.ObjectProjections) query.Handler {
-	return &getPhysicalObjectsHandler{projector: projector}
-}
-func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (any, error) {
+func (h *QueryHandler) GetPhysicalObjects(ctx context.Context, payload any) (any, error) {
 	organization_id, ok := ctx.Value("organization_id").(string)
 	q, ok := payload.(*GetPhysicalObjectsQuery)
 	if !ok {

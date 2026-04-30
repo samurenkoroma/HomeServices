@@ -8,7 +8,6 @@ import (
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/providers/weather"
 	"sync"
 )
@@ -23,11 +22,6 @@ type RedisGrowingProvider struct {
 
 	oncePlan sync.Once
 }
-
-var (
-	instance *RedisGrowingProvider
-	once     sync.Once
-)
 
 func (p *RedisGrowingProvider) ProviderName() string {
 	return "growing"
@@ -60,15 +54,12 @@ func (p *RedisGrowingProvider) CropPlans() cropplan.Repository {
 }
 
 func (p *RedisGrowingProvider) Seasons() season.Repository {
-	if p.seasons == nil {
-		p.seasons = postgres.NewSeasonRepository(p.tx)
-	}
-	return p.seasons
+	panic("implement me")
 }
 
 func (p *RedisGrowingProvider) Catalog() catalog.Repository {
 	if p.catalog == nil {
-		p.catalog = postgres.NewCatalogRepository(p.tx)
+		p.catalog = NewInMemoryCatalogRepository()
 	}
 	return p.catalog
 }

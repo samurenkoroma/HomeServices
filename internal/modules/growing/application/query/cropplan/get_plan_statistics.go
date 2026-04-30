@@ -1,37 +1,18 @@
-package query
+package cropplan
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
 	"time"
 )
 
-type getPlanStatisticsHandler struct {
-	PlanRepo cropplan.Repository
-	TaskRepo task.Repository
-}
-
-func NewGetPlanStatisticsHandler(PlanRepo cropplan.Repository, TaskRepo task.Repository) query.Handler {
-	return &getPlanStatisticsHandler{
-		PlanRepo: PlanRepo,
-		TaskRepo: TaskRepo,
-	}
-}
-
-// GetPlanStatisticsQuery параметры запроса
 type GetPlanStatisticsQuery struct {
 	PlanID string `json:"planId"`
 }
 
-func (h *getPlanStatisticsHandler) Name() string {
-	return "GetPlanStatistics"
-}
-
-// GetPlanStatisticsResponse ответ со статистикой
 type GetPlanStatisticsResponse struct {
 	PlanID      string `json:"plan_id"`
 	PlanName    string `json:"plan_name"`
@@ -73,8 +54,7 @@ type GetPlanStatisticsResponse struct {
 	Recommendations []string `json:"recommendations,omitempty"`
 }
 
-// Handle выполняет запрос
-func (h *getPlanStatisticsHandler) Handle(ctx context.Context, query any) (any, error) {
+func (h *QueryHandler) GetPlanStatistics(ctx context.Context, query any) (any, error) {
 	q, ok := query.(*GetPlanStatisticsQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")

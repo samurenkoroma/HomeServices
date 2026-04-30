@@ -35,7 +35,7 @@ func NewModule(uowFactory repository.Factory, jwtService *jwt.Service) module.Mo
 		Queries: []module.QueryHandler{
 			{
 				Name:    "Me",
-				Handler: queries.NewUserHandler(uowFactory, jwtService),
+				Handler: queries.NewUserHandler(uowFactory, jwtService).Me,
 				Decoder: utils.DecodeJSON[queries.MeQuery],
 			},
 		},

@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS growing_stage_templates (
                                                id SERIAL PRIMARY KEY,
-                                               species_key VARCHAR(50) NOT NULL REFERENCES public.growing_species(key) ON DELETE CASCADE,
+                                               species_key VARCHAR(50) NOT NULL REFERENCES public.growing_crops(key) ON DELETE CASCADE,
 
     -- Данные этапа
                                                type VARCHAR(50) NOT NULL,

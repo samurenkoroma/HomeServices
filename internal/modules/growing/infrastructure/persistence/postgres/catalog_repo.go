@@ -22,10 +22,10 @@ func NewCatalogRepository(tx *sql.Tx) *CatalogRepository {
 // ========== SPECIES (ВИДЫ) ==========
 
 // GetSpecies возвращает вид по ключу
-func (r *CatalogRepository) GetSpecies(ctx context.Context, key string) (*catalog.Species, error) {
+func (r *CatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.Species, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
-        FROM public.growing_species
+        FROM public.growing_crops
         WHERE key = $1
     `
 
@@ -49,10 +49,10 @@ func (r *CatalogRepository) GetSpecies(ctx context.Context, key string) (*catalo
 }
 
 // ListSpecies возвращает все виды
-func (r *CatalogRepository) ListSpecies(ctx context.Context) ([]catalog.Species, error) {
+func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Species, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
-        FROM public.growing_species
+        FROM public.growing_crops
         ORDER BY name
     `
 
@@ -86,7 +86,7 @@ func (r *CatalogRepository) ListSpecies(ctx context.Context) ([]catalog.Species,
 func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category string) ([]catalog.Species, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
-        FROM public.growing_species
+        FROM public.growing_crops
         WHERE category = $1
         ORDER BY name
     `
@@ -120,7 +120,7 @@ func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category 
 // SaveSpecies сохраняет вид
 func (r *CatalogRepository) SaveSpecies(ctx context.Context, species *catalog.Species) error {
 	query := `
-        INSERT INTO public.growing_species (key, name, family, category, image_url, description, created_at, updated_at)
+        INSERT INTO public.growing_crops (key, name, family, category, image_url, description, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         ON CONFLICT (key) DO UPDATE SET
             name = EXCLUDED.name,
@@ -148,7 +148,7 @@ func (r *CatalogRepository) SaveSpecies(ctx context.Context, species *catalog.Sp
 
 // DeleteSpecies удаляет вид
 func (r *CatalogRepository) DeleteSpecies(ctx context.Context, key string) error {
-	query := `DELETE FROM public.growing_species WHERE key = $1`
+	query := `DELETE FROM public.growing_crops WHERE key = $1`
 
 	result, err := r.tx.ExecContext(ctx, query, key)
 	if err != nil {
@@ -166,24 +166,11 @@ func (r *CatalogRepository) DeleteSpecies(ctx context.Context, key string) error
 // ========== VARIETIES (СОРТА) ==========
 
 // GetVariety возвращает сорт по ID
-func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyID string) (*catalog.Variety, error) {
+func (r *CatalogRepository) GetVariety(ctx context.Context, varietyID string) (*catalog.Variety, error) {
 	var query string
 	var args []interface{}
 
-	if speciesKey != "" {
-		query = `
-            SELECT id, name, species_key, species_name, base_temperature, max_temperature,
-                   days_to_maturity, yield_potential, plant_height, 
-                   COALESCE(recommended_seasons, '{}') as recommended_seasons,
-                   COALESCE(growing_types, '{}') as growing_types,
-                   characteristics, description, water_requirement,
-                   light_requirement, phenophase_gdd, seeding_rates
-            FROM public.growing_varieties
-            WHERE id = $1 AND species_key = $2
-        `
-		args = []interface{}{varietyID, speciesKey}
-	} else {
-		query = `
+	query = `
             SELECT id, name, species_key, species_name, base_temperature, max_temperature,
                    days_to_maturity, yield_potential, plant_height,
                    COALESCE(recommended_seasons, '{}') as recommended_seasons,
@@ -193,8 +180,7 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyI
             FROM public.growing_varieties
             WHERE id = $1
         `
-		args = []interface{}{varietyID}
-	}
+	args = []interface{}{varietyID}
 
 	var variety catalog.Variety
 	var recommendedSeasonsStr, growingTypesStr string // ПРОМЕЖУТОЧНЫЕ ПЕРЕМЕННЫЕ ДЛЯ МАССИВОВ
@@ -611,7 +597,7 @@ func (r *CatalogRepository) GetStageTemplatesByBBCH(ctx context.Context, species
 func (r *CatalogRepository) SaveStageTemplate(ctx context.Context, speciesKey string, template *catalog.StageTemplate) error {
 	// Проверяем существование вида
 	var exists bool
-	checkQuery := `SELECT EXISTS(SELECT 1 FROM public.growing_species WHERE key = $1)`
+	checkQuery := `SELECT EXISTS(SELECT 1 FROM public.growing_crops WHERE key = $1)`
 	err := r.tx.QueryRowContext(ctx, checkQuery, speciesKey).Scan(&exists)
 	if err != nil {
 		return fmt.Errorf("failed to check species existence: %w", err)

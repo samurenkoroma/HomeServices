@@ -3,7 +3,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
 
 {
-  "query": "ListSpecies",
+  "query": "GetCrops",
   "data": {
 
   }
@@ -16,7 +16,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
 
 {
-  "query": "GetSpecie",
+  "query": "GetCrops",
   "data": {
     "key": "tomato"
   }
@@ -28,9 +28,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
 
 {
-  "query": "ListVarieties",
+  "query": "GetVarieties",
   "data": {
-    "speciesKey": "tomato"
+    "cropKey": "tomato"
   }
 }
 ###
@@ -41,9 +41,8 @@ POST http://localhost:8080/queries/
 Content-Type: application/json
 
 {
-  "query": "GetVariety",
+  "query": "GetVarieties",
   "data": {
-    "key": "pea",
     "id": "madonna"
   }
 }

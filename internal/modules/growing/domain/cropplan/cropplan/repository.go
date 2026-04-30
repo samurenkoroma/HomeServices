@@ -13,7 +13,7 @@ type Repository interface {
 	//Delete(ctx context.Context, id string) error
 	//
 	//Запросы по полям
-	FindByArea(ctx context.Context, areaId string) ([]*CropPlan, error)
+	FindByObject(ctx context.Context, areaId string) ([]*CropPlan, error)
 	//FindByVariety(ctx context.Context, varietyID string) ([]*CropPlan, error)
 	//FindByStatus(ctx context.Context, status Status) ([]*CropPlan, error)
 	//FindByAssignedTo(ctx context.Context, userID string) ([]*CropPlan, error)

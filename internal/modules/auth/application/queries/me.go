@@ -20,7 +20,7 @@ type MeResponse struct {
 	CurrentOrgId string                      `json:"currentOrgId"`
 }
 
-func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *UserHandler) Me(ctx context.Context, cmd any) (any, error) {
 	userID, ok := ctx.Value("user_id").(string)
 	if !ok {
 		return nil, domain.ErrUnauthorized

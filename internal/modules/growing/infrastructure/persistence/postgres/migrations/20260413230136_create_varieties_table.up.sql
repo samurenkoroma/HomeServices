@@ -4,9 +4,9 @@
 
 CREATE TABLE IF NOT EXISTS growing_varieties
 (
-    id                  VARCHAR(100) PRIMARY KEY,
+    id                  uuid PRIMARY KEY,
     name                VARCHAR(200)  NOT NULL,
-    species_key         VARCHAR(50)   NOT NULL REFERENCES growing_species (key) ON DELETE CASCADE,
+    species_key         VARCHAR(50)   NOT NULL REFERENCES growing_crops (key) ON DELETE CASCADE,
     species_name        VARCHAR(100)  NOT NULL,
 
     -- Температурные параметры

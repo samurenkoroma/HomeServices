@@ -6,7 +6,7 @@
 -- TRUNCATE species CASCADE;
 
 -- Вставка данных
-INSERT INTO public.growing_species (key, name, family, category, image_url, description)
+INSERT INTO public.growing_crops (key, name, family, category, image_url, description)
 VALUES ('tomato', 'Томат', 'nightshade', 'Овощные', 'https://images.example.com/crops/tomato.jpg',
         'Овощная культура семейства пасленовых. Плоды — сочные ягоды, используемые в кулинарии.'),
        ('cucumber', 'Огурец', 'cucurbits', 'Овощные', 'https://images.example.com/crops/cucumber.jpg',
@@ -58,7 +58,7 @@ $$
     DECLARE
         species_count INTEGER;
     BEGIN
-        SELECT COUNT(*) INTO species_count FROM public.growing_species;
+        SELECT COUNT(*) INTO species_count FROM public.growing_crops;
         RAISE NOTICE 'Импортировано видов: %', species_count;
     END
 $$;

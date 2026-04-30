@@ -52,7 +52,7 @@ func (s *phenologyService) GetCurrentPhenology(
 	}
 
 	// 2. Получаем сорт из каталога
-	variety, err := s.catalogRepo.GetVariety(ctx, "", varietyID)
+	variety, err := s.catalogRepo.GetVariety(ctx, varietyID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrVarietyNotFound, err)
 	}

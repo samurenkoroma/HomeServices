@@ -14,6 +14,51 @@ type InMemoryCatalogRepository struct {
 	varieties map[string]map[string]catalog.Variety
 }
 
+func (r *InMemoryCatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.Species, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) ListCrops(ctx context.Context) ([]catalog.Species, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) GetVariety(ctx context.Context, varietyID string) (*catalog.Variety, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) GetStageTemplates(ctx context.Context, speciesKey string) ([]catalog.StageTemplate, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) GetStageTemplatesByBBCH(ctx context.Context, speciesKey string, bbchCode int) ([]catalog.StageTemplate, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) SaveStageTemplate(ctx context.Context, speciesKey string, template *catalog.StageTemplate) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) SaveStageTemplatesBatch(ctx context.Context, speciesKey string, templates []catalog.StageTemplate) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) DeleteStageTemplate(ctx context.Context, speciesKey string, templateType string, displayOrder int) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r *InMemoryCatalogRepository) DeleteAllStageTemplates(ctx context.Context, speciesKey string) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 // NewInMemoryCatalogRepository создает новый in-memory репозиторий
 func NewInMemoryCatalogRepository() *InMemoryCatalogRepository {
 	repo := &InMemoryCatalogRepository{
@@ -95,33 +140,6 @@ func (r *InMemoryCatalogRepository) DeleteSpecies(ctx context.Context, key strin
 	}
 	delete(r.species, key)
 	return nil
-}
-
-// GetVariety возвращает сорт
-func (r *InMemoryCatalogRepository) GetVariety(ctx context.Context, speciesKey, varietyID string) (*catalog.Variety, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	// Если speciesKey не указан, ищем во всех
-	if speciesKey == "" {
-		for _, speciesVarieties := range r.varieties {
-			if v, ok := speciesVarieties[varietyID]; ok {
-				return &v, nil
-			}
-		}
-		return nil, catalog.ErrVarietyNotFound
-	}
-
-	speciesVarieties, ok := r.varieties[speciesKey]
-	if !ok {
-		return nil, catalog.ErrSpeciesNotFound
-	}
-
-	variety, ok := speciesVarieties[varietyID]
-	if !ok {
-		return nil, catalog.ErrVarietyNotFound
-	}
-	return &variety, nil
 }
 
 // ListVarieties возвращает все сорта вида

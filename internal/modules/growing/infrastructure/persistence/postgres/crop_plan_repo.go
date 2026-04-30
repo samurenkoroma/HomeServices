@@ -146,7 +146,7 @@ func (r *cropPlanRepository) FindByID(ctx context.Context, id string) (*cropplan
 // // ========== ЗАПРОСЫ ПО ПОЛЯМ ==========
 //
 // // FindByArea находит все планы на грядке (area = bed)
-func (r *cropPlanRepository) FindByArea(ctx context.Context, areaId string) ([]*cropplan.CropPlan, error) {
+func (r *cropPlanRepository) FindByObject(ctx context.Context, areaId string) ([]*cropplan.CropPlan, error) {
 	//query := `
 	//    SELECT
 	//        id, bed_id, name, variety_id, crop_name, status, stages,

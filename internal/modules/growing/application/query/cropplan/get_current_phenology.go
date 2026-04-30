@@ -1,42 +1,17 @@
-package query
+package cropplan
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/application/dto"
-	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
-	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
 )
 
-type getCurrentPhenologyHandler struct {
-	PlanRepo         cropplan.Repository
-	CatalogRepo      catalog.Repository
-	PhenologyService phenology.PhenologyService
-}
-
-func (h *getCurrentPhenologyHandler) Name() string {
-	return "GetCurrentPhenology"
-}
-
-func NewGetCurrentPhenologyHandler(PlanRepo cropplan.Repository,
-	CatalogRepo catalog.Repository,
-	PhenologyService phenology.PhenologyService) query.Handler {
-	return &getCurrentPhenologyHandler{
-		PlanRepo:         PlanRepo,
-		CatalogRepo:      CatalogRepo,
-		PhenologyService: PhenologyService,
-	}
-}
-
-// GetCurrentPhenologyQuery параметры запроса
 type GetCurrentPhenologyQuery struct {
 	PlanID string `json:"plan_id"`
 }
 
-// GetCurrentPhenologyResponse ответ с фенологией
 type GetCurrentPhenologyResponse struct {
 	PlanID      string `json:"plan_id"`
 	PlanName    string `json:"plan_name"`
@@ -70,8 +45,7 @@ type GetCurrentPhenologyResponse struct {
 	AvailableStages []dto.StageDTO `json:"available_stages"`
 }
 
-// Handle выполняет запрос
-func (h *getCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any, error) {
+func (h *QueryHandler) GetCurrentPhenolog(ctx context.Context, query any) (any, error) {
 	q, ok := query.(*GetCurrentPhenologyQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
@@ -84,7 +58,7 @@ func (h *getCurrentPhenologyHandler) Handle(ctx context.Context, query any) (any
 	}
 
 	// Получаем сорт
-	variety, err := h.CatalogRepo.GetVariety(ctx, plan.Variety().GetSpeciesName(), plan.Variety().GetId())
+	variety, err := h.CatalogRepo.GetVariety(ctx, plan.Variety().GetId())
 	if err != nil {
 		return nil, fmt.Errorf("variety not found: %w", err)
 	}

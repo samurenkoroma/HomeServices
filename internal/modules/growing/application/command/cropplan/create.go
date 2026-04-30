@@ -41,7 +41,7 @@ func (h *CropPlanHandler) Create(ctx context.Context, cmd any) (any, error) {
 			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		// Получаем сорт из каталога
-		variety, err := growingProvider.Catalog().GetVariety(ctx, c.SpeciesKey, c.VarietyID)
+		variety, err := growingProvider.Catalog().GetVariety(ctx, c.VarietyID)
 		if err != nil {
 			return nil, err
 		}

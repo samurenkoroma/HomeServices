@@ -1,1 +1,1 @@
-TRUNCATE growing_species CASCADE
+TRUNCATE growing_crops CASCADE

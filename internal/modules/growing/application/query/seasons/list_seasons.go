@@ -1,33 +1,17 @@
-package query
+package seasons
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 	"time"
 )
 
-type listSeasonsHandler struct {
-	seasons season.Repository
-}
-
-func (h *listSeasonsHandler) Name() string {
-	return "ListSeasons"
-}
-
-func ListSeasonsHandler(seasons season.Repository) query.Handler {
-	return &listSeasonsHandler{
-		seasons: seasons,
-	}
-}
-
 type ListSeasonsQuery struct {
 }
 
-// Handle выполняет запрос
-func (h *listSeasonsHandler) Handle(ctx context.Context, query any) (any, error) {
+func (h *QueryHandler) List(ctx context.Context, query any) (any, error) {
 	_, ok := query.(*ListSeasonsQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")

@@ -8,7 +8,9 @@ import (
 	"samurenkoroma/services/internal/modules/growing/application/command/cropplan"
 	"samurenkoroma/services/internal/modules/growing/application/command/season"
 	"samurenkoroma/services/internal/modules/growing/application/command/stage"
-	growingQueries "samurenkoroma/services/internal/modules/growing/application/query"
+	"samurenkoroma/services/internal/modules/growing/application/query/catalog"
+	cropplanQuery "samurenkoroma/services/internal/modules/growing/application/query/cropplan"
+	"samurenkoroma/services/internal/modules/growing/application/query/seasons"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"samurenkoroma/services/pkg/utils"
 )
@@ -21,72 +23,58 @@ type growingModule struct {
 func NewModule(uowFactory repository.Factory) module.Module {
 	tx, _ := uowFactory.DB().Begin()
 	pr := postgres.NewPostgresGrowingProvider(tx).(*postgres.PostgresGrowingProvider)
-	seasons := season.NewSeasonHandler(uowFactory)
-	stages := stage.NewStageHandler(uowFactory)
-	plans := cropplan.NewCropPlanHandler(uowFactory)
 	return &growingModule{
 		Commands: []module.CommandHandler{{
 			Name:    "ActivateCropPlan",
-			Handler: plans.Activate,
+			Handler: cropplan.NewCropPlanHandler(uowFactory).Activate,
 			Decoder: utils.DecodeJSON[cropplan.ActivateCropPlanCmd],
 		}, {
 			Name:    "CreateCropPlan",
-			Handler: plans.Create,
+			Handler: cropplan.NewCropPlanHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[cropplan.CreateCropPlanCmd],
 		}, {
 			Name:    "CompleteCropPlan",
-			Handler: plans.Complete,
+			Handler: cropplan.NewCropPlanHandler(uowFactory).Complete,
 			Decoder: utils.DecodeJSON[cropplan.CompleteCropPlanCmd],
 		}, {
 			Name:    "AddStage",
-			Handler: stages.Add,
+			Handler: stage.NewStageHandler(uowFactory).Add,
 			Decoder: utils.DecodeJSON[stage.AddStageCmd],
 		}, {
 			Name:    "CompleteStage",
-			Handler: stages.Complete,
+			Handler: stage.NewStageHandler(uowFactory).Complete,
 			Decoder: utils.DecodeJSON[stage.CompleteStageCmd],
 		}, {
 			Name:    "SkipStage",
-			Handler: stages.Skip,
+			Handler: stage.NewStageHandler(uowFactory).Skip,
 			Decoder: utils.DecodeJSON[stage.SkipStageCmd],
 		}, {
 			Name:    "StartStage",
-			Handler: stages.Start,
+			Handler: stage.NewStageHandler(uowFactory).Start,
 			Decoder: utils.DecodeJSON[stage.StartStageCmd],
 		}, {
 			Name:    "CreateSeason",
-			Handler: seasons.Create,
+			Handler: season.NewSeasonHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[season.CreateSeasonCmd],
 		}},
 		Queries: []module.QueryHandler{{
 			Name:    "ListSeasons",
-			Handler: growingQueries.ListSeasonsHandler(pr.Seasons()),
-			Decoder: utils.DecodeJSON[growingQueries.ListSeasonsQuery],
+			Handler: seasons.NewSeasonsHandler(pr.Seasons()).List,
+			Decoder: utils.DecodeJSON[seasons.ListSeasonsQuery],
 		}, {
-			Name:    "ListVarieties",
-			Handler: growingQueries.NewListVarietiesHandler(uowFactory),
-			Decoder: utils.DecodeJSON[growingQueries.ListVarietiesQuery],
+			Name:    "GetCrops",
+			Handler: catalog.NewCatalogHandler(pr.Catalog()).GetCrops,
+			Decoder: utils.DecodeJSON[catalog.CropsQuery],
 		}, {
-			Name:    "GetSpecie",
-			Handler: growingQueries.NewGetSpeciesHandler(pr.Catalog()),
-			Decoder: utils.DecodeJSON[growingQueries.GetSpeciesQuery],
+			Name:    "GetVarieties",
+			Handler: catalog.NewCatalogHandler(pr.Catalog()).GetVarieties,
+			Decoder: utils.DecodeJSON[catalog.VarietiesQuery],
 		}, {
-			Name:    "GetVariety",
-			Handler: growingQueries.NewGetVarietyHandler(pr.Catalog()),
-			Decoder: utils.DecodeJSON[growingQueries.GetVarietyQuery],
-		}, {
-			Name:    "GetCropPlan",
-			Handler: growingQueries.NewGetCropPlanHandler(pr.CropPlans()),
-			Decoder: utils.DecodeJSON[growingQueries.GetCropPlanQuery],
-		}, {
-			Name:    "ListCropPlan",
-			Handler: growingQueries.NewListCropPlansHandler(pr.CropPlans()),
-			Decoder: utils.DecodeJSON[growingQueries.ListCropPlansQuery],
-		}, {
-			Name:    "ListSpecies",
-			Handler: growingQueries.NewListSpeciesHandler(pr.Catalog()),
-			Decoder: utils.DecodeJSON[growingQueries.ListSpeciesQuery],
-		}},
+			Name:    "GetCropPlans",
+			Handler: cropplanQuery.NewQueryCropPlanHandler(pr.CropPlans(), pr.Catalog(), pr.Tasks(), pr.PhenologyService()).GetCropPlans,
+			Decoder: utils.DecodeJSON[cropplanQuery.GetCropPlanQuery],
+		},
+		},
 	}
 
 }
