@@ -12,7 +12,7 @@ type getSpeciesHandler struct {
 }
 
 func (h *getSpeciesHandler) Name() string {
-	return "GetSpecies"
+	return "GetSpecie"
 }
 
 func NewGetSpeciesHandler(repo catalog.Repository) query.Handler {

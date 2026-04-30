@@ -99,14 +99,15 @@ func (r *seasonRepo) FindByID(ctx context.Context, id season.SeasonID) (*season.
 }
 
 // FindAll возвращает все сезоны
-func (r *seasonRepo) FindAll(ctx context.Context) ([]*season.Season, error) {
+func (r *seasonRepo) FindAll(ctx context.Context, filter season.Filter) ([]*season.Season, error) {
 	query := `
         SELECT id, name, start_date, end_date, description, status, created_by, created_at, updated_at
-        FROM growing_seasons
+        FROM growing_seasons s
+        WHERE ($1 = '' OR s.created_by::text = $1)
         ORDER BY start_date DESC
     `
 
-	rows, err := r.tx.QueryContext(ctx, query)
+	rows, err := r.tx.QueryContext(ctx, query, filter.OwnerId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query seasons: %w", err)
 	}

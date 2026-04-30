@@ -6,8 +6,9 @@ import (
 )
 
 type Filter struct {
-	Limit  int `json:"limit,omitempty"`
-	Offset int `json:"offset,omitempty"`
+	Limit   int    `json:"limit,omitempty"`
+	Offset  int    `json:"offset,omitempty"`
+	OwnerId string `json:"owner_id,omitempty"`
 }
 
 type ListItem struct {

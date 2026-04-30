@@ -23,17 +23,18 @@ func (f poProjection) GetList(ctx context.Context, filter physicalobject.POFilte
 	SELECT
 		po.id, po.type, po.name, ST_AsGeoJSON(geometry),  po.area, attributes, po.status, po.owner_id, po.created_at
 	FROM farm_physical_objects po
-	WHERE ($1 = '' OR po.status = $1)
+	WHERE  ($1 = '' OR po.status = $1)
+	  AND ($4 = '' OR po.owner_id::text = $4)
 	  AND ($2 = '' OR po.type = $2)
--- 	  AND ($3 = '' OR po.owner_id = $3)
 	  AND ($3 = '' OR po.name ILIKE '%' || $3 || '%')
 	GROUP BY po.id
 	ORDER BY po.name 
 		`
+
 	var attrJSON []byte
 	var geomJSON string
 	rows, err := f.db.QueryContext(ctx, query,
-		filter.Status, filter.Type, filter.Search)
+		filter.Status, filter.Type, filter.Search, filter.OwnerId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query objects: %w", err)
 	}

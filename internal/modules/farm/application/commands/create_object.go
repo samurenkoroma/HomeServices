@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
@@ -9,8 +10,6 @@ import (
 	"samurenkoroma/services/internal/core/spatial"
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	"samurenkoroma/services/internal/modules/farm/infrastructure/persistence/postgres"
-
-	"github.com/google/uuid"
 )
 
 type CreateFarmObjectCmd struct {
@@ -36,6 +35,10 @@ func (h *FarmObjectHandler) Create(ctx context.Context, cmd any) (any, error) {
 	}
 
 	return uow.Execute(ctx, postgres.NewPostgresFarmProvider, func(provider repository.RepositoryProvider) (any, error) {
+		organization_id, ok := ctx.Value("organization_id").(string)
+		if !ok {
+			return nil, errors.New("organization_id is required")
+		}
 		// Приводим провайдер к нужному типу
 		farmProvider, ok := provider.(*postgres.FarmProvider)
 		if !ok {
@@ -50,11 +53,11 @@ func (h *FarmObjectHandler) Create(ctx context.Context, cmd any) (any, error) {
 		// 1. Создаем поле
 		switch c.Type {
 		case "field":
-			newObj = physicalobject.NewField(c.Name, c.GeoJSON, area, dim, "Чернозём", uuid.New().String())
+			newObj = physicalobject.NewField(c.Name, c.GeoJSON, area, dim, "Чернозём", organization_id)
 		case "plot":
-			newObj = physicalobject.NewPlot(c.Name, c.GeoJSON, area, dim, uuid.New().String())
+			newObj = physicalobject.NewPlot(c.Name, c.GeoJSON, area, dim, organization_id)
 		case "greenhouse":
-			newObj = physicalobject.NewGreenhouse(c.Name, dim, c.GeoJSON, "film", uuid.New().String())
+			newObj = physicalobject.NewGreenhouse(c.Name, dim, c.GeoJSON, "film", organization_id)
 
 		}
 

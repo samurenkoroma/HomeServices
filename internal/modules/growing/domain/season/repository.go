@@ -7,7 +7,7 @@ import (
 type Repository interface {
 	Save(context.Context, *Season) error
 	FindByID(ctx context.Context, id SeasonID) (*Season, error)
-	FindAll(ctx context.Context) ([]*Season, error)
+	FindAll(context.Context, Filter) ([]*Season, error)
 
 	Delete(ctx context.Context, id SeasonID) error
 	//

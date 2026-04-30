@@ -1,4 +1,4 @@
-package command
+package stage
 
 import (
 	"context"
@@ -10,12 +10,6 @@ import (
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 )
 
-// AddStageHandler команда добавления этапа в план
-type addStageHandler struct {
-	uowFactory repository.Factory
-}
-
-// AddStageCmd структура команды
 type AddStageCmd struct {
 	PlanID      string `json:"planId"`
 	Name        string `json:"name"`
@@ -26,14 +20,7 @@ type AddStageCmd struct {
 	Order       int    `json:"order"`
 }
 
-func NewAddStageHandler(uowFactory repository.Factory) command.Handler {
-	return &addStageHandler{
-		uowFactory: uowFactory,
-	}
-}
-
-// Handle выполняет команду
-func (h *addStageHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *StageHandler) Add(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*AddStageCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -44,16 +31,16 @@ func (h *addStageHandler) Handle(ctx context.Context, cmd any) (any, error) {
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		// Получаем план
 		plan, err := growingProvider.CropPlans().FindByID(ctx, c.PlanID)
 		if err != nil {
-			return fmt.Errorf("failed to find plan: %w", err)
+			return nil, err
 		}
 
 		// Создаем этап
@@ -67,23 +54,21 @@ func (h *addStageHandler) Handle(ctx context.Context, cmd any) (any, error) {
 			c.BBCHEnd,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to create stage: %w", err)
+			return nil, err
 		}
 		stage.Description = c.Description
 
 		// Добавляем этап в план
 		if err := plan.AddStage(*stage); err != nil {
-			return fmt.Errorf("failed to add stage to plan: %w", err)
+			return nil, err
 		}
 
 		// Сохраняем изменения
 		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
-			return fmt.Errorf("failed to update plan: %w", err)
+			return nil, err
 		}
-
 		uow.RegisterAggregate(plan)
 
-		return nil
+		return nil, nil
 	})
-	return nil, err
 }

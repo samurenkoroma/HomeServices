@@ -8,7 +8,7 @@ CREATE TABLE farm_physical_objects
     area        NUMERIC ,
 
     status      TEXT NOT NULL DEFAULT 'active',
-    owner_id    uuid NOT NULL ,
+    owner_id    uuid REFERENCES auth_organizations (id) ON DELETE CASCADE ,
     description TEXT,
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL,

@@ -1,4 +1,4 @@
-package command
+package cropplan
 
 import (
 	"context"
@@ -13,20 +13,6 @@ import (
 	"time"
 )
 
-// CreateCropPlanHandler команда создания плана
-type createCropPlanHandler struct {
-	uowFactory repository.Factory
-}
-
-func (h *createCropPlanHandler) Name() string {
-	return "CreateCropPlan"
-}
-
-func NewCreateCropPlanHandler(uowFactory repository.Factory) command.Handler {
-	return &createCropPlanHandler{uowFactory: uowFactory}
-}
-
-// CreateCropPlanCmd структура команды
 type CreateCropPlanCmd struct {
 	AreaID       string    `json:"areaID"`
 	Name         string    `json:"name"`
@@ -37,8 +23,7 @@ type CreateCropPlanCmd struct {
 	AssignedTo   string    `json:"assignedTo"`
 }
 
-// Handle выполняет команду
-func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *CropPlanHandler) Create(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateCropPlanCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -49,25 +34,25 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 		// Получаем сорт из каталога
 		variety, err := growingProvider.Catalog().GetVariety(ctx, c.SpeciesKey, c.VarietyID)
 		if err != nil {
-			return fmt.Errorf("variety not found: %w", err)
+			return nil, err
 		}
 
 		seasons, err := growingProvider.Seasons().FindByID(ctx, season.SeasonID(c.SeasonId))
 		if err != nil {
-			return fmt.Errorf("variety not found: %w", err)
+			return nil, err
 		}
 		area, err := growingProvider.CultivationAreas().FindByID(ctx, c.AreaID)
 		if err != nil {
-			return fmt.Errorf("variety not found: %w", err)
+			return nil, err
 		}
 		// Создаем план
 		plan, err := cropplan.NewCropPlan(
@@ -80,25 +65,23 @@ func (h *createCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error
 			c.AssignedTo,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to create plan: %w", err)
+			return nil, err
 		}
 
 		// Добавляем этапы из шаблонов
 		templates := catalog.GetStageTemplatesForSpecies(variety.SpeciesKey)
 		if err := plan.AddStagesFromTemplates(templates); err != nil {
-			return fmt.Errorf("failed to add stages: %w", err)
+			return nil, err
 		}
 
 		// Сохраняем план
 
 		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
-			return fmt.Errorf("failed to save plan: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(plan)
 
-		return nil
+		return nil, nil
 	})
-
-	return nil, err
 }

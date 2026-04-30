@@ -17,7 +17,7 @@ type MeQuery struct {
 type MeResponse struct {
 	User         auth.User                   `json:"user"`
 	Organization []*dto.UserOrganizationInfo `json:"organizations"`
-	CurrentOrg   *dto.UserOrganizationInfo   `json:"currentOrg"`
+	CurrentOrgId string                      `json:"currentOrgId"`
 }
 
 func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
@@ -62,19 +62,6 @@ func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
 				Role:             member.GetRoleName(),
 			})
 		}
-		// Определяем текущую организацию
-		var currentOrg *dto.UserOrganizationInfo
-		currentOrgID := user.GetCurrentOrganizationID()
-
-		if currentOrgID != "" {
-			for _, org := range organizations {
-				if org.OrganizationID == currentOrgID {
-					currentOrg = org
-					break
-				}
-			}
-		}
-
 		return MeResponse{
 			User: auth.User{
 				Id:    user.ID,
@@ -83,7 +70,7 @@ func (h *UserHandler) Handle(ctx context.Context, cmd any) (any, error) {
 				Role:  user.Role.String(),
 			},
 			Organization: organizations,
-			CurrentOrg:   currentOrg,
+			CurrentOrgId: user.GetCurrentOrganizationID(),
 		}, nil
 
 	})

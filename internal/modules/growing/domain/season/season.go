@@ -13,7 +13,6 @@ const (
 	SeasonStatusPlanning  SeasonStatus = "planning"
 	SeasonStatusActive    SeasonStatus = "active"
 	SeasonStatusCompleted SeasonStatus = "completed"
-	SeasonStatusArchived  SeasonStatus = "archived"
 )
 
 // Season - агрономический сезон
@@ -39,6 +38,9 @@ func NewSeason(
 ) (*Season, error) {
 	if name == "" {
 		return nil, ErrInvalidName
+	}
+	if status == SeasonStatusPlanning && endDate.Before(time.Now()) {
+		return nil, ErrInvalidPlanningInPast
 	}
 	if startDate.After(endDate) {
 		return nil, ErrInvalidPeriod
@@ -101,22 +103,6 @@ func (s *Season) Complete() error {
 	s.AddEvent(SeasonCompleted{
 		SeasonID: string(s.Id),
 		Name:     s.name,
-	})
-
-	return nil
-}
-
-// Archive архивирует сезон
-func (s *Season) Archive() error {
-	if s.status == SeasonStatusArchived {
-		return ErrAlreadyArchived
-	}
-
-	s.status = SeasonStatusArchived
-	s.Update()
-
-	s.AddEvent(SeasonArchived{
-		SeasonID: string(s.Id),
 	})
 
 	return nil

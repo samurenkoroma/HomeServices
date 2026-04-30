@@ -1,4 +1,4 @@
-package command
+package season
 
 import (
 	"context"
@@ -9,24 +9,12 @@ import (
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 )
 
-type deleteSeasonHandler struct {
-	uowFactory repository.Factory
-}
-
-func (h *deleteSeasonHandler) Name() string {
-	return "DeleteSeason"
-}
-
-func NewDeleteSeasonHandler(uowFactory repository.Factory) command.Handler {
-	return &deleteSeasonHandler{uowFactory: uowFactory}
-}
-
 type DeleteSeasonCmd struct {
 	SeasonId    string `json:"seasonId"`
 	Permanently bool   `json:"permanently"`
 }
 
-func (h *deleteSeasonHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *SeasonHandler) Delete(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*DeleteSeasonCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -36,16 +24,16 @@ func (h *deleteSeasonHandler) Handle(ctx context.Context, cmd any) (any, error) 
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 
 		obj, err := growingProvider.Seasons().FindByID(ctx, season.SeasonID(c.SeasonId))
 		if err != nil {
-			return fmt.Errorf("failed to find season: %w", err)
+			return nil, err
 		}
 
 		//TODO сделать проверки на наличие записей сезона
@@ -57,12 +45,11 @@ func (h *deleteSeasonHandler) Handle(ctx context.Context, cmd any) (any, error) 
 			err = growingProvider.Seasons().Save(ctx, obj)
 		}
 		if err != nil {
-			return fmt.Errorf("variety not found: %w", err)
+			return nil, err
 		}
 
 		uow.RegisterAggregate(obj)
 
-		return nil
+		return nil, nil
 	})
-	return nil, err
 }

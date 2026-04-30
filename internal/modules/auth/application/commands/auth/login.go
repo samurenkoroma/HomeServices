@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"samurenkoroma/services/internal/core/domain/repository"
-	"samurenkoroma/services/internal/modules/auth/application/dto"
 	"samurenkoroma/services/internal/modules/auth/domain"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/jwt"
 	"samurenkoroma/services/internal/modules/auth/infrastructure/persistence/postgres"
@@ -23,10 +22,9 @@ type User struct {
 	Role  string `json:"role"`
 }
 type LoginResult struct {
-	TokenPair     *jwt.TokenPair             `json:"tokenPair"`
-	User          User                       `json:"user"`
-	Organizations []dto.UserOrganizationInfo `json:"organizations"`
-	CurrentOrg    *dto.UserOrganizationInfo  `json:"currentOrg,omitempty"`
+	TokenPair    *jwt.TokenPair `json:"tokenPair"`
+	User         User           `json:"user"`
+	CurrentOrgId string         `json:"currentOrgId,omitempty"`
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +59,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		userRepo := authProvider.Users()
 		membershipRepo := authProvider.Memberships()
-		orgRepo := authProvider.Organizations()
 
 		// Ищем пользователя
 		user, err := userRepo.FindByEmail(ctx, req.Email)
@@ -81,73 +78,27 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			return nil, domain.ErrUserInactive
 		}
 
-		// Получаем все членства пользователя
-		memberships, err := membershipRepo.FindByUser(ctx, user.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		// Собираем информацию об организациях
-		var organizations []dto.UserOrganizationInfo
-		for _, m := range memberships {
-			if !m.IsActive {
-				continue
-			}
-			org, err := orgRepo.FindByID(ctx, m.OrganizationID)
-			if err != nil {
-				continue
-			}
-			organizations = append(organizations, dto.UserOrganizationInfo{
-				OrganizationID:   org.ID,
-				OrganizationName: org.Name,
-				Role:             string(m.Role),
-				RoleName:         m.GetRoleName(),
-			})
-		}
-
-		// Определяем текущую организацию
-		var currentOrg *dto.UserOrganizationInfo
 		currentOrgID := user.GetCurrentOrganizationID()
-
+		var orgRole string
 		if currentOrgID != "" {
-			for _, org := range organizations {
-				if org.OrganizationID == currentOrgID {
-					currentOrg = &org
-					break
-				}
+			// Получаем все членства пользователя
+			membership, err := membershipRepo.FindByUserAndOrganization(ctx, user.ID, currentOrgID)
+			if err != nil {
+				return nil, err
 			}
-		}
-
-		// Если нет текущей организации, но есть организации - выбираем первую
-		if currentOrg == nil && len(organizations) > 0 {
-			currentOrg = &organizations[0]
-			// Сохраняем выбранную организацию в профиле пользователя
-			user.SetCurrentOrganization(currentOrg.OrganizationID)
-			userRepo.Update(ctx, user)
+			orgRole = membership.GetRoleName()
 		}
 
 		// Генерируем токены с текущей организацией
-		var tokenPair *jwt.TokenPair
-		if currentOrg != nil {
-			tokenPair, err = h.jwtService.GenerateTokenPair(
-				user.ID,
-				user.Username,
-				user.Email,
-				string(user.Role),
-				currentOrg.OrganizationID,
-				currentOrg.Role,
-			)
-		} else {
-			// Если нет организаций, токен без organization_id
-			tokenPair, err = h.jwtService.GenerateTokenPair(
-				user.ID,
-				user.Username,
-				user.Email,
-				string(user.Role),
-				"",
-				"",
-			)
-		}
+
+		tokenPair, err := h.jwtService.GenerateTokenPair(
+			user.ID,
+			user.Username,
+			user.Email,
+			string(user.Role),
+			currentOrgID,
+			orgRole,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -166,7 +117,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 					Email: user.Email,
 					Role:  user.Role.String(),
 				},
-				CurrentOrg: currentOrg,
+				CurrentOrgId: currentOrgID,
 			}).WriteJSON(w, http.StatusOK)
 
 		return nil, nil

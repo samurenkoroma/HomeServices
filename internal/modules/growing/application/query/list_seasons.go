@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"errors"
+	"fmt"
 	"samurenkoroma/services/internal/application/query"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
 	"time"
@@ -32,7 +33,15 @@ func (h *listSeasonsHandler) Handle(ctx context.Context, query any) (any, error)
 		return nil, errors.New("invalid query type")
 	}
 	response := []SeasonDTO{}
-	data, err := h.seasons.FindAll(ctx)
+	orgId, ok := ctx.Value("organization_id").(string)
+	if !ok {
+		return nil, errors.New("organization_id is required")
+	}
+	fmt.Print(orgId)
+
+	data, err := h.seasons.FindAll(ctx, season.Filter{
+		OwnerId: orgId,
+	})
 	if err != nil {
 		return nil, err
 	}

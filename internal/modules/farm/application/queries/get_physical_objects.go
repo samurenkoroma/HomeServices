@@ -23,6 +23,7 @@ func NewGetPhysicalObjectsHandler(projector physicalobject.ObjectProjections) qu
 	return &getPhysicalObjectsHandler{projector: projector}
 }
 func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (any, error) {
+	organization_id, ok := ctx.Value("organization_id").(string)
 	q, ok := payload.(*GetPhysicalObjectsQuery)
 	if !ok {
 		return nil, query.ErrInvalidPayloadType
@@ -45,6 +46,6 @@ func (h *getPhysicalObjectsHandler) Handle(ctx context.Context, payload any) (an
 	} else {
 		filter.Status = valueobject.Active
 	}
-
+	filter.OwnerId = organization_id
 	return h.projector.GetList(ctx, filter)
 }

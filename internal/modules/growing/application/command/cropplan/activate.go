@@ -1,4 +1,4 @@
-package command
+package cropplan
 
 import (
 	"context"
@@ -8,21 +8,11 @@ import (
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 )
 
-// ActivateCropPlanHandler команда активации плана
-type activateCropPlanHandler struct {
-	uowFactory repository.Factory
-}
-
-// ActivateCropPlanCmd структура команды
 type ActivateCropPlanCmd struct {
 	PlanID string `json:"planId"`
 }
 
-func NewActivateCropPlanCmd(uowFactory repository.Factory) command.Handler {
-	return &activateCropPlanHandler{uowFactory: uowFactory}
-}
-
-func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) (any, error) {
+func (h *CropPlanHandler) Activate(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*ActivateCropPlanCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -33,31 +23,28 @@ func (h *activateCropPlanHandler) Handle(ctx context.Context, cmd any) (any, err
 		return nil, err
 	}
 
-	err = uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) error {
+	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		// Приводим провайдер к нужному типу
 		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
-			return fmt.Errorf("expected FarmProvider, got %T", provider)
+			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
 
 		plan, err := growingProvider.CropPlans().FindByID(ctx, c.PlanID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := plan.Activate(); err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
-			return err
+			return nil, err
 		}
 
 		uow.RegisterAggregate(plan)
 
-		return nil
+		return nil, nil
 	})
-
-	return nil, err
-
 }
