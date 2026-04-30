@@ -1,45 +1,4 @@
-POST http://localhost:8080/queries/
-Content-Type: application/json
 
-{
-  "query": "ListVarieties",
-  "data": {
-    "speciesKey": "tomato"
-  }
-}
-###
-
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{
-  "query": "ListSpecies",
-  "data": {
-
-  }
-}
-###
-
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{
-  "query": "GetSpecies",
-  "data": {
-    "key": "tomato"
-  }
-}
-###
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{
-  "query": "GetVariety",
-  "data": {
-    "key": "pea",
-    "id": "madonna"
-  }
-}
 ###
 POST http://localhost:8080/commands/
 Content-Type: application/json
