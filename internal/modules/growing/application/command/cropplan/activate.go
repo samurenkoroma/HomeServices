@@ -12,7 +12,7 @@ type ActivateCropPlanCmd struct {
 	PlanID string `json:"planId"`
 }
 
-func (h *CropPlanHandler) Activate(ctx context.Context, cmd any) (any, error) {
+func (h *PlanHandler) Activate(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*ActivateCropPlanCmd)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
@@ -29,8 +29,7 @@ func (h *CropPlanHandler) Activate(ctx context.Context, cmd any) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
-
-		plan, err := growingProvider.CropPlans().FindByID(ctx, c.PlanID)
+		plan, err := growingProvider.CropPlans().GetByID(ctx, c.PlanID)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +43,7 @@ func (h *CropPlanHandler) Activate(ctx context.Context, cmd any) (any, error) {
 		}
 
 		uow.RegisterAggregate(plan)
-
 		return nil, nil
 	})
+
 }

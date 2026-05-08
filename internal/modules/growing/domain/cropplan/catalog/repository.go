@@ -8,10 +8,10 @@ import (
 
 // Repository интерфейс для работы с каталогом (может быть реализован для PostgreSQL)
 type Repository interface {
-	// Species
-	GetCrop(ctx context.Context, key string) (*Species, error)
-	ListCrops(ctx context.Context) ([]Species, error)
-	SaveSpecies(ctx context.Context, species *Species) error
+	// Crop
+	GetCrop(ctx context.Context, key string) (*Crop, error)
+	ListCrops(ctx context.Context) ([]Crop, error)
+	SaveSpecies(ctx context.Context, species *Crop) error
 
 	// Varieties
 	GetVariety(ctx context.Context, varietyID string) (*Variety, error)

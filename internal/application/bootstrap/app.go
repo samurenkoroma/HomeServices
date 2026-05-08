@@ -17,7 +17,6 @@ import (
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	"samurenkoroma/services/internal/modules/growing"
 	growingEventHandlers "samurenkoroma/services/internal/modules/growing/application/eventhandlers"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -33,13 +32,7 @@ func Build(ctx context.Context, db *sql.DB, conf *configs.Config) (*App, error) 
 	bus := inmemory.NewInMemoryEventBus()
 	uowFactory := repository.NewUnitOfWorkFactory(db, bus)
 
-	jwtConfig := jwt.Config{
-		SecretKey:     conf.Auth.AccessSecret,
-		AccessExpiry:  time.Hour * 24,     // 24 часа
-		RefreshExpiry: time.Hour * 24 * 7, // 7 дней
-		Issuer:        "home-services",
-	}
-	jwtService := jwt.NewService(jwtConfig)
+	jwtService := jwt.NewService(conf.Auth)
 
 	commandRouter := command.NewRouter()
 	queryRouter := query.NewRouter()

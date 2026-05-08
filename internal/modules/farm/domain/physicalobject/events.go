@@ -26,10 +26,9 @@ func (e GreenhouseCreated) EventName() string {
 
 type FieldCreated struct {
 	event.BaseEvent
-	ID       string          `json:"id"`
-	Name     string          `json:"name"`
-	Geometry spatial.GeoJSON `json:"geometry"`
-	Area     float64         `json:"area"`
+	ID   string  `json:"id"`
+	Name string  `json:"name"`
+	Area float64 `json:"area"`
 }
 
 func (e FieldCreated) EventName() string {

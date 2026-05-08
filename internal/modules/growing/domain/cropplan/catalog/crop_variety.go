@@ -7,16 +7,16 @@ import (
 // ========== ОШИБКИ ==========
 
 var (
-	ErrSpeciesNotFound = errors.New("species not found")
+	ErrCropNotFound    = errors.New("crop not found")
 	ErrVarietyNotFound = errors.New("variety not found")
 	ErrInvalidGDD      = errors.New("invalid GDD value")
 )
 
 // ========== ТИПЫ ДЛЯ КУЛЬТУРЫ (SPECIES) ==========
 
-// Species - вид культуры (обобщенная информация)
+// Crop - вид культуры (обобщенная информация)
 // Например: "Томат", "Огурец", "Баклажан"
-type Species struct {
+type Crop struct {
 	Key         string `json:"key"`      // "tomato"
 	Name        string `json:"name"`     // "Томат"
 	Family      string `json:"family"`   // "nightshade"
@@ -113,8 +113,20 @@ type Variety struct {
 	Characteristics    map[string]string `json:"characteristics"`
 	Description        string            `json:"description"`
 	Image              string            `json:"image"`
+
+	phaseIndex map[string]int // не сериализуется
 }
 
+func (v *Variety) initIndex() {
+	if v.phaseIndex != nil {
+		return
+	}
+
+	v.phaseIndex = make(map[string]int)
+	for i, p := range v.PhenophaseGDD {
+		v.phaseIndex[p.Code] = i
+	}
+}
 func (v *Variety) GetId() string {
 	return v.ID
 }
@@ -150,9 +162,9 @@ func (v *Variety) GetPhaseByGDD(accumulatedGDD float64) *PhenophaseGDD {
 
 // GetNextPhase возвращает следующую фазу (к которой нужно стремиться)
 func (v *Variety) GetNextPhase(currentGDD float64) *PhenophaseGDD {
-	for _, phase := range v.PhenophaseGDD {
-		if currentGDD < phase.GDDRequired {
-			return &phase
+	for i := range v.PhenophaseGDD {
+		if currentGDD < v.PhenophaseGDD[i].GDDRequired {
+			return &v.PhenophaseGDD[i]
 		}
 	}
 	return nil
@@ -196,88 +208,11 @@ func (v *Variety) IsSuitableForGrowingType(growingType string) bool {
 	}
 	return false
 }
+func (v *Variety) GetPhaseByCode(code string) *PhenophaseGDD {
+	v.initIndex()
 
-// ========== ГЛОБАЛЬНЫЙ КАТАЛОГ ==========
-
-// CropCatalog - глобальный каталог всех видов и сортов
-type CropCatalog struct {
-	Species   map[string]Species            `json:"species"`   // key: speciesKey
-	Varieties map[string]map[string]Variety `json:"varieties"` // key: speciesKey -> varietyID -> Variety
-}
-
-// Глобальный экземпляр каталога (заполняется в init() файлов с данными)
-var GlobalCatalog = CropCatalog{
-	Species:   make(map[string]Species),
-	Varieties: make(map[string]map[string]Variety),
-}
-
-// ========== ФУНКЦИИ ДЛЯ РАБОТЫ С КАТАЛОГОМ ==========
-
-// GetSpecies возвращает вид по ключу
-func GetSpecies(speciesKey string) (*Species, error) {
-	species, ok := GlobalCatalog.Species[speciesKey]
-	if !ok {
-		return nil, ErrSpeciesNotFound
+	if i, ok := v.phaseIndex[code]; ok {
+		return &v.PhenophaseGDD[i]
 	}
-	return &species, nil
-}
-
-// GetVariety возвращает сорт по ключу вида и ID сорта
-func GetVariety(speciesKey, varietyID string) (*Variety, error) {
-	speciesVarieties, ok := GlobalCatalog.Varieties[speciesKey]
-	if !ok {
-		return nil, ErrSpeciesNotFound
-	}
-
-	variety, ok := speciesVarieties[varietyID]
-	if !ok {
-		return nil, ErrVarietyNotFound
-	}
-	return &variety, nil
-}
-
-// GetVarietiesBySpecies возвращает все сорта вида
-func GetVarietiesBySpecies(speciesKey string) ([]Variety, error) {
-	speciesVarieties, ok := GlobalCatalog.Varieties[speciesKey]
-	if !ok {
-		return nil, ErrSpeciesNotFound
-	}
-
-	varieties := make([]Variety, 0, len(speciesVarieties))
-	for _, v := range speciesVarieties {
-		varieties = append(varieties, v)
-	}
-	return varieties, nil
-}
-
-// GetAllVarieties возвращает все сорта из каталога
-func GetAllVarieties() []Variety {
-	var all []Variety
-	for _, speciesVarieties := range GlobalCatalog.Varieties {
-		for _, v := range speciesVarieties {
-			all = append(all, v)
-		}
-	}
-	return all
-}
-
-// RegisterVariety регистрирует новый сорт в каталоге
-func RegisterVariety(speciesKey string, variety Variety) error {
-	// Проверяем, существует ли вид
-	if _, ok := GlobalCatalog.Species[speciesKey]; !ok {
-		return ErrSpeciesNotFound
-	}
-
-	// Инициализируем map для вида, если еще нет
-	if GlobalCatalog.Varieties[speciesKey] == nil {
-		GlobalCatalog.Varieties[speciesKey] = make(map[string]Variety)
-	}
-
-	GlobalCatalog.Varieties[speciesKey][variety.ID] = variety
 	return nil
-}
-
-// RegisterSpecies регистрирует новый вид
-func RegisterSpecies(species Species) {
-	GlobalCatalog.Species[species.Key] = species
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/gorm/logger"
@@ -23,8 +24,10 @@ type RedisConfig struct {
 	DB       int
 }
 type AuthConfig struct {
-	AccessSecret  string
-	RefreshSecret string
+	SecretKey     string
+	AccessExpiry  time.Duration
+	RefreshExpiry time.Duration
+	Issuer        string
 }
 type ServerConfig struct {
 	ApiPort    string
@@ -58,8 +61,10 @@ func LoadConfig() *Config {
 			Logger: getInt("DB_LOGGER", int(logger.Info)),
 		},
 		Auth: AuthConfig{
-			AccessSecret:  os.Getenv("ACCESS_SECRET_JWT"),
-			RefreshSecret: os.Getenv("REFRESH_SECRET_JWT"),
+			SecretKey:     getString("SECRET_JWT", "SECRET_JWT"),
+			AccessExpiry:  time.Duration(int(time.Hour) * getInt("ACCESS_AXPIRY_JWT", 24)),
+			RefreshExpiry: time.Duration(int(time.Hour) * getInt("REFRESH_AXPIRY_JWT", 24*7)),
+			Issuer:        getString("ISSUER_JWT", "home-services"),
 		},
 		Server: ServerConfig{
 			ApiPort:    getString("API_PORT", ":8080"),

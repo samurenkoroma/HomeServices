@@ -240,27 +240,9 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8080/queries/
-Content-Type: application/json
 
-{
-  "query": "GetCultivationAreas",
-  "data": {}
-}
 
-###
 
-POST http://localhost:8080/queries/
-Content-Type: application/json
-
-{
-  "query": "GetCultivationAreas",
-  "data": {
-    "id": "015c2bd7-105d-4124-99bb-404a2a74c846"
-  }
-}
-
-###
 
 POST http://localhost:8080/queries/
 Content-Type: application/json

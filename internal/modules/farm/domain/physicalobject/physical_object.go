@@ -101,10 +101,9 @@ func NewField(
 		},
 	}
 	obj.AddEvent(FieldCreated{
-		ID:       string(obj.Id),
-		Name:     obj.Name,
-		Geometry: obj.Geometry,
-		Area:     obj.Area,
+		ID:   string(obj.Id),
+		Name: obj.Name,
+		Area: obj.Area,
 	})
 	return obj
 }

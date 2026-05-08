@@ -5,11 +5,11 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cultivation"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/phenology"
-	"samurenkoroma/services/internal/modules/growing/domain/cropplan/task"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/worktask"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/providers/weather"
 )
 
@@ -20,9 +20,17 @@ type PostgresGrowingProvider struct {
 	cultivationAreaRepo cultivationarea.Repository
 	catalog             catalog.Repository
 	cropPlans           cropplan.Repository
-	tasks               task.Repository
+	cultivationRepo     cultivation.Repository
+	tasks               worktask.Repository
 	phenologyService    phenology.PhenologyService
 	seasons             season.Repository
+}
+
+func (p *PostgresGrowingProvider) Tasks() worktask.Repository {
+	if p.tasks == nil {
+		p.tasks = NewWorktaskRepository(p.tx)
+	}
+	return p.tasks
 }
 
 func (p *PostgresGrowingProvider) ProviderName() string {
@@ -54,6 +62,13 @@ func (p *PostgresGrowingProvider) CultivationAreas() cultivationarea.Repository 
 	return p.cultivationAreaRepo
 }
 
+func (p *PostgresGrowingProvider) Cultivation() cultivation.Repository {
+	if p.cultivationRepo == nil {
+		p.cultivationRepo = NewCultivationPlanRepository(p.tx)
+	}
+	return p.cultivationRepo
+}
+
 func (p *PostgresGrowingProvider) Catalog() catalog.Repository {
 	if p.catalog == nil {
 		p.catalog = NewCatalogRepository(p.tx)
@@ -77,10 +92,4 @@ func (p *PostgresGrowingProvider) PhenologyService() phenology.PhenologyService 
 		)
 	}
 	return p.phenologyService
-}
-func (p *PostgresGrowingProvider) Tasks() task.Repository {
-	if p.tasks == nil {
-		p.tasks = inmemory.NewTaskRepo()
-	}
-	return p.tasks
 }

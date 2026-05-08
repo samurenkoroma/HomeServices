@@ -2,19 +2,12 @@ package jwt
 
 import (
 	"errors"
+	"samurenkoroma/services/internal/infrastructure/configs"
 	"samurenkoroma/services/internal/modules/auth/domain"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-// Config конфигурация JWT
-type Config struct {
-	SecretKey     string
-	AccessExpiry  time.Duration
-	RefreshExpiry time.Duration
-	Issuer        string
-}
 
 // Claims структура JWT токена (с OrganizationID)
 type Claims struct {
@@ -36,10 +29,10 @@ type TokenPair struct {
 
 // Service JWT сервис
 type Service struct {
-	config Config
+	config configs.AuthConfig
 }
 
-func NewService(config Config) *Service {
+func NewService(config configs.AuthConfig) *Service {
 	return &Service{config: config}
 }
 

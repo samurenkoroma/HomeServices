@@ -1,36 +1,23 @@
 POST http://localhost:8080/api/queries/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
+Authorization: Bearer {{jwt_token}}
 
 {
-  "query": "GetCrops",
+  "query": "getCrops",
   "data": {
 
   }
 }
 ###
 
-
 POST http://localhost:8080/api/queries/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
+Authorization: Bearer {{jwt_token}}
 
 {
-  "query": "GetCrops",
+  "query": "getVarieties",
   "data": {
-    "key": "tomato"
-  }
-}
-###
-
-POST http://localhost:8080/api/queries/
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzY0MzE1NiwiaWF0IjoxNzc3NTU2NzU2fQ.k66UNx5rtge3wNjPYNe5Aj9N3iVnoSWPNcRLwwNZ2G0
-
-{
-  "query": "GetVarieties",
-  "data": {
-    "cropKey": "tomato"
+    "cropKey": "eggplant"
   }
 }
 ###
@@ -39,6 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwM
 ###
 POST http://localhost:8080/queries/
 Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
   "query": "GetVarieties",

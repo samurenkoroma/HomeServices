@@ -10,8 +10,6 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/farm/domain/physicalobject"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
-
-	"github.com/google/uuid"
 )
 
 type SchemaElement struct {
@@ -55,16 +53,10 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 				if bed.TypeObj != string(cultivationarea.AreaTypeBed) {
 					continue
 				}
-				bUUID, err := uuid.Parse(bed.Id)
-				if err != nil {
-					return nil, err
-				}
 
 				area = cultivationarea.NewBed(
-					bUUID.String(),
 					e.ObjectID,
 					fmt.Sprintf("%s -%s", e.Name, bed.Label),
-					e.Geometry,
 					bed.Width*bed.Length,
 				)
 				a, ok := area.(*cultivationarea.Bed)

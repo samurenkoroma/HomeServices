@@ -1,5 +1,93 @@
+POST http://localhost:8080/auth/login
+Content-Type: application/json
 
-###
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+> {% client.global.set("auth_token", response.body.data.tokenPair.accessToken); %}
+
+### CreateCultivationPlan
+POST http://localhost:8080/api/commands/
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3Nzg0MjA0MCwiaWF0IjoxNzc3NzU1NjQwfQ.g1gXy_ddCSbviS36PCoaoOPFbPKA3sYC_MkcOMFpsIs
+Content-Type: application/json
+
+{
+  "command": "CreateCultivationPlan",
+  "data": {
+    "version": 1,
+    "name": "Томат (базовый план)",
+    "cropKey": "tomato",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "soil_preparation",
+        "title": "Подготовка почвы",
+        "trigger": {
+          "type": "date",
+          "offset_days": -7
+        }
+      },
+      {
+        "id": "s2",
+        "type": "planting",
+        "title": "Высадка рассады",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s3",
+        "type": "watering",
+        "title": "Полив после посадки",
+        "trigger": {
+          "type": "date",
+          "offset_days": 1
+        }
+      },
+      {
+        "id": "s4",
+        "type": "fertilization",
+        "title": "Азотная подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-15"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "pest_control",
+        "title": "Обработка от вредителей",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-51"
+        }
+      },
+      {
+        "id": "s6",
+        "type": "watering",
+        "title": "Интенсивный полив",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-61"
+        }
+      },
+      {
+        "id": "s7",
+        "type": "harvest",
+        "title": "Сбор урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-89"
+        }
+      }
+    ]
+  }
+}
+
+### CreateCropPlan
 POST http://localhost:8080/commands/
 Content-Type: application/json
 
@@ -16,17 +104,31 @@ Content-Type: application/json
   }
 }
 
-###
 
-POST http://localhost:8080/queries/
+###
+POST http://localhost:8080/api/queries/
 Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
-  "query": "ListCropPlan",
+  "query": "cultivationAreas",
   "data": {
-    "status": "draft"
   }
 }
+###
+
+
+
+POST http://localhost:8080/api/queries/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3Nzk4OTk1OSwiaWF0IjoxNzc3OTAzNTU5fQ.62BtNxNfxp4eTp7_kvv-B1TwW4LfdPf6JhAiqsAFQKY
+
+{
+  "query": "GetCropPlans",
+  "data": {
+  }
+}
+
 ###
 POST http://localhost:8080/queries/
 Content-Type: application/json

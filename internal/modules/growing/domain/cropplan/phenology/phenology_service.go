@@ -8,6 +8,14 @@ import (
 )
 
 type PhenologyService interface {
+	PredictDateForStage(
+		ctx context.Context,
+		varietyID string,
+		startDate time.Time,
+		stage string,
+		lat, lon float64,
+	) (time.Time, error)
+
 	GetCurrentPhenology(
 		ctx context.Context,
 		planID string,
@@ -36,6 +44,76 @@ func NewPhenologyService(
 		gddCalculator:   NewGDDCalculator(),
 		useSinusoidal:   useSinusoidal, // больше не передаем температуры
 	}
+}
+
+func (s *phenologyService) PredictDateForStage(
+	ctx context.Context,
+	varietyID string,
+	startDate time.Time,
+	stage string,
+	lat, lon float64,
+) (time.Time, error) {
+
+	today := time.Now()
+
+	if startDate.After(today) {
+		return time.Time{}, ErrPlantingDateInFuture
+	}
+
+	// 1. Получаем сорт
+	variety, err := s.catalogRepo.GetVariety(ctx, varietyID)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("%w: %v", ErrVarietyNotFound, err)
+	}
+
+	// 2. Получаем фазу
+	phase := variety.GetPhaseByCode(stage)
+	if phase == nil {
+		return time.Time{}, fmt.Errorf("phenophase %s not found", stage)
+	}
+
+	targetGDD := phase.GDDRequired
+
+	// 3. Погода
+	temps, err := s.weatherProvider.GetHistoricalTemperatures(
+		ctx, lat, lon, startDate, today,
+	)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("%w: %v", ErrNoWeatherData, err)
+	}
+
+	// 4. Текущий GDD
+	var accumulatedGDD float64
+	if s.useSinusoidal {
+		accumulatedGDD = s.gddCalculator.AccumulateGDDWithSinusoidal(
+			temps, variety.BaseTemperature, variety.MaxTemperature,
+		)
+	} else {
+		accumulatedGDD = s.gddCalculator.AccumulateGDD(
+			temps, variety.BaseTemperature, variety.MaxTemperature,
+		)
+	}
+
+	// 5. Уже достигнута
+	if accumulatedGDD >= targetGDD {
+		return today, nil
+	}
+
+	// 6. Прогноз
+	days := s.gddCalculator.PredictDaysToTarget(
+		accumulatedGDD,
+		targetGDD,
+		temps,
+		variety.BaseTemperature,
+		variety.MaxTemperature,
+		s.useSinusoidal,
+	)
+
+	if days <= 0 || days > 365 {
+		return time.Time{}, fmt.Errorf("invalid prediction horizon")
+	}
+
+	return today.AddDate(0, 0, days), nil
 }
 
 func (s *phenologyService) GetCurrentPhenology(
@@ -282,83 +360,3 @@ func (s *phenologyService) generateRecommendations(
 
 	return actions
 }
-
-//
-//// ForecastDevelopment прогнозирует развитие на указанное количество дней
-//func (s *PhenologyService) ForecastDevelopment(
-//	ctx context.Context,
-//	planID string,
-//	varietyID string,
-//	plantingDate time.Time,
-//	lat, lon float64,
-//	forecastDays int,
-//) (*PhenologyForecast, error) {
-//
-//	// Получаем сорт
-//	variety, err := s.catalogRepo.GetVariety(ctx, "", varietyID)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// Получаем исторические температуры
-//	today := time.Now()
-//	historyTemps, err := s.weatherProvider.GetHistoricalTemperatures(
-//		ctx, lat, lon, plantingDate, today,
-//	)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// Получаем прогноз погоды
-//	forecastTemps, err := s.weatherProvider.GetForecast(ctx, lat, lon, forecastDays)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// Объединяем историю и прогноз
-//	allTemps := append(historyTemps, forecastTemps...)
-//
-//	// Рассчитываем накопленное GDD
-//	accumulatedGDD := s.gddCalculator.AccumulateGDD(historyTemps, variety.BaseTemperature, // ← из сорта
-//		variety.MaxTemperature, // ← из сорта
-//	)
-//
-//	// Прогнозируем даты фаз
-//	var phases []ForecastPhase
-//
-//	for _, phase := range variety.PhenophaseGDD {
-//		if phase.GDDRequired <= accumulatedGDD {
-//			// Фаза уже пройдена
-//			continue
-//		}
-//
-//		// Прогнозируем дату достижения фазы
-//		daysNeeded := s.gddCalculator.PredictDaysToTarget(
-//			accumulatedGDD, phase.GDDRequired, allTemps,
-//		)
-//		expectedDate := today.AddDate(0, 0, daysNeeded)
-//
-//		phases = append(phases, ForecastPhase{
-//			PhaseCode:    phase.Code,
-//			PhaseName:    phase.Name,
-//			ExpectedDate: expectedDate,
-//			GDDRequired:  phase.GDDRequired,
-//			IsCritical:   phase.IsCritical,
-//		})
-//	}
-//
-//	// Генерируем рекомендации
-//	currentPhase := variety.GetPhaseByGDD(accumulatedGDD)
-//	var actions []RecommendedAction
-//	if currentPhase != nil {
-//		actions = s.generateRecommendations(currentPhase.Code, 0, nil)
-//	}
-//
-//	return &PhenologyForecast{
-//		PlanID:             planID,
-//		PlantingDate:       plantingDate,
-//		ForecastDate:       today,
-//		Phases:             phases,
-//		RecommendedActions: actions,
-//	}, nil
-//}

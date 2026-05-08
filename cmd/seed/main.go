@@ -8,15 +8,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"samurenkoroma/services/internal/core/domain/repository"
-	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
-	"samurenkoroma/services/internal/modules/crop/application/commands"
-	"samurenkoroma/services/pkg/db"
-	"strings"
-
 	"samurenkoroma/services/internal/infrastructure/configs"
-	"samurenkoroma/services/internal/modules/crop/domain/croptype"
+	inmemory "samurenkoroma/services/internal/infrastructure/messaging/rabbitmq"
+	"samurenkoroma/services/internal/modules/growing/application/command/cultivation"
+	"samurenkoroma/services/pkg/db"
 
 	_ "github.com/lib/pq"
 )
@@ -45,6 +41,20 @@ type seedData struct {
 		YieldPotential     string   `json:"yield_potential"`
 		RecommendedRegions []string `json:"recommended_regions"`
 	}
+	CultivationPlan []struct {
+		Version   int     `json:"version"`
+		Name      string  `json:"name"`
+		CropKey   string  `json:"crop_key"`
+		VarietyId *string `json:"varietyId"`
+		Steps     []struct {
+			Type    string `json:"type"`
+			Title   string `json:"title"`
+			Trigger struct {
+				Type  string         `json:"type"`
+				Value map[string]any `json:"value"`
+			} `json:"trigger"`
+		} `json:"steps"`
+	} `json:"cultivation_plans"`
 }
 
 func main() {
@@ -61,7 +71,6 @@ func main() {
 	bus := inmemory.NewInMemoryEventBus()
 
 	uowFactory := repository.NewUnitOfWorkFactory(db, bus)
-	// Создаём фабрику UoW
 	data := readFile()
 
 	var parseData seedData
@@ -72,105 +81,139 @@ func main() {
 	log.Printf("Found %d crop types to seed", len(parseData.CropTypes))
 	switch *module {
 	case "all":
-		if err := seedCropTypes(uowFactory, parseData, *dryRun); err != nil {
-			log.Fatalf("Failed to seed crop types: %v", err)
+		if err := seedCultivationPlans(uowFactory, parseData, *dryRun); err != nil {
+			log.Fatalf("Failed to seed cultivation plan: %v", err)
 		}
-		if err := seedVarieties(uowFactory, parseData, *dryRun); err != nil {
-			log.Fatalf("Failed to seed varieties: %v", err)
-		}
+		//if err := seedCropTypes(uowFactory, parseData, *dryRun); err != nil {
+		//	log.Fatalf("Failed to seed crop types: %v", err)
+		//}
+		//if err := seedVarieties(uowFactory, parseData, *dryRun); err != nil {
+		//	log.Fatalf("Failed to seed varieties: %v", err)
+		//}
 	case "crop":
-		if err := seedCropTypes(uowFactory, parseData, *dryRun); err != nil {
-			log.Fatalf("Failed to seed crop types: %v", err)
-		}
-		if err := seedVarieties(uowFactory, parseData, *dryRun); err != nil {
-			log.Fatalf("Failed to seed varieties: %v", err)
-		}
+		//if err := seedCropTypes(uowFactory, parseData, *dryRun); err != nil {
+		//	log.Fatalf("Failed to seed crop types: %v", err)
+		//}
+		//if err := seedVarieties(uowFactory, parseData, *dryRun); err != nil {
+		//	log.Fatalf("Failed to seed varieties: %v", err)
+		//}
 	case "farm":
 		fmt.Printf("farm seed")
+	case "growing":
+		if err := seedCultivationPlans(uowFactory, parseData, *dryRun); err != nil {
+			log.Fatalf("Failed to seed cultivation plan: %v", err)
+		}
 	}
 
 	log.Println("Seeding completed successfully!")
 }
 
-func seedVarieties(uowFactory repository.Factory, data seedData, dryRun bool) error {
-	for _, v := range data.Varieties {
+func seedCultivationPlans(uowFactory repository.Factory, data seedData, dryRun bool) error {
+	for _, c := range data.CultivationPlan {
 		if dryRun {
-			log.Printf("[DRY RUN] Would create: %s (category: %s)", v.Name, v.Croptype)
+			log.Printf("[DRY RUN] Would create: %s (category: %s)", c.Name, c.CropKey)
 			continue
 		}
 
-		cmd := commands.CreateVarietyCmd{
-			Name:               v.Name,
-			Crop:               v.Croptype,
-			Description:        v.Description,
-			VegetationDays:     v.VegetationDays,
-			YieldPotential:     v.YieldPotential,
-			RecommendedRegions: v.RecommendedRegions,
-		}
-
 		// Создаём обработчик
-		handler := commands.NewCreateVarietyHandler(uowFactory)
+		handler := cultivation.NewCultivationPlanHandler(uowFactory)
+		cmd := cultivation.CreateCultivationPlanCmd{
+			Version: c.Version,
+			Name:    c.Name,
+			CropKey: c.CropKey,
+			Steps:   c.Steps,
+		}
 
 		// Выполняем команду
-		if err := handler.Handle(context.Background(), cmd); err != nil {
-			// Если уже существует — пропускаем
-			if err == croptype.ErrVarietyAlreadyExists {
-				log.Printf("Skipping. Variety '%s' already exists", v.Name)
-				continue
-			}
-			return fmt.Errorf("failed to create variety %s: %w", v.Name, err)
+		if _, err := handler.Create(context.Background(), &cmd); err != nil {
+			return fmt.Errorf("failed to create cultivation plan %s: %w", c.Name, err)
 		}
 
-		log.Printf("Created crop type: %s", v.Name)
+		log.Printf("Created crop type: %s", c.Name)
 	}
 	return nil
 }
 
-// seedCropTypes заливает типы культур из JSON
-func seedCropTypes(uowFactory repository.Factory, data seedData, dryRun bool) error {
-	for _, ct := range data.CropTypes {
-		if dryRun {
-			log.Printf("[DRY RUN] Would create: %s (category: %s, perennial: %v)",
-				ct.Name, ct.Category, ct.IsPerennial)
-			continue
-		}
-
-		re := regexp.MustCompile(`([а-яА-Я]*)\s\((\w+)\)`)
-		family := re.FindStringSubmatch(ct.Family)
-		category := re.FindStringSubmatch(ct.Category)
-		// Создаём команду
-		ruCat := category[1]
-		ruFam := family[1]
-		cmd := commands.CreateCropTypeCmd{
-			Name:        ct.Name,
-			Category:    strings.ToLower(category[2]),
-			CategoryRu:  &ruCat,
-			Family:      strings.ToLower(family[2]),
-			FamilyRu:    &ruFam,
-			Icon:        ct.Icon,
-			ImageURL:    ct.ImageUrl,
-			Description: ct.Description,
-			IsPerennial: ct.IsPerennial,
-		}
-
-		// Создаём обработчик
-		handler := commands.NewCreateCropTypeHandler(uowFactory)
-
-		// Выполняем команду
-		if err := handler.Handle(context.Background(), cmd); err != nil {
-			// Если уже существует — пропускаем
-			if err == croptype.ErrCropTypeAlreadyExists {
-				log.Printf("Skipping. CropType '%s' already exists", ct.Name)
-				continue
-			}
-			return fmt.Errorf("failed to create crop type %s: %w", ct.Name, err)
-		}
-
-		log.Printf("Created crop type: %s", ct.Name)
-	}
-
-	return nil
-}
+//
+//func seedVarieties(uowFactory repository.Factory, data seedData, dryRun bool) error {
+//	for _, v := range data.Varieties {
+//		if dryRun {
+//			log.Printf("[DRY RUN] Would create: %s (category: %s)", v.Name, v.Croptype)
+//			continue
+//		}
+//
+//		cmd := commands.CreateVarietyCmd{
+//			Name:               v.Name,
+//			Crop:               v.Croptype,
+//			Description:        v.Description,
+//			VegetationDays:     v.VegetationDays,
+//			YieldPotential:     v.YieldPotential,
+//			RecommendedRegions: v.RecommendedRegions,
+//		}
+//
+//		// Создаём обработчик
+//		handler := commands.NewCreateVarietyHandler(uowFactory)
+//
+//		// Выполняем команду
+//		if err := handler.Handle(context.Background(), cmd); err != nil {
+//			// Если уже существует — пропускаем
+//			if err == croptype.ErrVarietyAlreadyExists {
+//				log.Printf("Skipping. Variety '%s' already exists", v.Name)
+//				continue
+//			}
+//			return fmt.Errorf("failed to create variety %s: %w", v.Name, err)
+//		}
+//
+//		log.Printf("Created crop type: %s", v.Name)
+//	}
+//	return nil
+//}
+//
+//// seedCropTypes заливает типы культур из JSON
+//func seedCropTypes(uowFactory repository.Factory, data seedData, dryRun bool) error {
+//	for _, ct := range data.CropTypes {
+//		if dryRun {
+//			log.Printf("[DRY RUN] Would create: %s (category: %s, perennial: %v)",
+//				ct.Name, ct.Category, ct.IsPerennial)
+//			continue
+//		}
+//
+//		re := regexp.MustCompile(`([а-яА-Я]*)\s\((\w+)\)`)
+//		family := re.FindStringSubmatch(ct.Family)
+//		category := re.FindStringSubmatch(ct.Category)
+//		// Создаём команду
+//		ruCat := category[1]
+//		ruFam := family[1]
+//		cmd := commands.CreateCropTypeCmd{
+//			Name:        ct.Name,
+//			Category:    strings.ToLower(category[2]),
+//			CategoryRu:  &ruCat,
+//			Family:      strings.ToLower(family[2]),
+//			FamilyRu:    &ruFam,
+//			Icon:        ct.Icon,
+//			ImageURL:    ct.ImageUrl,
+//			Description: ct.Description,
+//			IsPerennial: ct.IsPerennial,
+//		}
+//
+//		// Создаём обработчик
+//		handler := commands.NewCreateCropTypeHandler(uowFactory)
+//
+//		// Выполняем команду
+//		if err := handler.Handle(context.Background(), cmd); err != nil {
+//			// Если уже существует — пропускаем
+//			if err == croptype.ErrCropTypeAlreadyExists {
+//				log.Printf("Skipping. CropType '%s' already exists", ct.Name)
+//				continue
+//			}
+//			return fmt.Errorf("failed to create crop type %s: %w", ct.Name, err)
+//		}
+//
+//		log.Printf("Created crop type: %s", ct.Name)
+//	}
+//
+//	return nil
+//}
 
 func readFile() []byte {
 	dataPath := filepath.Join(*dataDir, "seeds.json")

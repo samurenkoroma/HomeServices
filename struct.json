@@ -1,63 +1,79 @@
-{
-  "width": 21.319674523345117,
-  "length": 16.045448477237066,
-  "metadata": {
-    "schema": [
-      {
-        "x": 9.659837261672559,
-        "y": 7.022724238618533,
-        "id": "1775417769510",
-        "icon": "🟫",
-        "type": "path",
-        "color": "#d4a373",
-        "label": "Дорожка",
-        "width": 2,
-        "height": 2
-      },
-      {
-        "x": 9.659837261672559,
-        "y": 7.022724238618533,
-        "id": "1775417770323",
-        "icon": "🌱",
-        "type": "bed",
-        "color": "#22c55e",
-        "label": "Грядка",
-        "width": 2,
-        "height": 2
-      },
-      {
-        "x": 8.369281943475944,
-        "y": 7.606057571951867,
-        "id": "1775417783121",
-        "icon": "🌱",
-        "type": "bed",
-        "color": "#22c55e",
-        "label": "Грядка",
-        "width": 2.6999999999999993,
-        "height": 0.833333333333333
-      },
-      {
-        "x": 5.55983726167256,
-        "y": 5.306057571951868,
-        "id": "1775417789831",
-        "icon": "🌱",
-        "type": "bed",
-        "color": "#22c55e",
-        "label": "Грядка",
-        "width": 4.099999999999999,
-        "height": 2.299999999999999
-      },
-      {
-        "x": 9.659837261672559,
-        "y": 7.022724238618533,
-        "id": "1775417791129",
-        "icon": "🌱",
-        "type": "bed",
-        "color": "#22c55e",
-        "label": "Грядка",
-        "width": 2,
-        "height": 2
-      }
-    ]
+[
+  {
+    "ID": 1,
+    "Type": "soil_preparation",
+    "Trigger": {
+      "Date": null,
+      "Type": "date",
+      "BBCHStage": "",
+      "DayOffset": -7,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 2,
+    "Type": "planting",
+    "Trigger": {
+      "Date": null,
+      "Type": "date",
+      "BBCHStage": "",
+      "DayOffset": 0,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 3,
+    "Type": "watering",
+    "Trigger": {
+      "Date": null,
+      "Type": "date",
+      "BBCHStage": "",
+      "DayOffset": 1,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 4,
+    "Type": "fertilization",
+    "Trigger": {
+      "Date": null,
+      "Type": "bbch",
+      "BBCHStage": "BBCH-15",
+      "DayOffset": 0,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 5,
+    "Type": "pest_control",
+    "Trigger": {
+      "Date": null,
+      "Type": "bbch",
+      "BBCHStage": "BBCH-51",
+      "DayOffset": 0,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 6,
+    "Type": "watering",
+    "Trigger": {
+      "Date": null,
+      "Type": "bbch",
+      "BBCHStage": "BBCH-61",
+      "DayOffset": 0,
+      "DaysInterval": 0
+    }
+  },
+  {
+    "ID": 7,
+    "Type": "harvest",
+    "Trigger": {
+      "Date": null,
+      "Type": "bbch",
+      "BBCHStage": "BBCH-89",
+      "DayOffset": 0,
+      "DaysInterval": 0
+    }
   }
-}
+]

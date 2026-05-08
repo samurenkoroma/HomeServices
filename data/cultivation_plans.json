@@ -1,0 +1,319 @@
+[
+  {
+    "version": 1,
+    "name": "Томат (базовый план)",
+    "crop_key": "tomato",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "soil_preparation",
+        "title": "Подготовка почвы",
+        "trigger": {
+          "type": "date",
+          "offset_days": -7
+        }
+      },
+      {
+        "id": "s2",
+        "type": "planting",
+        "title": "Высадка рассады",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s3",
+        "type": "watering",
+        "title": "Полив после посадки",
+        "trigger": {
+          "type": "date",
+          "offset_days": 1
+        }
+      },
+      {
+        "id": "s4",
+        "type": "fertilization",
+        "title": "Азотная подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-15"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "pest_control",
+        "title": "Обработка от вредителей",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-51"
+        }
+      },
+      {
+        "id": "s6",
+        "type": "watering",
+        "title": "Интенсивный полив",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-61"
+        }
+      },
+      {
+        "id": "s7",
+        "type": "harvest",
+        "title": "Сбор урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-89"
+        }
+      }
+    ]
+  },
+  {
+    "id": "cucumber_basic",
+    "version": 1,
+    "name": "Огурец (базовый план)",
+    "crop_key": "cucumber",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "soil_preparation",
+        "title": "Подготовка почвы",
+        "trigger": {
+          "type": "date",
+          "offset_days": -5
+        }
+      },
+      {
+        "id": "s2",
+        "type": "planting",
+        "title": "Посев / высадка",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s3",
+        "type": "watering",
+        "title": "Регулярный полив",
+        "trigger": {
+          "type": "date",
+          "interval_days": 2
+        }
+      },
+      {
+        "id": "s4",
+        "type": "fertilization",
+        "title": "Подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-12"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "pest_control",
+        "title": "Защита от болезней",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-51"
+        }
+      },
+      {
+        "id": "s6",
+        "type": "harvest",
+        "title": "Сбор урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-89"
+        }
+      }
+    ]
+  },
+  {
+    "id": "potato_basic",
+    "version": 1,
+    "name": "Картофель (базовый план)",
+    "crop_key": "potato",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "soil_preparation",
+        "title": "Вспашка и подготовка",
+        "trigger": {
+          "type": "date",
+          "offset_days": -10
+        }
+      },
+      {
+        "id": "s2",
+        "type": "planting",
+        "title": "Посадка клубней",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s3",
+        "type": "hilling",
+        "title": "Окучивание",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-20"
+        }
+      },
+      {
+        "id": "s4",
+        "type": "fertilization",
+        "title": "Подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-40"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "pest_control",
+        "title": "Обработка от колорадского жука",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-51"
+        }
+      },
+      {
+        "id": "s6",
+        "type": "harvest",
+        "title": "Уборка урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-99"
+        }
+      }
+    ]
+  },
+  {
+    "id": "onion_basic",
+    "version": 1,
+    "name": "Лук (базовый план)",
+    "crop_key": "onion",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "planting",
+        "title": "Посадка",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s2",
+        "type": "watering",
+        "title": "Полив",
+        "trigger": {
+          "type": "date",
+          "interval_days": 3
+        }
+      },
+      {
+        "id": "s3",
+        "type": "fertilization",
+        "title": "Подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-13"
+        }
+      },
+      {
+        "id": "s4",
+        "type": "harvest",
+        "title": "Сбор урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-97"
+        }
+      }
+    ]
+  },
+  {
+    "id": "garlic_basic",
+    "version": 1,
+    "name": "Чеснок (базовый план)",
+    "crop_key": "garlic",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "planting",
+        "title": "Посадка зубчиков",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s2",
+        "type": "watering",
+        "title": "Полив",
+        "trigger": {
+          "type": "date",
+          "interval_days": 5
+        }
+      },
+      {
+        "id": "s3",
+        "type": "fertilization",
+        "title": "Подкормка",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-14"
+        }
+      },
+      {
+        "id": "s4",
+        "type": "harvest",
+        "title": "Сбор урожая",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-99"
+        }
+      }
+    ]
+  },
+  {
+    "id": "greens_basic",
+    "version": 1,
+    "name": "Зелень (универсальный план)",
+    "crop_key": "greens",
+    "steps": [
+      {
+        "id": "s1",
+        "type": "planting",
+        "title": "Посев",
+        "trigger": {
+          "type": "date",
+          "offset_days": 0
+        }
+      },
+      {
+        "id": "s2",
+        "type": "watering",
+        "title": "Регулярный полив",
+        "trigger": {
+          "type": "date",
+          "interval_days": 2
+        }
+      },
+      {
+        "id": "s3",
+        "type": "harvest",
+        "title": "Срез зелени",
+        "trigger": {
+          "type": "bbch",
+          "bbch": "BBCH-19"
+        }
+      }
+    ]
+  }
+]

@@ -6,7 +6,7 @@ import (
 	"samurenkoroma/services/internal/application/command"
 	"samurenkoroma/services/internal/core/domain/repository"
 	"samurenkoroma/services/internal/modules/growing/domain/season"
-	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/inmemory"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
 	"time"
 )
 
@@ -37,9 +37,9 @@ func (h *SeasonHandler) Create(ctx context.Context, cmd any) (any, error) {
 		return nil, err
 	}
 
-	return uow.Execute(ctx, inmemory.NewRedisGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
+	return uow.Execute(ctx, postgres.NewPostgresGrowingProvider, func(provider repository.RepositoryProvider) (any, error) {
 		orgId, ok := ctx.Value("organization_id").(string)
-		growingProvider, ok := provider.(*inmemory.RedisGrowingProvider)
+		growingProvider, ok := provider.(*postgres.PostgresGrowingProvider)
 		if !ok {
 			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}

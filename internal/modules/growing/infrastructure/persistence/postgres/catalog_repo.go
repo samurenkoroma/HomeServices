@@ -22,14 +22,14 @@ func NewCatalogRepository(tx *sql.Tx) *CatalogRepository {
 // ========== SPECIES (ВИДЫ) ==========
 
 // GetSpecies возвращает вид по ключу
-func (r *CatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.Species, error) {
+func (r *CatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.Crop, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
         FROM public.growing_crops
         WHERE key = $1
     `
 
-	var species catalog.Species
+	var species catalog.Crop
 	err := r.tx.QueryRowContext(ctx, query, key).Scan(
 		&species.Key,
 		&species.Name,
@@ -40,7 +40,7 @@ func (r *CatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.S
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, catalog.ErrSpeciesNotFound
+			return nil, catalog.ErrCropNotFound
 		}
 		return nil, fmt.Errorf("failed to get species: %w", err)
 	}
@@ -49,7 +49,7 @@ func (r *CatalogRepository) GetCrop(ctx context.Context, key string) (*catalog.S
 }
 
 // ListSpecies возвращает все виды
-func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Species, error) {
+func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Crop, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
         FROM public.growing_crops
@@ -62,9 +62,9 @@ func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Species, e
 	}
 	defer rows.Close()
 
-	var speciesList []catalog.Species
+	var speciesList []catalog.Crop
 	for rows.Next() {
-		var s catalog.Species
+		var s catalog.Crop
 		err := rows.Scan(
 			&s.Key,
 			&s.Name,
@@ -83,7 +83,7 @@ func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Species, e
 }
 
 // ListSpeciesByCategory возвращает виды по категории
-func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category string) ([]catalog.Species, error) {
+func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category string) ([]catalog.Crop, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
         FROM public.growing_crops
@@ -97,9 +97,9 @@ func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category 
 	}
 	defer rows.Close()
 
-	var speciesList []catalog.Species
+	var speciesList []catalog.Crop
 	for rows.Next() {
-		var s catalog.Species
+		var s catalog.Crop
 		err := rows.Scan(
 			&s.Key,
 			&s.Name,
@@ -118,7 +118,7 @@ func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category 
 }
 
 // SaveSpecies сохраняет вид
-func (r *CatalogRepository) SaveSpecies(ctx context.Context, species *catalog.Species) error {
+func (r *CatalogRepository) SaveSpecies(ctx context.Context, species *catalog.Crop) error {
 	query := `
         INSERT INTO public.growing_crops (key, name, family, category, image_url, description, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
@@ -157,7 +157,7 @@ func (r *CatalogRepository) DeleteSpecies(ctx context.Context, key string) error
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return catalog.ErrSpeciesNotFound
+		return catalog.ErrCropNotFound
 	}
 
 	return nil
@@ -603,7 +603,7 @@ func (r *CatalogRepository) SaveStageTemplate(ctx context.Context, speciesKey st
 		return fmt.Errorf("failed to check species existence: %w", err)
 	}
 	if !exists {
-		return catalog.ErrSpeciesNotFound
+		return catalog.ErrCropNotFound
 	}
 
 	query := `

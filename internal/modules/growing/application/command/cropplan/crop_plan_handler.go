@@ -4,10 +4,10 @@ import (
 	"samurenkoroma/services/internal/core/domain/repository"
 )
 
-type CropPlanHandler struct {
+type PlanHandler struct {
 	uowFactory repository.Factory
 }
 
-func NewCropPlanHandler(uowFactory repository.Factory) *CropPlanHandler {
-	return &CropPlanHandler{uowFactory: uowFactory}
+func NewCropPlanHandler(uowFactory repository.Factory) *PlanHandler {
+	return &PlanHandler{uowFactory: uowFactory}
 }

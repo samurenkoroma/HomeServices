@@ -2,7 +2,7 @@ package cultivationarea
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
-	"samurenkoroma/services/internal/core/spatial"
+	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
@@ -10,17 +10,11 @@ import (
 type Bed struct {
 	aggregate.Entity[string]
 
-	farmRefID string
-	parentID  string // ID теплицы
-	name      string
-	geometry  spatial.GeoJSON // Точка (центр грядки)
-	area      float64
-
+	FarmRefID string
+	Name      string
+	Area      float64
 	// Атрибуты грядки (хранятся в JSONB)
 	attributes BedAttributes
-
-	seasons         map[string]SeasonConfig
-	currentSeasonID string
 }
 
 // BedAttributes — атрибуты грядки
@@ -32,15 +26,12 @@ type BedAttributes struct {
 }
 
 // NewBed создаёт новую грядку
-func NewBed(id string, farmRefID, name string, centerPoint spatial.GeoJSON, area float64) *Bed {
+func NewBed(farmRefID, name string, area float64) *Bed {
 	return &Bed{
-		Entity:    aggregate.NewEntity(id),
-		farmRefID: farmRefID,
-		parentID:  farmRefID,
-		name:      name,
-		geometry:  centerPoint,
-		seasons:   make(map[string]SeasonConfig),
-		area:      area,
+		Entity:    aggregate.NewEntity(types.NewUUID()),
+		FarmRefID: farmRefID,
+		Name:      name,
+		Area:      area,
 	}
 }
 
@@ -80,103 +71,23 @@ func (b *Bed) GetPositionY() float64 {
 	return b.attributes.PositionY
 }
 
-// ConfigureForSeason — реализация интерфейса CultivationArea
-func (b *Bed) ConfigureForSeason(seasonID string, config AreaConfig) error {
-	//if config.CropPlanID == nil {
-	//	return ErrCropPlanRequiredForBed
-	//}
-
-	if _, exists := b.seasons[seasonID]; exists {
-		return ErrSeasonAlreadyConfigured
-	}
-
-	// Если имя не указано, используем текущее
-	name := config.Name
-	if name == "" {
-		name = b.name
-	}
-
-	// Если геометрия не указана, используем текущую
-	geom := config.Geometry
-	if geom.Type == "" {
-		geom = b.geometry
-	}
-
-	seasonConfig := SeasonConfig{
-		SeasonID:   seasonID,
-		Name:       name,
-		Geometry:   geom,
-		Area:       b.attributes.Width * b.attributes.Length, // для точки площадь 0
-		CropPlanID: config.CropPlanID,
-		BlockIDs:   []string{},
-		Metadata:   config.Metadata,
-		ValidFrom:  time.Now(),
-	}
-
-	b.seasons[seasonID] = seasonConfig
-	b.currentSeasonID = seasonID
-	b.name = name
-	b.geometry = geom
-	b.area = seasonConfig.Area
-	b.Update()
-
-	//TODO вынести засев грядки в отдельное событие
-	b.AddEvent(BedConfigured{
-		BedID:    b.Id,
-		SeasonID: seasonID,
-		//CropPlanID: *config.CropPlanID,
-		Area: seasonConfig.Area,
-	})
-
-	return nil
-}
-
-// Getters
-func (b *Bed) GetId() string                        { return b.Id }
-func (b *Bed) GetFarmRefID() string                 { return b.farmRefID }
-func (b *Bed) GetType() AreaType                    { return AreaTypeBed }
-func (b *Bed) GetName() string                      { return b.name }
-func (b *Bed) GetGeometry() spatial.GeoJSON         { return b.geometry }
-func (b *Bed) GetArea() float64                     { return b.area }
-func (b *Bed) GetCurrentSeasonID() string           { return b.currentSeasonID }
-func (b *Bed) IsConfiguredForSeason(id string) bool { _, ok := b.seasons[id]; return ok }
-func (b *Bed) HasBlocks() bool                      { return false }
-func (b *Bed) GetBlocks() []string                  { return []string{} }
-func (b *Bed) GetHistory() []AreaSnapshot           { return []AreaSnapshot{} }
-
-func (b *Bed) GetSeasonConfig(seasonID string) (*SeasonConfig, error) {
-	if config, exists := b.seasons[seasonID]; exists {
-		return &config, nil
-	}
-	return nil, ErrSeasonConfigNotFound
-}
-
-func (b *Bed) GetCropPlanForSeason(seasonID string) (string, error) {
-	config, err := b.GetSeasonConfig(seasonID)
-	if err != nil {
-		return "", err
-	}
-	if config.CropPlanID == nil {
-		return "", ErrNoCropPlanConfigured
-	}
-	return *config.CropPlanID, nil
-}
+func (b *Bed) GetId() string        { return b.Id }
+func (b *Bed) GetFarmRefID() string { return b.FarmRefID }
+func (b *Bed) GetType() AreaType    { return AreaTypeBed }
+func (b *Bed) GetName() string      { return b.Name }
+func (b *Bed) GetArea() float64     { return b.Area }
+func (b *Bed) HasBlocks() bool      { return false }
+func (b *Bed) GetBlocks() []string  { return []string{} }
 
 // Rehydrate восстанавливает грядку из БД
-func (b *Bed) Rehydrate(id, farmRefID string, attrs BedAttributes, createdAt, updatedAt time.Time) {
+func (b *Bed) Rehydrate(id string, createdAt, updatedAt time.Time) {
 	b.Id = id
-	b.farmRefID = farmRefID
-	b.attributes = attrs
 	b.CreatedAt = createdAt
 	b.UpdatedAt = updatedAt
 }
 
 // SetFarmRefID устанавливает ссылку на farm модуль
 func (b *Bed) SetFarmRefID(farmRefID string) {
-	b.farmRefID = farmRefID
+	b.FarmRefID = farmRefID
 	b.Update()
-}
-
-func (b *Bed) GetParentID() string {
-	return b.parentID
 }

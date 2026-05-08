@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-type ListSeasonsQuery struct {
+type SeasonsQuery struct {
 }
 
 func (h *QueryHandler) List(ctx context.Context, query any) (any, error) {
-	_, ok := query.(*ListSeasonsQuery)
+	_, ok := query.(*SeasonsQuery)
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}
