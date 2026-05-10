@@ -5,10 +5,10 @@ import (
 )
 
 type QueryHandler struct {
-	catalog catalog.Repository
+	catalog catalog.CatalogProjections
 }
 
-func NewCatalogHandler(catalog catalog.Repository) *QueryHandler {
+func NewCatalogHandler(catalog catalog.CatalogProjections) *QueryHandler {
 	return &QueryHandler{
 		catalog: catalog,
 	}

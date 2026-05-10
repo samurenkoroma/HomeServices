@@ -19,57 +19,20 @@ func NewAreaProjection(db *sql.DB) cultivationarea.Projections {
 // GetList возвращает список мест выращивания
 func (p *areaProjection) GetList(ctx context.Context, filter cultivationarea.AreaFilter) ([]cultivationarea.AreaListItem, error) {
 	var query string
-	var args []interface{}
 
-	if filter.SeasonID != "" {
-		// Если сезон указан — проверяем конфигурацию для этого сезона И наличие любой конфигурации
-		query = `
+	query = `
             SELECT 
                 ca.id, 
                 ca.farm_ref_id, 
                 ca.type, 
                 ca.name, 
-                ca.area,
-                ca.parent_id,
-                ca.created_at,
-                EXISTS(
-                    SELECT 1 FROM public.growing_area_season_configs cfg
-                    WHERE cfg.area_id = ca.id
-                    AND cfg.season_id::text = $2
-                ) as is_configured,
-                EXISTS(
-                    SELECT 1 FROM public.growing_area_season_configs cfg
-                    WHERE cfg.area_id = ca.id
-                ) as has_any_config
+                ca.area
             FROM public.growing_cultivation_areas ca
-            WHERE ($1 = '' OR ca.type = $1)
+            WHERE ($1 = '' OR ca.farm_ref_id::text = $1)
             ORDER BY ca.name
         `
-		args = []interface{}{filter.Type, filter.SeasonID}
-	} else {
-		// Если сезон не указан — проверяем только наличие любой конфигурации
-		query = `
-            SELECT 
-                ca.id, 
-                ca.farm_ref_id, 
-                ca.type, 
-                ca.name, 
-                ca.area,
-                ca.parent_id,
-                ca.created_at,
-                false as is_configured,
-                EXISTS(
-                    SELECT 1 FROM public.growing_area_season_configs cfg
-                    WHERE cfg.area_id = ca.id
-                ) as has_any_config
-            FROM public.growing_cultivation_areas ca
-            WHERE ($1 = '' OR ca.type = $1)
-            ORDER BY ca.name
-        `
-		args = []interface{}{filter.Type}
-	}
 
-	rows, err := p.db.QueryContext(ctx, query, args...)
+	rows, err := p.db.QueryContext(ctx, query, filter.ObjectId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query areas: %w", err)
 	}
@@ -78,25 +41,16 @@ func (p *areaProjection) GetList(ctx context.Context, filter cultivationarea.Are
 	var items []cultivationarea.AreaListItem
 	for rows.Next() {
 		var item cultivationarea.AreaListItem
-		var parentID sql.NullString
 
 		err := rows.Scan(
 			&item.ID,
-			&item.FarmRefID,
+			&item.ObjectId,
 			&item.Type,
 			&item.Name,
 			&item.Area,
-			&parentID,
-			&item.CreatedAt,
-			&item.IsConfigured,
-			&item.HasAnyConfig,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan area: %w", err)
-		}
-
-		if parentID.Valid {
-			item.ParentID = &parentID.String
 		}
 
 		items = append(items, item)
@@ -119,7 +73,6 @@ func (p *areaProjection) GetByID(ctx context.Context, id string) (*cultivationar
             ca.name,
             ST_AsGeoJSON(ca.geometry) as geometry,
             ca.area,
-            ca.parent_id,
             ca.created_at,
             ca.updated_at,
             -- Атрибуты (из farm_physical_objects)

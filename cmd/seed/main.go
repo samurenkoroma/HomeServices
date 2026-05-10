@@ -47,13 +47,13 @@ type seedData struct {
 		CropKey   string  `json:"crop_key"`
 		VarietyId *string `json:"varietyId"`
 		Steps     []struct {
-			Type    string `json:"type"`
-			Title   string `json:"title"`
+			Type    string `json:"type" validate:"required"`
+			Title   string `json:"title" validate:"required"`
 			Trigger struct {
-				Type  string         `json:"type"`
-				Value map[string]any `json:"value"`
-			} `json:"trigger"`
-		} `json:"steps"`
+				Type  string         `json:"type" validate:"required"`
+				Value map[string]any `json:"value" validate:"required,min=1,dive,keys,min=3,endkeys,required"`
+			} `json:"trigger" validate:"required"`
+		} `json:"steps" validate:"required"`
 	} `json:"cultivation_plans"`
 }
 

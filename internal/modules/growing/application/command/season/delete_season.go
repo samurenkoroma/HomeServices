@@ -38,12 +38,9 @@ func (h *SeasonHandler) Delete(ctx context.Context, cmd any) (any, error) {
 
 		//TODO сделать проверки на наличие записей сезона
 
-		if c.Permanently {
-			err = growingProvider.Seasons().Delete(ctx, season.SeasonID(c.SeasonId))
-		} else {
-			obj.Delete()
-			err = growingProvider.Seasons().Save(ctx, obj)
-		}
+		obj.Delete()
+		err = growingProvider.Seasons().Save(ctx, obj)
+
 		if err != nil {
 			return nil, err
 		}

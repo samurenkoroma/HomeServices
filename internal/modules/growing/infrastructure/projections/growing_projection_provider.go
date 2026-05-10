@@ -3,15 +3,15 @@ package projections
 import (
 	"database/sql"
 	"samurenkoroma/services/internal/core/domain/repository"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 	"samurenkoroma/services/internal/modules/growing/domain/cultivationarea"
-	"samurenkoroma/services/internal/modules/growing/domain/season"
 )
 
 type GrowingProjectionsProvider struct {
 	db *sql.DB
 
 	// Кеш репозиториев
-	seasons season.Projections
+	catalog catalog.CatalogProjections
 	areas   cultivationarea.Projections
 }
 
@@ -27,11 +27,11 @@ func NewGrowingProjectionsProvider(db *sql.DB) *GrowingProjectionsProvider {
 	}
 }
 
-func (provider *GrowingProjectionsProvider) Seasons() season.Projections {
-	if provider.seasons == nil {
-		provider.seasons = NewSeasonProjection(provider.db)
+func (provider *GrowingProjectionsProvider) Catalog() catalog.CatalogProjections {
+	if provider.catalog == nil {
+		provider.catalog = NewCatalogProjection(provider.db)
 	}
-	return provider.seasons
+	return provider.catalog
 }
 
 func (provider *GrowingProjectionsProvider) Areas() cultivationarea.Projections {

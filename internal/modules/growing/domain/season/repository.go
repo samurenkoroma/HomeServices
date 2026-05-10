@@ -7,9 +7,9 @@ import (
 type Repository interface {
 	Save(context.Context, *Season) error
 	FindByID(ctx context.Context, id SeasonID) (*Season, error)
-	FindAll(context.Context, Filter) ([]*Season, error)
+	//FindAll(context.Context, Filter) ([]*Season, error)
 
-	Delete(ctx context.Context, id SeasonID) error
+	//Delete(ctx context.Context, id SeasonID) error
 	//
 	//// Поиск
 	//FindByName(ctx context.Context, name string) (*Season, error)

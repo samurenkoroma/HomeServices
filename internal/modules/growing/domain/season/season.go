@@ -24,9 +24,6 @@ type Season struct {
 	status      SeasonStatus
 	description string
 	createdBy   string
-
-	// План на сезон
-	plan *SeasonPlan
 }
 
 func NewSeason(
@@ -58,13 +55,6 @@ func NewSeason(
 		createdBy:   createdBy,
 		description: description,
 	}
-
-	//s.AddEvent(SeasonCreated{
-	//	SeasonID:  string(s.Id),
-	//	Name:      s.name,
-	//	StartDate: s.startDate,
-	//	EndDate:   s.endDate,
-	//})
 
 	return s, nil
 }
@@ -108,17 +98,6 @@ func (s *Season) Complete() error {
 	return nil
 }
 
-// SetPlan устанавливает план на сезон
-func (s *Season) SetPlan(plan *SeasonPlan) {
-	s.plan = plan
-	s.Update()
-}
-
-// GetPlan возвращает план на сезон
-func (s *Season) GetPlan() *SeasonPlan {
-	return s.plan
-}
-
 // IsActive проверяет, активен ли сезон в указанную дату
 func (s *Season) IsActiveAt(date time.Time) bool {
 	return !date.Before(s.startDate) && !date.After(s.endDate)
@@ -135,11 +114,6 @@ func (s *Season) GetStatus() SeasonStatus { return s.status }
 func (s *Season) GetCreatedBy() string    { return s.createdBy }
 func (s *Season) GetCreatedAt() time.Time { return s.CreatedAt }
 func (s *Season) GetUpdatedAt() time.Time { return s.UpdatedAt }
-
-// Duration возвращает длительность сезона в днях
-func (s *Season) Duration() int {
-	return int(s.endDate.Sub(s.startDate).Hours() / 24)
-}
 
 func (s *Season) Delete() {
 	now := time.Now()

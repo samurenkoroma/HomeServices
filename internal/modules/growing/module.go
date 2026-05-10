@@ -10,8 +10,8 @@ import (
 	"samurenkoroma/services/internal/modules/growing/application/command/season"
 	"samurenkoroma/services/internal/modules/growing/application/query/catalog"
 	cropplanQuery "samurenkoroma/services/internal/modules/growing/application/query/cropplan"
-	"samurenkoroma/services/internal/modules/growing/application/query/seasons"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
+	"samurenkoroma/services/internal/modules/growing/infrastructure/projections"
 	"samurenkoroma/services/pkg/utils"
 )
 
@@ -23,6 +23,7 @@ type growingModule struct {
 func NewModule(uowFactory repository.Factory) module.Module {
 	tx, _ := uowFactory.DB().Begin()
 	pr := postgres.NewPostgresGrowingProvider(tx).(*postgres.PostgresGrowingProvider)
+	projector := projections.NewGrowingProjectionsProvider(uowFactory.DB())
 	return &growingModule{
 		Commands: []module.CommandHandler{{
 			Name:    "ActivateCropPlan",
@@ -33,38 +34,37 @@ func NewModule(uowFactory repository.Factory) module.Module {
 			Handler: cropplan.NewCropPlanHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[cropplan.CreateCropPlanCmd],
 		}, {
-			Name:    "CreateSeason",
+			Name:    "createSeason",
 			Handler: season.NewSeasonHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[season.CreateSeasonCmd],
 		}, {
 			Name:    "CreateCultivationPlan",
 			Handler: cultivation.NewCultivationPlanHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[cultivation.CreateCultivationPlanCmd],
-		},
-		},
+		}},
 		Queries: []module.QueryHandler{{
 			Name:    "getSeasons",
-			Handler: seasons.NewSeasonsHandler(pr.Seasons()).List,
-			Decoder: utils.DecodeJSON[seasons.SeasonsQuery],
+			Handler: catalog.NewCatalogHandler(projector.Catalog()).GetSeasons,
+			Decoder: utils.DecodeJSON[catalog.SeasonsQuery],
 		}, {
 			Name:    "getCrops",
-			Handler: catalog.NewCatalogHandler(pr.Catalog()).GetCrops,
+			Handler: catalog.NewCatalogHandler(projector.Catalog()).GetCrops,
 			Decoder: utils.DecodeJSON[catalog.CropsQuery],
 		}, {
 			Name:    "getVarieties",
-			Handler: catalog.NewCatalogHandler(pr.Catalog()).GetVarieties,
+			Handler: catalog.NewCatalogHandler(projector.Catalog()).GetVarieties,
 			Decoder: utils.DecodeJSON[catalog.VarietiesQuery],
 		}, {
 			Name:    "getCropPlans",
-			Handler: cropplanQuery.NewCropPlanQueryHandler(pr).GetCropPlans,
+			Handler: cropplanQuery.NewCropPlanQueryHandler(projector, pr).GetCropPlans,
 			Decoder: utils.DecodeJSON[cropplanQuery.CropPlansQuery],
 		}, {
 			Name:    "getCultivationPlans",
-			Handler: cropplanQuery.NewCropPlanQueryHandler(pr).GetCultivationPlan,
+			Handler: cropplanQuery.NewCropPlanQueryHandler(projector, pr).GetCultivationPlan,
 			Decoder: utils.DecodeJSON[cropplanQuery.CultivationPlansQuery],
 		}, {
 			Name:    "getCultivationAreas",
-			Handler: cropplanQuery.NewCropPlanQueryHandler(pr).GetCultivationAreas,
+			Handler: cropplanQuery.NewCropPlanQueryHandler(projector, pr).GetCultivationAreas,
 			Decoder: utils.DecodeJSON[cropplanQuery.CultivationAreasQuery],
 		}},
 	}

@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"samurenkoroma/services/internal/infrastructure/persistence"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
-	"strings"
 )
 
 // CatalogRepository реализация репозитория каталога для PostgreSQL
@@ -82,7 +82,6 @@ func (r *CatalogRepository) ListCrops(ctx context.Context) ([]catalog.Crop, erro
 	return speciesList, nil
 }
 
-// ListSpeciesByCategory возвращает виды по категории
 func (r *CatalogRepository) ListSpeciesByCategory(ctx context.Context, category string) ([]catalog.Crop, error) {
 	query := `
         SELECT key, name, family, category, image_url, description
@@ -213,8 +212,8 @@ func (r *CatalogRepository) GetVariety(ctx context.Context, varietyID string) (*
 	}
 
 	// Парсим массивы PostgreSQL в []string
-	variety.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
-	variety.GrowingTypes = parsePostgresArray(growingTypesStr)
+	variety.RecommendedSeasons = persistence.ParsePostgresArray(recommendedSeasonsStr)
+	variety.GrowingTypes = persistence.ParsePostgresArray(growingTypesStr)
 
 	// Декодируем JSON поля
 	if len(characteristicsJSON) > 0 {
@@ -299,8 +298,8 @@ func (r *CatalogRepository) ListVarieties(ctx context.Context, speciesKey string
 			return nil, fmt.Errorf("failed to scan variety: %w", err)
 		}
 
-		v.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
-		v.GrowingTypes = parsePostgresArray(growingTypesStr)
+		v.RecommendedSeasons = persistence.ParsePostgresArray(recommendedSeasonsStr)
+		v.GrowingTypes = persistence.ParsePostgresArray(growingTypesStr)
 
 		json.Unmarshal(characteristicsJSON, &v.Characteristics)
 		json.Unmarshal(waterReqJSON, &v.WaterRequirement)
@@ -396,8 +395,8 @@ func (r *CatalogRepository) SearchVarieties(ctx context.Context, filter catalog.
 			return nil, fmt.Errorf("failed to scan variety: %w", err)
 		}
 
-		v.RecommendedSeasons = parsePostgresArray(recommendedSeasonsStr)
-		v.GrowingTypes = parsePostgresArray(growingTypesStr)
+		v.RecommendedSeasons = persistence.ParsePostgresArray(recommendedSeasonsStr)
+		v.GrowingTypes = persistence.ParsePostgresArray(growingTypesStr)
 
 		json.Unmarshal(characteristicsJSON, &v.Characteristics)
 		json.Unmarshal(waterReqJSON, &v.WaterRequirement)
@@ -710,33 +709,4 @@ func (r *CatalogRepository) DeleteAllStageTemplates(ctx context.Context, species
 	}
 
 	return nil
-}
-
-// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
-
-// parsePostgresArray преобразует строку массива PostgreSQL в []string
-// Формат PostgreSQL массива: {value1,value2,value3} или {"value with space","value2"}
-func parsePostgresArray(arrStr string) []string {
-	if arrStr == "" || arrStr == "{}" {
-		return []string{}
-	}
-
-	// Убираем фигурные скобки
-	content := arrStr[1 : len(arrStr)-1]
-	if content == "" {
-		return []string{}
-	}
-
-	// Разделяем по запятой
-	parts := strings.Split(content, ",")
-	result := make([]string, 0, len(parts))
-
-	for _, p := range parts {
-		// Убираем кавычки, если есть
-		p = strings.TrimSpace(p)
-		p = strings.Trim(p, "\"")
-		result = append(result, p)
-	}
-
-	return result
 }

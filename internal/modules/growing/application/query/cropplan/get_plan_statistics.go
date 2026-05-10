@@ -62,7 +62,7 @@ package cropplan
 //	}
 //
 //	// Получаем план
-//	plan, err := h.PlanRepo.FindBy(ctx, q.PlanID)
+//	plan, err := h.PlanRepo.FindById(ctx, q.PlanID)
 //	if err != nil {
 //		return nil, fmt.Errorf("plan not found: %w", err)
 //	}

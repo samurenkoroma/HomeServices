@@ -7,21 +7,16 @@ import (
 
 // AreaFilter — фильтр для списка мест
 type AreaFilter struct {
-	Type     string `json:"type"`
-	SeasonID string `json:"season_id"`
+	ObjectId string `json:"objectId"`
 }
 
 // AreaListItem — DTO для списка мест
 type AreaListItem struct {
-	ID           string    `json:"id"`
-	FarmRefID    string    `json:"farm_ref_id"`
-	Type         string    `json:"type"`
-	Name         string    `json:"name"`
-	Area         float64   `json:"area"`
-	ParentID     *string   `json:"parent_id,omitempty"`
-	IsConfigured bool      `json:"is_configured"`
-	HasAnyConfig bool      `json:"has_any_config"` // ← добавляем
-	CreatedAt    time.Time `json:"created_at"`
+	ID       string  `json:"id"`
+	ObjectId string  `json:"objectId"`
+	Type     string  `json:"type"`
+	Name     string  `json:"name"`
+	Area     float64 `json:"area"`
 }
 
 // AreaDetail — DTO для детальной страницы места выращивания

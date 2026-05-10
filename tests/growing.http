@@ -3,6 +3,16 @@ Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
+      "query": "getSeasons",
+  "data": {}
+}
+###
+
+POST http://localhost:8080/api/queries/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
   "query": "getCrops",
   "data": {
 
@@ -24,13 +34,13 @@ Authorization: Bearer {{jwt_token}}
 
 
 ###
-POST http://localhost:8080/queries/
+POST http://localhost:8080/api/queries/
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-  "query": "GetVarieties",
+  "query": "getVarieties",
   "data": {
-    "id": "madonna"
+    "id": "28a9f113-04dc-49f1-8355-65a0c6733847"
   }
 }

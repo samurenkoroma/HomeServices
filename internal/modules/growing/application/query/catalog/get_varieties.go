@@ -20,6 +20,6 @@ func (h *QueryHandler) GetVarieties(ctx context.Context, query any) (any, error)
 		return h.catalog.GetVariety(ctx, q.Id)
 	}
 
-	return h.catalog.ListVarieties(ctx, q.CropKey)
+	return h.catalog.GetVarieties(ctx, q.CropKey)
 
 }

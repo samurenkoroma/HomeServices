@@ -63,7 +63,7 @@ func (r *cultivationAreaRepository) Save(ctx context.Context, area cultivationar
 }
 
 // FindByID находит место по ID
-func (r *cultivationAreaRepository) FindBy(ctx context.Context, id string) (cultivationarea.CultivationArea, error) {
+func (r *cultivationAreaRepository) FindById(ctx context.Context, id string) (cultivationarea.CultivationArea, error) {
 	query := `
         SELECT id, farm_ref_id, type, name, area,  created_at, updated_at
         FROM public.growing_cultivation_areas
@@ -93,48 +93,6 @@ func (r *cultivationAreaRepository) FindBy(ctx context.Context, id string) (cult
 	}
 
 	return r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(areaType), name, areaValue, createdAt, updatedAt)
-}
-
-func (r *cultivationAreaRepository) FindAllBy(ctx context.Context, filter cultivationarea.Filter) ([]cultivationarea.CultivationArea, error) {
-	query := `
-        SELECT id, farm_ref_id, type, name,  area,  created_at, updated_at
-        FROM growing_cultivation_areas
-        ORDER BY type, name
-    `
-
-	rows, err := r.db.QueryContext(ctx, query)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query cultivation areas: %w", err)
-	}
-	defer rows.Close()
-
-	var areas []cultivationarea.CultivationArea
-
-	for rows.Next() {
-		var (
-			areaID    string
-			farmRefID string
-			at        string
-			name      string
-			areaValue float64
-			createdAt time.Time
-			updatedAt time.Time
-		)
-
-		err := rows.Scan(&areaID, &farmRefID, &at, &name, &areaValue, &createdAt, &updatedAt)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan cultivation area: %w", err)
-		}
-
-		cultArea, err := r.hydrateArea(areaID, farmRefID, cultivationarea.AreaType(at), name, areaValue, createdAt, updatedAt)
-		if err != nil {
-			return nil, err
-		}
-
-		areas = append(areas, cultArea)
-	}
-
-	return areas, nil
 }
 
 // hydrateArea восстанавливает объект CultivationArea из данных

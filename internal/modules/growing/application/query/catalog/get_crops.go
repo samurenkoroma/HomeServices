@@ -9,5 +9,5 @@ type CropsQuery struct {
 }
 
 func (h *QueryHandler) GetCrops(ctx context.Context, query any) (any, error) {
-	return h.catalog.ListCrops(ctx)
+	return h.catalog.GetCrops(ctx)
 }
