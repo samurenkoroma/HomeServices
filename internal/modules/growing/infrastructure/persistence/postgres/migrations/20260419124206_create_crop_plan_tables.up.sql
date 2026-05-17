@@ -9,7 +9,8 @@ CREATE TABLE growing_crop_plans
     area_id                   UUID      NOT NULL REFERENCES growing_cultivation_areas (id) ON DELETE RESTRICT, -- если есть география
     owner_id                  UUID      NOT NULL REFERENCES auth_organizations (id) ON DELETE RESTRICT,
 
-    start_date                DATE      NOT NULL,
+    expected_harvest_date     DATE      NOT NULL DEFAULT NOW(),
+    planting_date             DATE      NOT NULL DEFAULT NOW(),
     status                    TEXT      NOT NULL DEFAULT 'draft',
 
     cultivation_plan_id       UUID      NOT NULL,

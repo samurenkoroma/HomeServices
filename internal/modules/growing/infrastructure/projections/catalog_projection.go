@@ -7,10 +7,173 @@ import (
 	"fmt"
 	"samurenkoroma/services/internal/infrastructure/persistence"
 	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
+	"time"
 )
 
 type catalogProjection struct {
 	db persistence.DBTX
+}
+
+func (c catalogProjection) GetCropPlans(ctx context.Context, filter catalog.CropPlanFilter) ([]catalog.CropPlanListItemDTO, error) {
+	query := `
+        SELECT 
+           plan.id,
+       plan.status,
+       plan.expected_harvest_date,
+       plan.planting_date,
+       crop.key,
+       crop.name,
+       variety.id,
+       variety.name,
+       variety.days_to_maturity,
+       prod_unit.id,
+       prod_unit.area,
+       prod_unit.name,
+       cultivator.id,
+       cultivator.name
+FROM growing_crop_plans plan
+         LEFT JOIN growing_crops crop on crop.key = plan.crop_key
+         LEFT JOIN growing_varieties variety on variety.id = plan.variety_id
+         LEFT JOIN growing_cultivation_areas prod_unit on prod_unit.id = plan.area_id
+         LEFT JOIN growing_cultivation_plans cultivator on cultivator.id = plan.cultivation_plan_id
+--         WHERE pu.owner_id IN (
+--             SELECT id FROM farm_physical_objects WHERE  IN (
+--                 SELECT id FROM land_structure WHERE unit_type = 'land' AND root_id = $1
+--                 UNION
+--                 SELECT $1
+--             )
+--         )
+        ORDER BY plan.planting_date ASC 
+    `
+
+	rows, err := c.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query plans: %w", err)
+	}
+	defer rows.Close()
+
+	var plans []catalog.CropPlanListItemDTO
+
+	for rows.Next() {
+		var p catalog.CropPlanListItemDTO
+		var cropName, cropKey, cropNameFull, prodUnitId, prodUnitName, cultivatorId, cultivatorName string
+		var prodUnitArea float64
+		var daysToMaturity sql.NullInt16
+		var varietyID, varietyName sql.NullString
+
+		var plantingDate, expectedHarvestDate time.Time
+
+		err := rows.Scan(
+			&p.ID,
+			&p.Status,
+			&expectedHarvestDate,
+			&plantingDate,
+
+			&cropKey,
+			&cropName,
+
+			&varietyID,
+			&varietyName,
+			&daysToMaturity,
+			&prodUnitId,
+			&prodUnitArea,
+			&prodUnitName,
+
+			&cultivatorId,
+			&cultivatorName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan plan: %w", err)
+		}
+
+		// Заполняем DTO
+		p.PlantingDate = plantingDate.Format("2006-01-02")
+		p.ExpectedHarvestDate = expectedHarvestDate.Format("2006-01-02")
+
+		// Культура
+		p.Crop = catalog.CropDTO{
+			Key:  cropKey,
+			Name: cropNameFull,
+		}
+		if p.Crop.Name == "" {
+			p.Crop.Name = cropName
+		}
+
+		// Сорт
+		if varietyID.Valid {
+			p.Variety = catalog.VarietyDTO{
+				ID:             varietyID.String,
+				Name:           varietyName.String,
+				DaysToMaturity: daysToMaturity.Int16,
+			}
+		}
+
+		if p.Variety.Name == "" {
+			p.Variety.Name = cropName
+		}
+
+		// Производственная единица
+		p.ProductionUnit = catalog.UnitDTO{
+			ID:   prodUnitId,
+			Area: prodUnitArea,
+			Name: prodUnitName,
+		}
+
+		// Шаблон плана (пока заглушка)
+		p.CultivationPlan = catalog.PlanRefDTO{
+			ID:   cultivatorId,
+			Name: cultivatorName,
+		}
+
+		// Прогресс (расчет на основе завершенных этапов)
+		p.Progress = 0 // нужно будет рассчитать
+
+		plans = append(plans, p)
+	}
+
+	return plans, nil
+
+}
+
+func (c catalogProjection) GetCultivationPlans(ctx context.Context, filter catalog.CultivationPlansFilter) ([]catalog.CultivationPlanItem, error) {
+	query := `
+	SELECT id, version, name, crop_key, steps
+	FROM growing_cultivation_plans
+	WHERE crop_key = $1
+	ORDER BY id, version DESC
+	`
+
+	rows, err := c.db.QueryContext(ctx, query, filter.CropKey)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []catalog.CultivationPlanItem{}
+
+	for rows.Next() {
+		var p catalog.CultivationPlanItem
+		var stepsBytes []byte
+
+		err := rows.Scan(
+			&p.ID,
+			&p.Version,
+			&p.Name,
+			&p.CropKey,
+			&stepsBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(stepsBytes, &p.Steps); err != nil {
+			return nil, err
+		}
+
+		result = append(result, p)
+	}
+
+	return result, nil
 }
 
 func (c catalogProjection) GetSeasons(ctx context.Context, filter catalog.SeasonFilter) ([]catalog.SeasonItem, error) {

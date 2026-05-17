@@ -111,6 +111,18 @@ Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
+  "query": "getCultivationPlans",
+  "data": {
+    "cropKey": "onion"
+  }
+}
+###
+
+POST http://localhost:8080/api/queries/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
   "query": "getCultivationAreas",
   "data": {
   }
@@ -121,17 +133,19 @@ Authorization: Bearer {{jwt_token}}
 
 POST http://localhost:8080/api/queries/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTZiZjE3NC04MjMwLTRiYWQtOWUxYS0xYzI4YWY5YmM4ODciLCJvcmdfcm9sZSI6ItCQ0LPRgNC-0L3QvtC8IiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3Nzk4OTk1OSwiaWF0IjoxNzc3OTAzNTU5fQ.62BtNxNfxp4eTp7_kvv-B1TwW4LfdPf6JhAiqsAFQKY
+Authorization: Bearer {{jwt_token}}
 
 {
-  "query": "GetCropPlans",
+  "query": "getCropPlans",
   "data": {
   }
 }
 
+
 ###
-POST http://localhost:8080/queries/
+POST http://localhost:8080/api/queries/
 Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
   "query": "GetCurrentPhenology",
@@ -140,16 +154,7 @@ Content-Type: application/json
   }
 }
 
-###
-POST http://localhost:8080/queries/
-Content-Type: application/json
 
-{
-  "query": "GetCropPlan",
-  "data": {
-    "planId": "dfb2500b-6fd7-4be3-b253-5eca2ceea27b"
-  }
-}
 
 ###
 

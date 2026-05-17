@@ -1,146 +1,45 @@
-[
-  {
-    "code": "cereal",
-    "name": "Зерновые",
-    "nameEn": "Cereals",
-    "description": "Зерновые культуры для производства зерна",
-    "parent": null,
-    "subcategories": ["grain"]
+{
+  "width": 4,
+  "length": 12,
+  "metadata": {
+    "schema": [
+      {
+        "x": 1.402083396911621,
+        "y": 0.4052083969116211,
+        "id": "6f0ac3bd-3610-44fb-8b6e-20e40b976349",
+        "icon": "🌱",
+        "type": "bed",
+        "color": "#22c55e",
+        "label": "Грядка 1",
+        "width": 9,
+        "height": 1.1
+      },
+      {
+        "x": 0.8770833969116212,
+        "y": 1.6927083969116208,
+        "id": "68d9912b-f596-4ade-980e-ba48edf306d2",
+        "icon": "🌱",
+        "type": "bed",
+        "color": "#22c55e",
+        "label": "Грядка 2",
+        "width": 7.2,
+        "height": 0.6
+      },
+      {
+        "x": 0.8395833969116211,
+        "y": 2.730208396911621,
+        "id": "a5eb7c79-6afc-4aa7-8730-dbb036cb3dbd",
+        "icon": "🌱",
+        "type": "bed",
+        "color": "#22c55e",
+        "label": "Грядка 3",
+        "width": 10,
+        "height": 0.5
+      }
+    ]
   },
-  {
-    "code": "grain",
-    "name": "Зернобобовые",
-    "nameEn": "Grain Legumes",
-    "description": "Бобовые культуры, выращиваемые на зерно",
-    "parent": "cereal",
-    "subcategories": []
-  },
-  {
-    "code": "oilseed",
-    "name": "Масличные",
-    "nameEn": "Oilseeds",
-    "description": "Культуры для получения растительных масел",
-    "parent": null,
-    "subcategories": []
-  },
-  {
-    "code": "industrial",
-    "name": "Технические",
-    "nameEn": "Industrial",
-    "description": "Культуры для промышленной переработки",
-    "parent": null,
-    "subcategories": []
-  },
-  {
-    "code": "sugar",
-    "name": "Сахароносные",
-    "nameEn": "Sugar Crops",
-    "description": "Культуры для производства сахара",
-    "parent": null,
-    "subcategories": []
-  },
-  {
-    "code": "vegetable",
-    "name": "Овощные",
-    "nameEn": "Vegetables",
-    "description": "Овощные культуры открытого и закрытого грунта",
-    "parent": null,
-    "subcategories": ["melon", "root"]
-  },
-  {
-    "code": "melon",
-    "name": "Бахчевые",
-    "nameEn": "Melons",
-    "description": "Бахчевые культуры (арбузы, дыни, тыквы)",
-    "parent": "vegetable",
-    "subcategories": []
-  },
-  {
-    "code": "root",
-    "name": "Корнеплоды",
-    "nameEn": "Root Vegetables",
-    "description": "Корнеплодные овощные культуры",
-    "parent": "vegetable",
-    "subcategories": []
-  },
-  {
-    "code": "fruit",
-    "name": "Плодовые",
-    "nameEn": "Fruits",
-    "description": "Плодовые деревья и кустарники",
-    "parent": null,
-    "subcategories": ["berry", "nut"]
-  },
-  {
-    "code": "berry",
-    "name": "Ягодные",
-    "nameEn": "Berries",
-    "description": "Ягодные культуры",
-    "parent": "fruit",
-    "subcategories": []
-  },
-  {
-    "code": "nut",
-    "name": "Орехоплодные",
-    "nameEn": "Nuts",
-    "description": "Орехоплодные культуры",
-    "parent": "fruit",
-    "subcategories": []
-  },
-  {
-    "code": "forage",
-    "name": "Кормовые",
-    "nameEn": "Forage Crops",
-    "description": "Культуры для кормопроизводства",
-    "parent": null,
-    "subcategories": ["silage", "green_manure"]
-  },
-  {
-    "code": "silage",
-    "name": "Силосные",
-    "nameEn": "Silage Crops",
-    "description": "Культуры для производства силоса",
-    "parent": "forage",
-    "subcategories": []
-  },
-  {
-    "code": "green_manure",
-    "name": "Сидераты",
-    "nameEn": "Green Manure",
-    "description": "Культуры для улучшения почвы",
-    "parent": "forage",
-    "subcategories": []
-  },
-  {
-    "code": "medicinal",
-    "name": "Лекарственные",
-    "nameEn": "Medicinal Plants",
-    "description": "Лекарственные растения",
-    "parent": null,
-    "subcategories": []
-  },
-  {
-    "code": "spice",
-    "name": "Пряные",
-    "nameEn": "Spice Crops",
-    "description": "Пряные и ароматические культуры",
-    "parent": null,
-    "subcategories": []
-  },
-  {
-    "code": "ornamental",
-    "name": "Декоративные",
-    "nameEn": "Ornamental Plants",
-    "description": "Декоративные растения для озеленения",
-    "parent": null,
-    "subcategories": ["floral"]
-  },
-  {
-    "code": "floral",
-    "name": "Цветочные",
-    "nameEn": "Flowers",
-    "description": "Цветочные культуры",
-    "parent": "ornamental",
-    "subcategories": []
-  }
-]
+  "has_heating": false,
+  "has_lighting": false,
+  "greenhouse_type": "film",
+  "has_ventilation": false
+}

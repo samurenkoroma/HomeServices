@@ -3,6 +3,7 @@ package eventhandlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"samurenkoroma/services/internal/core/domain/event"
 	"samurenkoroma/services/internal/modules/growing/infrastructure/persistence/postgres"
@@ -45,20 +46,31 @@ func OnFarmObjectSchemaUpdated(ctx context.Context, event event.DomainEvent) err
 		case physicalobject.PhysicalObjectSchemaUpdated:
 			var elements []SchemaElement
 			// Создано поле → создаём FieldArea
-			err := json.Unmarshal(e.Schema, &elements)
-			if err != nil {
+			if err := json.Unmarshal(e.Schema, &elements); err != nil {
 				return nil, err
 			}
+
 			for _, bed := range elements {
 				if bed.TypeObj != string(cultivationarea.AreaTypeBed) {
 					continue
 				}
-
-				area = cultivationarea.NewBed(
-					e.ObjectID,
-					fmt.Sprintf("%s -%s", e.Name, bed.Label),
-					bed.Width*bed.Length,
-				)
+				area, err = growingProvider.CultivationAreas().FindById(ctx, bed.Id)
+				if err != nil {
+					if !errors.As(err, &cultivationarea.ErrAreaNotFound) {
+						return nil, err
+					}
+				}
+				if area == nil {
+					area = cultivationarea.NewBed(
+						bed.Id,
+						e.ObjectID,
+						fmt.Sprintf("%s - %s", e.Name, bed.Label),
+						bed.Width*bed.Length/10000,
+					)
+				} else {
+					area.SetArea(bed.Width * bed.Length / 10000)
+					area.SetName(fmt.Sprintf("%s - %s", e.Name, bed.Label))
+				}
 				a, ok := area.(*cultivationarea.Bed)
 				if !ok {
 					return nil, fmt.Errorf("invalid area type")

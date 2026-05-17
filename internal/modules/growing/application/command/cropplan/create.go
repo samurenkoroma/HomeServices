@@ -14,7 +14,6 @@ import (
 )
 
 type CreateCropPlanCmd struct {
-	CropID            string  `json:"cropId"`
 	VarietyID         *string `json:"varietyId,omitempty"`
 	CultivationPlanID string  `json:"cultivationPlanId"`
 	SeasonID          string  `json:"seasonId"`
@@ -42,21 +41,22 @@ func (h *PlanHandler) Create(ctx context.Context, cmd any) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("expected FarmProvider, got %T", provider)
 		}
-
+		orgId, ok := ctx.Value("organization_id").(string)
 		tpl, err := growingProvider.Cultivation().GetLatest(ctx, c.CultivationPlanID)
 		if err != nil {
 			return nil, err
 		}
 
 		plan := &cropplan.Plan{
-			ID: uuid.New().String(),
-
-			CropKey: "tomato",
-
+			ID:                     uuid.New().String(),
+			CropKey:                tpl.CropKey,
+			VarietyID:              c.VarietyID,
+			Organization:           orgId,
 			CultivationPlanID:      tpl.ID,
 			CultivationPlanVersion: tpl.Version,
-
-			Snapshot: utils.BuildSnapshot(tpl),
+			AreaID:                 c.AreaID,
+			SeasonID:               c.SeasonID,
+			Snapshot:               utils.BuildSnapshot(tpl),
 		}
 		if err := growingProvider.CropPlans().Save(ctx, plan); err != nil {
 			return nil, err

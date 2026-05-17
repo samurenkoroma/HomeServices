@@ -14,6 +14,14 @@ type FieldArea struct {
 	Area      float64
 }
 
+func (f *FieldArea) SetArea(area float64) {
+	f.Area = area
+}
+
+func (f *FieldArea) SetName(name string) {
+	f.Name = name
+}
+
 // NewFieldArea создаёт новое поле как место выращивания
 func NewFieldArea(farmRefID, name string, area float64) *FieldArea {
 	return &FieldArea{

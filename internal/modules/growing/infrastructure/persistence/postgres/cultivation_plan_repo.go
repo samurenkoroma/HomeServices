@@ -121,7 +121,7 @@ func (r *cultivationPlanRepo) List(ctx context.Context, cropKey string) ([]*cult
 	}
 	defer rows.Close()
 
-	var result []*cultivation.CultivationPlan
+	result := []*cultivation.CultivationPlan{}
 
 	for rows.Next() {
 		var p cultivation.CultivationPlan

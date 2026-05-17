@@ -20,4 +20,6 @@ type CultivationArea interface {
 	GetType() AreaType
 	GetName() string
 	GetArea() float64
+	SetName(name string)
+	SetArea(area float64)
 }

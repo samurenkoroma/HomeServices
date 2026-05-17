@@ -23,6 +23,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjhmY
 
 ###
 
+POST http://localhost:8080/api/commands/
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{"command":"UpdateObject","data":{"id":"ccffbfb0-b85e-470c-84a4-2d7ed5326919","schema":[{"color":"#22c55e","height":0.6,"icon":"🌱","id":"6f0ac3bd-3610-44fb-8b6e-20e40b976349","label":"Грядка 1","type":"bed","width":12,"x":0,"y":0},{"color":"#22c55e","height":0.5,"icon":"🌱","id":"68d9912b-f596-4ade-980e-ba48edf306d2","label":"Грядка 2","type":"bed","width":7.7,"x":0,"y":1.1927083969116206},{"color":"#22c55e","height":0.6,"icon":"🌱","id":"a5eb7c79-6afc-4aa7-8730-dbb036cb3dbd","label":"Грядка 3","type":"bed","width":12,"x":0,"y":3.3625000000000003},{"color":"#22c55e","height":0.5,"icon":"🌱","id":"d9f6a3a3-8cfa-4456-9303-3bbaa3a1182e","label":"Грядка 4","type":"bed","width":10,"x":0,"y":2.2624999999999997}]}}
+
+###
+
 POST http://localhost:8080/commands/
 Content-Type: application/json
 
@@ -106,18 +114,16 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8080/commands/
+POST http://localhost:8080/api/commands/
 Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
 
 {
-  "command": "CreateCropPlan",
+  "command": "createCropPlan",
   "data": {
-    "crop_type_id": "e3db564e-c6e6-47c7-aa90-a84cdef1c846",
-    "variety_id": "bc6f1c3a-ff7e-467a-9870-7120fa51775a",
-    "name": "Интенсивная технология кабачка",
-    "duration": 120,
-    "description": "План с повышенными нормами удобрений",
-    "created_by": "user-123"
+    "cultivationPlanId": "d3cb156d-a7a5-472b-87c1-6a05cebf0c51",
+    "seasonId": "9f6823d5-7a60-466b-a3b4-89b3d030c332",
+    "areaId": "6f0ac3bd-3610-44fb-8b6e-20e40b976349"
   }
 }
 

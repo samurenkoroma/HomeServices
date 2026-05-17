@@ -2,7 +2,6 @@ package cultivationarea
 
 import (
 	"samurenkoroma/services/internal/core/domain/aggregate"
-	"samurenkoroma/services/internal/core/domain/types"
 	"time"
 )
 
@@ -17,6 +16,10 @@ type Bed struct {
 	attributes BedAttributes
 }
 
+func (b *Bed) SetArea(area float64) {
+	b.Area = area
+}
+
 // BedAttributes — атрибуты грядки
 type BedAttributes struct {
 	Width     float64 `json:"width"`      // ширина (м)
@@ -26,17 +29,22 @@ type BedAttributes struct {
 }
 
 // NewBed создаёт новую грядку
-func NewBed(farmRefID, name string, area float64) *Bed {
+func NewBed(id, farmRefID, name string, area float64) *Bed {
 	return &Bed{
-		Entity:    aggregate.NewEntity(types.NewUUID()),
+		Entity:    aggregate.NewEntity(id),
 		FarmRefID: farmRefID,
 		Name:      name,
 		Area:      area,
 	}
 }
 
+func (b *Bed) SetName(name string) {
+	b.Name = name
+}
+
 // SetAttributes устанавливает атрибуты грядки
 func (b *Bed) SetAttributes(width, length, posX, posY float64) {
+
 	b.attributes = BedAttributes{
 		Width:     width,
 		Length:    length,
@@ -80,8 +88,7 @@ func (b *Bed) HasBlocks() bool      { return false }
 func (b *Bed) GetBlocks() []string  { return []string{} }
 
 // Rehydrate восстанавливает грядку из БД
-func (b *Bed) Rehydrate(id string, createdAt, updatedAt time.Time) {
-	b.Id = id
+func (b *Bed) Rehydrate(createdAt, updatedAt time.Time) {
 	b.CreatedAt = createdAt
 	b.UpdatedAt = updatedAt
 }

@@ -110,8 +110,8 @@ func (r *cultivationAreaRepository) hydrateArea(
 		return field, nil
 
 	case cultivationarea.AreaTypeBed:
-		bed := cultivationarea.NewBed(farmRefID, name, areaValue)
-		bed.Rehydrate(id, createdAt, updatedAt)
+		bed := cultivationarea.NewBed(id, farmRefID, name, areaValue)
+		bed.Rehydrate(createdAt, updatedAt)
 		return bed, nil
 
 	default:

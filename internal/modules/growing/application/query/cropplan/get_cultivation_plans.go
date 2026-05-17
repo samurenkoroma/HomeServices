@@ -3,6 +3,7 @@ package cropplan
 import (
 	"context"
 	"errors"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 )
 
 type CultivationPlansQuery struct {
@@ -14,10 +15,5 @@ func (h *QueryHandler) GetCultivationPlan(ctx context.Context, query any) (any, 
 	if !ok {
 		return nil, errors.New("invalid query type")
 	}
-	//if q.CropKey != "" {
-	return h.provider.Cultivation().List(ctx, q.CropKey)
-	//}
-	//return h.provider.All(ctx, cropplan.Filter{
-	//	OwnerID: &orgId,
-	//})
+	return h.projector.Catalog().GetCultivationPlans(ctx, catalog.CultivationPlansFilter{CropKey: q.CropKey})
 }

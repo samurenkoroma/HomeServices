@@ -3,11 +3,10 @@ package cropplan
 import (
 	"context"
 	"errors"
-	"samurenkoroma/services/internal/modules/growing/domain/cropplan/cropplan"
+	"samurenkoroma/services/internal/modules/growing/domain/cropplan/catalog"
 )
 
 type CropPlansQuery struct {
-	PlanID   string `json:"planId"`
 	ObjectID string `json:"objectID,omitempty"`
 }
 
@@ -17,10 +16,13 @@ func (h *QueryHandler) GetCropPlans(ctx context.Context, query any) (any, error)
 		return nil, errors.New("invalid query type")
 	}
 	orgId, ok := ctx.Value("organization_id").(string)
-	if q.PlanID != "" {
-		return h.provider.CropPlans().GetByID(ctx, q.PlanID)
+	filter := catalog.CropPlanFilter{
+		OwnerId: orgId,
 	}
-	return h.provider.CropPlans().All(ctx, cropplan.Filter{
-		OwnerID: &orgId,
-	})
+
+	if q.ObjectID != "" {
+		filter.ProductionUnitId = q.ObjectID
+	}
+
+	return h.projector.Catalog().GetCropPlans(ctx, filter)
 }

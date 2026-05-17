@@ -30,7 +30,7 @@ func NewModule(uowFactory repository.Factory) module.Module {
 			Handler: cropplan.NewCropPlanHandler(uowFactory).Activate,
 			Decoder: utils.DecodeJSON[cropplan.ActivateCropPlanCmd],
 		}, {
-			Name:    "CreateCropPlan",
+			Name:    "createCropPlan",
 			Handler: cropplan.NewCropPlanHandler(uowFactory).Create,
 			Decoder: utils.DecodeJSON[cropplan.CreateCropPlanCmd],
 		}, {

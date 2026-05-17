@@ -1,6 +1,8 @@
 package catalog
 
-import "context"
+import (
+	"context"
+)
 
 type CropDto struct {
 	Key         string `json:"key"`      // "tomato"
@@ -67,8 +69,77 @@ type SeasonFilter struct {
 	OwnerId string `json:"owner_id,omitempty"`
 }
 
+type CultivationPlansFilter struct {
+	CropKey string `json:"cropKey,omitempty"`
+}
+
+type CultivationPlanItem struct {
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	CropKey   string  `json:"cropKey"`
+	VarietyID *string `json:"varietyID"`
+	Version   int     `json:"version"`
+	Steps     []Step  `json:"steps"`
+}
+type Step struct {
+	ID      uint8   `json:"id"`
+	Trigger Trigger `json:"trigger"`
+	Type    string  `json:"type"`
+}
+
+type Trigger struct {
+	Type  string         `json:"type"`
+	Value map[string]any `json:"value"`
+}
+
+// CropPlanListItemDTO для списка (компактный)
+type CropPlanListItemDTO struct {
+	ID                  string     `json:"id"`
+	Crop                CropDTO    `json:"crop"`
+	Variety             VarietyDTO `json:"variety"`
+	ProductionUnit      UnitDTO    `json:"productionUnit"`
+	CultivationPlan     PlanRefDTO `json:"cultivationPlan"`
+	PlantingDate        string     `json:"plantingDate"`
+	Status              string     `json:"status"`
+	ExpectedHarvestDate string     `json:"expectedHarvestDate"`
+	Progress            int        `json:"progress"`
+}
+
+// CropDTO информация о культуре
+type CropDTO struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+}
+
+// VarietyDTO информация о сорте
+type VarietyDTO struct {
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	DaysToMaturity int16  `json:"daysToMaturity"`
+}
+
+// UnitDTO информация о производственной единице (грядка/поле)
+type UnitDTO struct {
+	ID   string  `json:"id"`
+	Area float64 `json:"area"`
+	Name string  `json:"name"`
+}
+
+// PlanRefDTO ссылка на шаблон плана
+type PlanRefDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type CropPlanFilter struct {
+	OwnerId          string `json:"owner_id,omitempty"`
+	ProductionUnitId string `json:"puid,omitempty"`
+}
+
 type CatalogProjections interface {
 	GetSeasons(context.Context, SeasonFilter) ([]SeasonItem, error)
+	GetCropPlans(context.Context, CropPlanFilter) ([]CropPlanListItemDTO, error)
+	GetCultivationPlans(context.Context, CultivationPlansFilter) ([]CultivationPlanItem, error)
 	GetCrops(context.Context) ([]CropDto, error)
 	GetVarieties(context.Context, string) ([]VarietyItem, error)
 	GetVariety(context.Context, string) (*VarietyDetail, error)
